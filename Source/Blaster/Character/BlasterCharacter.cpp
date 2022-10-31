@@ -551,7 +551,7 @@ void ABlasterCharacter::DropCurrentWeapon()//按G丢武器
 		{
 			Combat->EquippedWeapon->Dropped();//先把手上的丢了
 			Combat->EquippedWeapon = Combat->SecondaryWeapon;//将要装备的武器设置为第二把武器
-
+			UE_LOG(LogTemp, Warning, TEXT("test"));
 			//设置要使用的武器的状态
 			Combat->EquippedWeapon->SetWeaponState(EWeaponState::Weapon_Equipped);//设置武器的状态为已装备
 			Combat->AttachActorToRightHand(Combat->EquippedWeapon);//东西放右手上
