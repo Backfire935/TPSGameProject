@@ -293,7 +293,10 @@ void AWeapon::Fire(const FVector& HitTarget)
 		}
 	}//子弹壳抛出效果结束
 
-	SpendRound();
+	if(HasAuthority())
+	{
+		SpendRound();
+	}
 
 }
 

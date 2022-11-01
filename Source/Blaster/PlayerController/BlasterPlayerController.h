@@ -73,6 +73,11 @@ public:
 	void ClientJoinMidGame(FName StateOfMatch, float Warmup, float Match, float Cooldown,float StartingTime);//客户端中途加入游戏时同步数据
 
 		void HandleCooldown();
+
+		void HighPingWarning(float ping);
+		void StopHighPingWarning();
+		void CheckPing(float DeltaTime);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -128,4 +133,17 @@ private:
 	bool bInitializeCarriedAmmo = false;
 	float HUDWeaponAmmo;
 	bool bInitializeWeaponAmmo = false;
+
+	float HighPingRunningTime = 0.f;
+
+	UPROPERTY(EditAnywhere)
+	float HighPingDuration = 5.f;
+
+	float PingAnimationRunningTime = 0.f;
+
+	UPROPERTY(EditAnywhere)
+	float CheckPingFrequency = 10.f;//间隔十秒检查一次ping值
+
+	UPROPERTY(EditAnywhere)
+	float HighPingThreshold = 100.f; //高ping警告的阈值,100以下都能玩
 };
