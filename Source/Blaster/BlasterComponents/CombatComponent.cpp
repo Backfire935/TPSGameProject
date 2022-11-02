@@ -177,16 +177,59 @@ void UCombatComponent::Fire()
 	if (CanFire())
 	{
 		bCanFire = false;
-	
-		ServerFire(HitTarget);
 
 		if (EquippedWeapon)//增加开火准心散布
 		{
 			CrosshairShootingFactor = 0.75f;
+
+			switch (EquippedWeapon->FireType)
+			{
+			case EFireType::EFT_Projectile:
+				{
+				FireProjectileWeapon();
+				break;
+				}
+			case EFireType::EFT_HitScan:
+				{
+				FireHitScanWeapon();
+					break;
+				}
+			case EFireType::EFT_Shotgun:
+				{
+				FireShotgunWeapon();
+					break;
+				}
+
+				default:
+					break;
+			}
+
 		}
 		StartFireTimer();
 	}	
 }
+
+void UCombatComponent::FireProjectileWeapon()
+{
+	LocalFire(HitTarget);
+	ServerFire(HitTarget);
+}
+
+void UCombatComponent::FireHitScanWeapon()
+{
+	if(EquippedWeapon)
+	{
+		HitTarget = EquippedWeapon->bUseScatter ? EquippedWeapon->TraceWithScatter(HitTarget) : HitTarget;
+		LocalFire(HitTarget);
+		ServerFire(HitTarget);
+	}
+}
+
+void UCombatComponent::FireShotgunWeapon()
+{
+
+}
+
 
 bool UCombatComponent::CanFire()
 {
@@ -288,9 +331,15 @@ void UCombatComponent::ServerFire_Implementation(const FVector_NetQuantize& Trac
 
 void UCombatComponent::MultiCastFire_Implementation(const FVector_NetQuantize& TraceHitTarget)//服务器发起的向客户端的多播开火
 {
+	if(Character && Character->IsLocallyControlled() && !Character->HasAuthority()) return;//如果接到通知的是本机，就不执行这句话，因为之前执行过了
+	LocalFire(TraceHitTarget);
+}
+
+void UCombatComponent::LocalFire(const FVector_NetQuantize& TraceHitTarget)
+{
 	if (EquippedWeapon == nullptr) return;
 
-	if(Character && CombatState == ECombatState::ECS_Reloading && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_ShotGun)//如果武器为喷子且正在换弹的话
+	if (Character && CombatState == ECombatState::ECS_Reloading && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_ShotGun)//如果武器为喷子且正在换弹的话
 	{
 		//开火需要播放两种动画，一种是角色的开火动作动画，还有一种是武器的动作动画
 		Character->PlayFireMontage(bAiming);//角色类播放开火蒙太奇动画
@@ -327,7 +376,7 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 
 void UCombatComponent::SwapPrimaryWeapon()
 {
-	
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
 	AWeapon* TempWeapon = EquippedWeapon;
 	EquippedWeapon = SecondaryWeapon;
 	SecondaryWeapon = TempWeapon;
@@ -349,7 +398,7 @@ void UCombatComponent::SwapPrimaryWeapon()
 
 void UCombatComponent::SwapSecondaryWeapon()
 {
-
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
 	AWeapon* TempWeapon = SecondaryWeapon;
 	SecondaryWeapon = EquippedWeapon;
 	EquippedWeapon = TempWeapon;

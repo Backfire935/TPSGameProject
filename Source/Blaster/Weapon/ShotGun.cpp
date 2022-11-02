@@ -27,7 +27,7 @@ void AShotGun::Fire(const FVector& HitTarget)
 
 		for(uint32 i = 0; i < NumberOfPellets; i++)
 		{
-			//FVector End = TraceWithScatter(Start, HitTarget);//Åç×ÓÉ¢ÉäµÄÉäÏß¼ì²â
+			//FVector End = TraceWithScatter(HitTarget);//Åç×ÓÉ¢ÉäµÄÉäÏß¼ì²â
 			FHitResult FireHit;
 			WeaponTraceHit(Start, HitTarget, FireHit);
 

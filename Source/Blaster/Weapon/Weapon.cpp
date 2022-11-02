@@ -12,6 +12,9 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include"Blaster/PlayerController/BlasterPlayerController.h"
 #include "Blaster/BlasterComponents/CombatComponent.h"
+#include "Kismet/KismetMathLibrary.h"
+#include  "WeaponTypes.h"
+
 // Sets default values
 AWeapon::AWeapon()
 {
@@ -57,15 +60,11 @@ void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (HasAuthority())
-	{
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		AreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-		AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnSphereOverlap);
+	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	AreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnSphereOverlap);
+	AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AWeapon::OnSphereEndOverlap);
 
-		AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AWeapon::OnSphereEndOverlap);
-
-	}
 	if ( PickupWidget)
 	{
 		PickupWidget->SetVisibility(false);
@@ -255,6 +254,31 @@ bool AWeapon::IsEmpty()//判断子弹是否打完
 bool AWeapon::IsFull()
 {
 	return Ammo == MagCapacity;//当前剩余子弹数量是不是等于弹夹容量
+}
+
+FVector AWeapon::TraceWithScatter(const FVector& HitTarget)//喷子散射的射线检测
+{
+	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName("MuzzleFlash");
+
+	if (MuzzleFlashSocket == nullptr) return FVector();//一个直线武器攻击检测
+
+	FTransform SocketTransform = MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());
+	FVector TraceStart = SocketTransform.GetLocation();//开火检测的起始点
+
+	FVector  ToTargetNormalized = (HitTarget - TraceStart).GetSafeNormal();//一个从射线起始点到被击中目标的向量
+	FVector  SphereCenter = TraceStart + ToTargetNormalized * DistanceToSphere;//到喷子射程终点的中点向量
+	FVector  RandVec = UKismetMathLibrary::RandomUnitVector() * FMath::FRandRange(0.f, SphereRadius);//随机方向单位向量*随机长度 
+	FVector EndLoc = SphereCenter + RandVec;//中心到四周的随机扩散向量
+	FVector ToEndLoc = EndLoc - TraceStart;//两点间的线段
+	FVector EndEnd = (TraceStart + ToEndLoc * TRACE_LENGTH / ToEndLoc.Size());//单个射线向量
+
+	/*
+	 *DrawDebugSphere(GetWorld(), SphereCenter, SphereRadius, 12, FColor::Red, false, 10.f);//整个散射扩散范围
+	DrawDebugSphere(GetWorld(), EndLoc, 4.F, 12, FColor::Blue, false,10.f);//单个喷子子弹的落点
+	DrawDebugLine(GetWorld(), TraceStart, EndEnd, FColor::Orange, false, 10.f);//单个喷子子弹的落点
+*/
+
+	return EndEnd;//单个射线向量
 }
 
 

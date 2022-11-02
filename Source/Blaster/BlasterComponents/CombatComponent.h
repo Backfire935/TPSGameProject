@@ -190,6 +190,12 @@ private:
 	 void FireTimerFinished();
 	 void Fire();
 
+	 void FireProjectileWeapon();
+	 void FireHitScanWeapon();
+	 void FireShotgunWeapon();
+
+	 void LocalFire(const FVector_NetQuantize & TraceHitTarget);
+
 	 bool CanFire();
 
 	 //当前手持武器的备弹

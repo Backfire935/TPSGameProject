@@ -18,6 +18,16 @@ enum class EWeaponState : uint8
 
 };
 
+UENUM(BlueprintType)
+enum class EFireType : uint8
+{
+	EFT_HitScan UMETA(DisplayName = "HitScan Weapon"),
+	EFT_Projectile UMETA(DisplayName = "Projectile Weapon"),
+	EFT_Shotgun UMETA(DisplayName = "Shotgun Weapon"),
+	EFT_MAX UMETA(DisplayName = "DefaultMax")
+
+};
+
 UCLASS()
 class BLASTER_API AWeapon : public AActor
 {
@@ -39,6 +49,8 @@ public:
 	void ShowPickupWidget(bool bShowWidget);
 	virtual void Fire(const FVector &HitTarget);
 	void Dropped();
+	FVector TraceWithScatter(const FVector& HitTarget);//喷子散射的射线检测
+
 	UFUNCTION()
 		void ReadyDestroyWeapon();
 	UFUNCTION()
@@ -88,6 +100,12 @@ public:
 
 	bool bDestroyedWeapon = false;
 
+	UPROPERTY(EditAnywhere)
+	EFireType FireType;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
+		bool bUseScatter = false;//是否允许子弹散射
+	 
 	protected:
 	virtual void BeginPlay() override;
 
@@ -160,6 +178,13 @@ private:
 
 	UPROPERTY(EditAnywhere)
 		EWeaponType WeaponType;
+
+	//射线结束的位置分裂子弹
+	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
+		float DistanceToSphere = 800.f;//喷子的有效攻击距离
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
+		float SphereRadius = 75.f;//扩散范围
 
 public:	
 

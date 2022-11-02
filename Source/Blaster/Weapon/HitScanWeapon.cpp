@@ -78,23 +78,6 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 	}
 }
 
-FVector AHitScanWeapon::TraceWithScatter(const FVector& TraceStart, const FVector& HitTarget)//喷子散射的射线检测
-{
-	FVector  ToTargetNormalized = (HitTarget - TraceStart).GetSafeNormal();//一个从射线起始点到被击中目标的向量
-	FVector  SphereCenter = TraceStart + ToTargetNormalized * DistanceToSphere;//到喷子射程终点的中点向量
-	FVector  RandVec = UKismetMathLibrary::RandomUnitVector() * FMath::FRandRange(0.f, SphereRadius);//随机方向单位向量*随机长度 
-	FVector EndLoc = SphereCenter + RandVec;//中心到四周的随机扩散向量
-	FVector ToEndLoc = EndLoc - TraceStart;//两点间的线段
-	FVector EndEnd = (TraceStart + ToEndLoc * TRACE_LENGTH / ToEndLoc.Size());//单个射线向量
-
-	/*
-	 *DrawDebugSphere(GetWorld(), SphereCenter, SphereRadius, 12, FColor::Red, false, 10.f);//整个散射扩散范围
-	DrawDebugSphere(GetWorld(), EndLoc, 4.F, 12, FColor::Blue, false,10.f);//单个喷子子弹的落点
-	DrawDebugLine(GetWorld(), TraceStart, EndEnd, FColor::Orange, false, 10.f);//单个喷子子弹的落点
-*/
-
-	return EndEnd;//单个射线向量
-}
 
 void AHitScanWeapon::WeaponTraceHit(const FVector& TraceStart,const FVector & HitTarget, FHitResult& OutHit)
 {
@@ -102,7 +85,7 @@ void AHitScanWeapon::WeaponTraceHit(const FVector& TraceStart,const FVector & Hi
 	UWorld* World = GetWorld();
 	if(World)
 	{
-		FVector End = bUseScatter ? TraceWithScatter(TraceStart,HitTarget) : TraceStart + (HitTarget - TraceStart) * 1.25;//1.25倍目标点到此的攻击距离
+		FVector End =  TraceStart + (HitTarget - TraceStart) * 1.25;//1.25倍目标点到此的攻击距离
 
 		World->LineTraceSingleByChannel(
 			OutHit,
@@ -116,6 +99,16 @@ void AHitScanWeapon::WeaponTraceHit(const FVector& TraceStart,const FVector & Hi
 		{
 			BeamEnd = OutHit.ImpactPoint;
 		}
+
+		DrawDebugSphere(
+			GetWorld(),
+			BeamEnd,
+			16.f,
+			12,
+			FColor::Orange,
+			true
+		);
+
 		if (BeamParticles)
 		{
 			UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(
