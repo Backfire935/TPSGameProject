@@ -26,9 +26,13 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UFUNCTION()
 	void EquipWeapon(class AWeapon* WeaponToEquip);//装备武器
 
+	UFUNCTION()
 	void SwapPrimaryWeapon();//切换到主武器
+
+	UFUNCTION()
 	void SwapSecondaryWeapon();//切换到副武器
 
 
@@ -56,6 +60,8 @@ public:
 	void ServerLuncherGrenade(const FVector_NetQuantize& Target);
 
 	void PickupAmmp(EWeaponType WeaponType,int32 AmmoAmount);
+
+	bool bLocallyReloading = false;
 protected:
 
 	virtual void BeginPlay() override;
@@ -75,7 +81,13 @@ protected:
 	void ServerFire(const FVector_NetQuantize& TraceHitTarget);//服务器开火
 
 	UFUNCTION(NetMulticast,  Reliable)
-	void MultiCastFire(const FVector_NetQuantize& TraceHitTarget);//服务器发起的向客户端的多播开火
+	void MultiCastFire(const FVector_NetQuantize& TraceHitTarget);//服务器向客户端发起的开火通知
+
+	UFUNCTION(Server, Reliable)
+	void ServerShotgunFire(const TArray<FVector_NetQuantize>&  TraceHitTargets);//服务器喷子开火
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastShotgunFire(const TArray<FVector_NetQuantize>& TraceHitTargets);//服务器向客户端发起的喷子开火通知
 
 	void TraceUnderCrosshairs(FHitResult & TraceHitResult);
 
@@ -96,12 +108,14 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> GrenadeClass;
 
+	UFUNCTION()
 	void DropEquippedWeapon();
 
 	void AttachActorToRightHand(AActor * ActorToAttach);
 	void AttachActorToLeftHand(AActor* ActorToAttach);
 	void AttachActorToBackpack(AActor* ActorToAttach);
 
+	UFUNCTION()
 	void UpdateCarriedAmmo();
 
 	void PlayEquipWeaponSound(AWeapon * WeaponToEquip);
@@ -135,8 +149,13 @@ private:
 	 UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
 	 AWeapon* SecondaryWeapon;
 	
-	 UPROPERTY(Replicated)//使用属性网络复制，需要使用GetLifetimeReplicatedProps进行注册
-	 bool bAiming;//武器是否要瞄准
+	 UPROPERTY(ReplicatedUsing= OnRep_Aiming)//使用属性网络复制，需要使用GetLifetimeReplicatedProps进行注册
+	 bool bAiming = false;//武器是否要瞄准
+
+	 bool bAimButtonPressed = false;
+
+	UFUNCTION()
+	 void OnRep_Aiming();
 
 	 UPROPERTY(EditAnywhere)
 	 float BaseWalkSpeed;//基本行走速度
@@ -190,11 +209,21 @@ private:
 	 void FireTimerFinished();
 	 void Fire();
 
+	 UFUNCTION()
 	 void FireProjectileWeapon();
-	 void FireHitScanWeapon();
-	 void FireShotgunWeapon();
 
+	 UFUNCTION()
+	 void FireHitScanWeapon();
+
+	 UFUNCTION()
+	 void FireShotgun();
+
+	 UFUNCTION()
 	 void LocalFire(const FVector_NetQuantize & TraceHitTarget);
+
+	 UFUNCTION()
+	 void LocalShotgunFire(const TArray<FVector_NetQuantize>& TraceHitTarget);
+
 
 	 bool CanFire();
 
@@ -237,8 +266,10 @@ private:
 	 UFUNCTION()
 	 void OnRep_CombatState();
 
+	 UFUNCTION()
 	 void UpdateAmmoValues();
 
+	 UFUNCTION()
 	 void UpdateShotgunAmmoValues();
 
 	UPROPERTY(ReplicatedUsing=OnRep_Grenades,EditAnywhere)

@@ -87,6 +87,10 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		}
 		
 		bUseFABRIK = BlasterCharacter->GetCombatState() == ECombatState::ECS_Unoccupied;//只要不是普通状态都禁用IK动画
+		if(BlasterCharacter->IsLocallyControlled()  && BlasterCharacter->GetCombatState() != ECombatState::ECS_ThrowingGrenade)
+		{
+			bUseFABRIK = !BlasterCharacter->IsLocallyReloading();//只要本地不是处于换弹动画都开启
+		}
 		bUseAimOffsets = BlasterCharacter->GetCombatState() == ECombatState::ECS_Unoccupied && !BlasterCharacter->GetDisableGamePlay();////只要不是普通状态都禁用IK动画,禁用AimOffsets而且当禁止输入的指令设置时也禁用
 		bTransformRightHand = BlasterCharacter->GetCombatState() == ECombatState::ECS_Unoccupied && !BlasterCharacter->GetDisableGamePlay();//换弹状态下禁用右手移动而且当禁止输入的指令设置时也禁用
 	/*	FTransform MuzzleTipTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("MuzzleFlash"), ERelativeTransformSpace::RTS_World);

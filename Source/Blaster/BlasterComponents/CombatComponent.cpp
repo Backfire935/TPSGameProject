@@ -15,6 +15,7 @@
 #include "TimerManager.h"
 #include"Sound/SoundCue.h"
 #include "Blaster/Weapon/Projectile.h"
+#include "Blaster/Weapon/ShotGun.h"
 
 UCombatComponent::UCombatComponent()
 {
@@ -196,7 +197,7 @@ void UCombatComponent::Fire()
 				}
 			case EFireType::EFT_Shotgun:
 				{
-				FireShotgunWeapon();
+				FireShotgun();
 					break;
 				}
 
@@ -211,22 +212,35 @@ void UCombatComponent::Fire()
 
 void UCombatComponent::FireProjectileWeapon()
 {
-	LocalFire(HitTarget);
-	ServerFire(HitTarget);
+	if(EquippedWeapon && Character)
+	{
+		HitTarget = EquippedWeapon->bUseScatter ? EquippedWeapon->TraceWithScatter(HitTarget) : HitTarget;
+		if(!Character->HasAuthority()) LocalFire(HitTarget);//防止服务端调用两次，一次localfire，一次serverfire
+		ServerFire(HitTarget);
+	}
+
 }
 
 void UCombatComponent::FireHitScanWeapon()
 {
-	if(EquippedWeapon)
+	if(EquippedWeapon && Character)
 	{
 		HitTarget = EquippedWeapon->bUseScatter ? EquippedWeapon->TraceWithScatter(HitTarget) : HitTarget;
-		LocalFire(HitTarget);
+		if (!Character->HasAuthority()) LocalFire(HitTarget);//防止服务端调用两次，一次localfire，一次serverfire
 		ServerFire(HitTarget);
 	}
 }
 
-void UCombatComponent::FireShotgunWeapon()
+void UCombatComponent::FireShotgun()
 {
+	AShotGun* ShotGun = Cast<AShotGun>(EquippedWeapon);//将武器类型转换为喷子
+	if(ShotGun && Character)
+	{
+		TArray<FVector_NetQuantize> HitTargets;
+		ShotGun->ShotgunTraceEndWithScatter(HitTarget, HitTargets);//获取喷子子弹群的落点
+		if (!Character->HasAuthority()) LocalShotgunFire(HitTargets);//防止服务端调用两次，一次localfire，一次serverfire
+		ServerShotgunFire(HitTargets);
+	}
 
 }
 
@@ -234,6 +248,7 @@ void UCombatComponent::FireShotgunWeapon()
 bool UCombatComponent::CanFire()
 {
 	if (EquippedWeapon == nullptr) return false;
+	if (bLocallyReloading) return false;//本地检查一次是否在换弹，是则不允许开火
 	if(!EquippedWeapon->IsEmpty() && bCanFire && CombatState == ECombatState::ECS_Reloading && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_ShotGun)//武器为喷子并且在换弹的情况下
 	{
 		return true;//允许开火
@@ -271,6 +286,8 @@ void UCombatComponent::InitializeCarriedAmmo()
 	CarriedAmmoMap.Emplace(EWeaponType::EWT_GrenadeLauncher, StartingGrenadeLauncherAmmo);
 
 }
+
+
 
 void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 {
@@ -335,18 +352,20 @@ void UCombatComponent::MultiCastFire_Implementation(const FVector_NetQuantize& T
 	LocalFire(TraceHitTarget);
 }
 
+void UCombatComponent::ServerShotgunFire_Implementation(const TArray<FVector_NetQuantize>& TraceHitTargets)
+{
+	MulticastShotgunFire(TraceHitTargets);
+}
+
+void UCombatComponent::MulticastShotgunFire_Implementation(const TArray<FVector_NetQuantize>& TraceHitTargets)
+{
+	if (Character && Character->IsLocallyControlled() && !Character->HasAuthority()) return;//如果接到通知的是本机，就不执行这句话，因为之前执行过了
+	LocalShotgunFire(TraceHitTargets);
+}
+
 void UCombatComponent::LocalFire(const FVector_NetQuantize& TraceHitTarget)
 {
 	if (EquippedWeapon == nullptr) return;
-
-	if (Character && CombatState == ECombatState::ECS_Reloading && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_ShotGun)//如果武器为喷子且正在换弹的话
-	{
-		//开火需要播放两种动画，一种是角色的开火动作动画，还有一种是武器的动作动画
-		Character->PlayFireMontage(bAiming);//角色类播放开火蒙太奇动画
-		EquippedWeapon->Fire(TraceHitTarget);//武器类触发开火事件
-		CombatState = ECombatState::ECS_Unoccupied;//将武器状态重新设置为 普通状态
-		return; //空返回 因为不需要执行后面的了
-	}
 
 	if (Character && CombatState == ECombatState::ECS_Unoccupied)//如果角色类存在，且武器状态是空闲状态的话
 	{
@@ -354,6 +373,20 @@ void UCombatComponent::LocalFire(const FVector_NetQuantize& TraceHitTarget)
 		Character->PlayFireMontage(bAiming);//角色类播放开火蒙太奇动画
 		EquippedWeapon->Fire(TraceHitTarget);//武器类触发开火事件
 	}
+}
+
+void UCombatComponent::LocalShotgunFire(const TArray<FVector_NetQuantize>& TraceHitTarget)
+{
+	AShotGun* ShotGun = Cast<AShotGun>(EquippedWeapon);//将武器类型转换为喷子
+	if(ShotGun == nullptr || Character == nullptr) return;
+	if (CombatState == ECombatState::ECS_Reloading || CombatState == ECombatState::ECS_Unoccupied)
+	{
+		Character->PlayFireMontage(bAiming);//角色类播放开火蒙太奇动画
+		ShotGun->FireShotgun(TraceHitTarget);
+		CombatState = ECombatState::ECS_Unoccupied;//将武器状态重新设置为 普通状态
+
+	}
+
 }
 
 void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
@@ -392,7 +425,7 @@ void UCombatComponent::SwapPrimaryWeapon()
 	//设置副武器的部分
 
 	SecondaryWeapon->SetWeaponState(EWeaponState::Weapon_EquippedSecondary);//设置武器的状态为已装备
-	AttachActorToBackpack(SecondaryWeapon);//主武器放到后背去
+	AttachActorToBackpack(SecondaryWeapon);//武器放到后背去
 
 }
 
@@ -445,6 +478,14 @@ void UCombatComponent::EquipSecondaryWeapon(AWeapon* WeaponToEquip)
 	SecondaryWeapon->EnableCustomDepth(true);//开启武器轮廓描边
 	SecondaryWeapon->SetOwner(Character);//设置所有权
 
+}
+
+void UCombatComponent::OnRep_Aiming()
+{
+	if(Character && Character->IsLocallyControlled())
+	{
+		bAiming = bAimButtonPressed;
+	}
 }
 
 void UCombatComponent::DropEquippedWeapon()
@@ -630,7 +671,11 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)//设置十字准心
 
 void UCombatComponent::HandleReload()
 {
-	Character->PlayReloadMontage();
+	if(Character)
+	{
+		Character->PlayReloadMontage();
+
+	}
 }
 
 int32 UCombatComponent::AmountToReload()
@@ -701,15 +746,18 @@ void UCombatComponent::OnRep_Grenades()
 
 void UCombatComponent::Reload()
 {
-	if (CarriedAmmo > 0 && CombatState != ECombatState::ECS_Reloading && !EquippedWeapon->IsFull())//还有子弹且不是满弹且当前武器状态不处于换弹才能够换弹
+	if (CarriedAmmo > 0 && CombatState != ECombatState::ECS_Reloading && !EquippedWeapon->IsFull() && !bLocallyReloading)//还有子弹且不是满弹且当前武器状态不处于换弹才能够换弹
 	{
 		ServerReload();
+		HandleReload();
+		bLocallyReloading = true;
 	}
 }
 
 void UCombatComponent::FinishReload()//由蓝图直接调用的函数
 {
 	if (Character == nullptr)  return;
+	bLocallyReloading = false;
 	if (Character->HasAuthority())
 	{
 		CombatState = ECombatState::ECS_Unoccupied;
@@ -727,7 +775,7 @@ void UCombatComponent::ServerReload_Implementation()//服务端上呼叫HandleReload
 	if (Character == nullptr || EquippedWeapon == nullptr) return;
 
 	CombatState = ECombatState::ECS_Reloading;//切换武器状态到换弹
-	HandleReload();
+	if(!Character->IsLocallyControlled()) HandleReload();//本地已经调用过一次换弹动画，这个是通知服务器的
 }
 
 void UCombatComponent::OnRep_CombatState()//客户端上呼叫HandleReload
@@ -735,7 +783,7 @@ void UCombatComponent::OnRep_CombatState()//客户端上呼叫HandleReload
 	switch (CombatState)
 	{
 	case ECombatState::ECS_Reloading:
-		HandleReload();
+		if(Character && !Character->IsLocallyControlled()) HandleReload();
 		break;
 	case ECombatState::ECS_Unoccupied:
 		if (bFireButtonPressed)
@@ -771,7 +819,7 @@ void UCombatComponent::UpdateAmmoValues()
 		Controller->SetHUDCarriedAmmo(CarriedAmmo);//设置备弹HUD
 	}
 
-	EquippedWeapon->AddAmmo(-ReloadAmount);
+	EquippedWeapon->AddAmmo(ReloadAmount);
 
 }
 
@@ -789,7 +837,7 @@ void UCombatComponent::UpdateShotgunAmmoValues()
 	{
 		Controller->SetHUDCarriedAmmo(CarriedAmmo);//设置备弹HUD
 	}
-	EquippedWeapon->AddAmmo(-1);//一旦加了子弹，肯定就能打了
+	EquippedWeapon->AddAmmo(1);//一旦加了子弹，肯定就能打了
 	bCanFire = true;
 
 	
@@ -880,6 +928,7 @@ void UCombatComponent::SetAiming(bool IsAiming)//设置是否瞄准
 	{
 		Character->ShowSniperScopeWidget(IsAiming);
 	}
+	if(Character->IsLocallyControlled()) bAimButtonPressed = IsAiming;
 }
 
 void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)//瞄准的服务器端RPC调用

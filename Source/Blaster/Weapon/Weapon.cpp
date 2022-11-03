@@ -85,7 +85,7 @@ void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AWeapon , WeaponState);
-	DOREPLIFETIME(AWeapon, Ammo);
+
 }
 
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -125,15 +125,6 @@ void AWeapon::OnRep_Owner()
 	}
 }
 
-void AWeapon::OnRep_Ammo()
-{
-	BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(GetOwner()) : BlasterOwnerCharacter;
-	if(BlasterOwnerCharacter && BlasterOwnerCharacter->GetCombat() && IsFull())
-	{
-		BlasterOwnerCharacter->GetCombat()->JumpToShotGunEnd();//
-	}
-	SetHUDAmmo();
-}
 
 void AWeapon::SetHUDAmmo()
 {
@@ -148,10 +139,46 @@ void AWeapon::SetHUDAmmo()
 	}
 }
 
-void AWeapon::SpendRound()
+
+void AWeapon::SpendRound()//打完了更新下子弹
 {
 	Ammo = FMath::Clamp(Ammo - 1 , 0 , MagCapacity);//让ammo限制在0到最大备弹数之间
 	SetHUDAmmo();
+	if(HasAuthority())
+	{
+		ClientUpdateAmmo(Ammo);
+	}
+	else  
+	{
+		++Sequence;
+	}
+}
+
+void AWeapon::ClientUpdateAmmo_Implementation(int32 ServerAmmo)
+{
+	if (HasAuthority()) return;
+	Ammo = ServerAmmo;
+	--Sequence;
+	Ammo -= Sequence;
+	SetHUDAmmo();
+}
+
+void AWeapon::AddAmmo(int32 AmmoToAdd)
+{
+	Ammo = FMath::Clamp(Ammo + AmmoToAdd, 0, MagCapacity);
+	SetHUDAmmo();
+	ClientAddAmmo(AmmoToAdd);
+}
+
+void AWeapon::ClientAddAmmo_Implementation(int32 AmmoToAdd)
+{
+	if (HasAuthority()) return;
+	Ammo = FMath::Clamp(Ammo + AmmoToAdd, 0, MagCapacity);
+	BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(GetOwner()) : BlasterOwnerCharacter;
+	if (BlasterOwnerCharacter && BlasterOwnerCharacter->GetCombat() && IsFull())
+	{
+		BlasterOwnerCharacter->GetCombat()->JumpToShotGunEnd();
+	}
 
 }
 
@@ -262,14 +289,15 @@ FVector AWeapon::TraceWithScatter(const FVector& HitTarget)//喷子散射的射线检测
 
 	if (MuzzleFlashSocket == nullptr) return FVector();//一个直线武器攻击检测
 
-	FTransform SocketTransform = MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());
-	FVector TraceStart = SocketTransform.GetLocation();//开火检测的起始点
+	const FTransform SocketTransform = MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());
+	const FVector TraceStart = SocketTransform.GetLocation();//开火检测的起始点
 
-	FVector  ToTargetNormalized = (HitTarget - TraceStart).GetSafeNormal();//一个从射线起始点到被击中目标的向量
-	FVector  SphereCenter = TraceStart + ToTargetNormalized * DistanceToSphere;//到喷子射程终点的中点向量
-	FVector  RandVec = UKismetMathLibrary::RandomUnitVector() * FMath::FRandRange(0.f, SphereRadius);//随机方向单位向量*随机长度 
-	FVector EndLoc = SphereCenter + RandVec;//中心到四周的随机扩散向量
-	FVector ToEndLoc = EndLoc - TraceStart;//两点间的线段
+	const FVector  ToTargetNormalized = (HitTarget - TraceStart).GetSafeNormal();//一个从射线起始点到被击中目标的向量
+	const FVector  SphereCenter = TraceStart + ToTargetNormalized * DistanceToSphere;//到喷子射程终点的中点向量
+	const FVector  RandVec = UKismetMathLibrary::RandomUnitVector() * FMath::FRandRange(0.f, SphereRadius);//随机方向单位向量*随机长度 
+	const FVector EndLoc = SphereCenter + RandVec;//中心到四周的随机扩散向量
+	const FVector ToEndLoc = EndLoc - TraceStart;//两点间的线段
+
 	FVector EndEnd = (TraceStart + ToEndLoc * TRACE_LENGTH / ToEndLoc.Size());//单个射线向量
 
 	/*
@@ -317,10 +345,7 @@ void AWeapon::Fire(const FVector& HitTarget)
 		}
 	}//子弹壳抛出效果结束
 
-	if(HasAuthority())
-	{
-		SpendRound();
-	}
+		SpendRound();//打完了更新下子弹
 
 }
 
@@ -354,9 +379,5 @@ void AWeapon::DestroyWeapon()
 		 Destroy();
 	}
 }
-void AWeapon::AddAmmo(int32 AmmoToAdd)
-{
-	Ammo = FMath::Clamp(Ammo -	AmmoToAdd, 0, MagCapacity);
-	SetHUDAmmo();
-}
+
 

@@ -111,6 +111,7 @@ public:
 
 	virtual void OnWeaponStateSet();
 
+	
 	virtual void HandleWeaponEquiped();//处理装备过的武器
 	virtual void HandleWeaponDropped();//处理丢弃的武器
 	virtual void HandleWeaponSecondary();//处理第二把武器
@@ -133,7 +134,12 @@ public:
 		int32 OtherBodyIndex
 	);
 
+	//射线结束的位置分裂子弹
+	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
+		float DistanceToSphere = 800.f;//喷子的有效攻击距离
 
+	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
+		float SphereRadius = 75.f;//扩散范围
 private:
 	UPROPERTY(VisibleAnywhere, category = "Weapon Properties")
 	USkeletalMeshComponent* WeaponMesh;
@@ -159,16 +165,22 @@ private:
 	TSubclassOf<class  ABulletShells> BulletShells;
 
 	
-	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Ammo)
+	UPROPERTY(EditAnywhere)
 	int32 Ammo;//满弹夹数量子弹数量
+
+	UFUNCTION(Client, Reliable)
+	void ClientUpdateAmmo(int32 ServerAmmo);
+
+	UFUNCTION(Client, Reliable)
+	void ClientAddAmmo(int32 AmmoToAdd);
 
 	UPROPERTY(EditAnywhere)
 	int32 MagCapacity = 30;//备弹数量
 
-	UFUNCTION()
-		void OnRep_Ammo();
+	int32 Sequence = 0;//跟子弹数量有关的未被服务器处理的请求数量	
 
-	void SpendRound();
+	UFUNCTION()
+	void SpendRound();//打完了更新下子弹
 
 	UPROPERTY()
 	class ABlasterCharacter* BlasterOwnerCharacter;
@@ -179,12 +191,7 @@ private:
 	UPROPERTY(EditAnywhere)
 		EWeaponType WeaponType;
 
-	//射线结束的位置分裂子弹
-	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
-		float DistanceToSphere = 800.f;//喷子的有效攻击距离
 
-	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
-		float SphereRadius = 75.f;//扩散范围
 
 public:	
 
