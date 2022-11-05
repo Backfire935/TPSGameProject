@@ -86,7 +86,7 @@ void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 
 	if(TrailSystemComponent && TrailSystemComponent->GetSystemInstance())
 	{
-		TrailSystemComponent->GetSystemInstance()->Deactivate();//不再激活粒子系统，就不会继续突突突冒尾气
+		TrailSystemComponent->GetSystemInstanceController()->Deactivate();//不再激活粒子系统，就不会继续突突突冒尾气
 	}
 
 	if(RocketLoopInAir && RocketLoopComponent->IsPlaying())//如果撞到目标后还在播放声音

@@ -55,6 +55,9 @@ public:
 	void UpdateHUDAmmo();//更新弹药HUD
 
 	void SpawnDefaultWeapon();
+
+	UPROPERTY()
+		TMap<FName, class UBoxComponent*> HitCollisionBoxes;
 protected:
 
 	virtual void BeginPlay() override;
@@ -148,7 +151,8 @@ protected:
 	UPROPERTY(EditAnywhere)
 		UBoxComponent* foot_r;
 
-	 
+
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = camera)
 	class USpringArmComponent* CameraBoom;	
@@ -165,11 +169,16 @@ private:
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeapon *LastWeapon);
 
+	//角色组件类
+
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UCombatComponent* Combat;
 
 	UPROPERTY(VisibleAnywhere)
 	class UBuffComponent* Buff;
+
+	UPROPERTY(VisibleAnywhere)
+	class ULagCompensationComponent* LagCompensation;
 
 	UFUNCTION(Server, Reliable)//RPC 呼叫主机调用函数
 	void ServerEquipButtonPressed();
@@ -326,6 +335,8 @@ public:
 	FORCEINLINE UStaticMeshComponent* GetAttachedGrenade() const { return AttachedGrenade; }
 
 	FORCEINLINE UBuffComponent* GetBuff() const { return Buff; }
+	FORCEINLINE ULagCompensationComponent* GetLagCompensationComponent() const { return LagCompensation; }
+
 
 	bool IsLocallyReloading();
 	

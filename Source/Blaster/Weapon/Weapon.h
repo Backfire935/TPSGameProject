@@ -110,7 +110,6 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void OnWeaponStateSet();
-
 	
 	virtual void HandleWeaponEquiped();//处理装备过的武器
 	virtual void HandleWeaponDropped();//处理丢弃的武器
@@ -140,6 +139,19 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
 		float SphereRadius = 75.f;//扩散范围
+
+	UPROPERTY(EditAnywhere)
+		float Damage = 10.f;
+
+	UPROPERTY(EditAnywhere)
+	bool bUseServerSideRewind = false;
+
+	UPROPERTY()
+		class ABlasterCharacter* BlasterOwnerCharacter;
+
+	UPROPERTY()
+		class ABlasterPlayerController* BlasterOwnerController;
+
 private:
 	UPROPERTY(VisibleAnywhere, category = "Weapon Properties")
 	USkeletalMeshComponent* WeaponMesh;
@@ -182,11 +194,6 @@ private:
 	UFUNCTION()
 	void SpendRound();//打完了更新下子弹
 
-	UPROPERTY()
-	class ABlasterCharacter* BlasterOwnerCharacter;
-
-	UPROPERTY()
-	class ABlasterPlayerController* BlasterOwnerController;
 
 	UPROPERTY(EditAnywhere)
 		EWeaponType WeaponType;
@@ -209,5 +216,5 @@ public:
 	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
 	FORCEINLINE int32 GetAmmo() const { return Ammo; };
 	FORCEINLINE int32 GetMagCapacity() const { return MagCapacity; }
-
+	FORCEINLINE float GetDamage() const { return Damage; }
 };

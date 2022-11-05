@@ -25,7 +25,8 @@ void ABlasterPlayerController::ServerRequestServerTime_Implementation(float Time
 void ABlasterPlayerController::ClientReportServerTime_Implementation(float TimeOfClientRequest, float TimeServerReceivedClientRequest)//由服务端发起的，将服务端当前的时间发送给客户端，来回应客户端发起的ServerRequestServerTime请求
 {
 	float RoundTripTime = GetWorld()->GetTimeSeconds() - TimeOfClientRequest;//将服务端的当前时间减去客户端发送请求时候的时间，得到网络传递信息的延迟时间。
-	float CurrentServerTime = TimeServerReceivedClientRequest +0.5 * RoundTripTime;//服务端接收到客户端请求时候的时间 + 0.5*网络传递信息的延迟时间 = 与客户端同步的服务端的真正时间
+	SingleTripTime = 0.5 * RoundTripTime;
+	float CurrentServerTime = TimeServerReceivedClientRequest + SingleTripTime;//服务端接收到客户端请求时候的时间 + 0.5*网络传递信息的延迟时间 = 与客户端同步的服务端的真正时间
 	ClientServerDelta = CurrentServerTime - GetWorld()->GetTimeSeconds();//客户端和服务端的时间差异
 
 }

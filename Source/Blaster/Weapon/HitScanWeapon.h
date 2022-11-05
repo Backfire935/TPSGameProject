@@ -27,20 +27,12 @@ private:
 	UPROPERTY(EditAnywhere)
 	USoundCue* FireSound;
 
-
-
-
-
 protected:
 	UPROPERTY(EditAnywhere)
 		USoundCue* HitSound;
 
 	UPROPERTY(EditAnywhere)
 		class UParticleSystem* ImpactParticles;
-
-	UPROPERTY(EditAnywhere)
-		float Damage = 10.f;
-
 
 	void WeaponTraceHit(const FVector & TraceStart, const FVector& HitTarget, FHitResult& OutHit);//ÎäÆ÷»÷ÖÐ¸ú×Ù
 };
