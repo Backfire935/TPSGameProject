@@ -35,7 +35,9 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 		ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(FireHit.GetActor());//获取击中的目标
 		if (BlasterCharacter && InstigatorController)
 		{
-			if(HasAuthority() && !bUseServerSideRewind)//不使用服务器回溯就直接算伤害,目前服务端开了这个功能就无法对服务端造成伤害
+			//不使用服务器回溯就直接算伤害,目前服务端开了这个功能就无法对服务端造成伤害
+			//if(HasAuthority() && !bUseServerSideRewind)
+			if (HasAuthority() )
 			{
 				UGameplayStatics::ApplyDamage(
 					BlasterCharacter,
@@ -49,14 +51,13 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 			{
 				BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(OwnerPawn) : BlasterOwnerCharacter;
 				BlasterOwnerController = BlasterOwnerController == nullptr ? Cast<ABlasterPlayerController>(InstigatorController) : BlasterOwnerController;
-				if(BlasterOwnerCharacter && BlasterOwnerController && BlasterOwnerCharacter->GetLagCompensationComponent())
+				if(BlasterOwnerCharacter && BlasterOwnerController && BlasterOwnerCharacter->GetLagCompensationComponent() && BlasterOwnerCharacter->IsLocallyControlled())
 				{
 					BlasterOwnerCharacter->GetLagCompensationComponent()->ServerScoreRequest(
 						BlasterCharacter,
 						Start,
 						HitTarget,
-						BlasterOwnerController->GetServerTime() - BlasterOwnerController->SingleTripTime,
-						this
+						BlasterOwnerController->GetServerTime() - BlasterOwnerController->SingleTripTime
 					);
 				}
 			}

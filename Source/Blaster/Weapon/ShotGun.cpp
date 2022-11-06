@@ -2,8 +2,11 @@
 
 
 #include "ShotGun.h"
+
+#include "Blaster/BlasterComponents/LagCompensationComponent.h"
 #include"Engine/SkeletalMeshSocket.h"
 #include"Blaster/Character/BlasterCharacter.h"
+#include "Blaster/PlayerController/BlasterPlayerController.h"
 #include"Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "particles/ParticleSystemComponent.h"
@@ -68,22 +71,45 @@ void AShotGun::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 			}
 
 		}
-		for (auto HitPair : HitMap)//开始计算每个角色被命中的总伤害
+
+		TArray<ABlasterCharacter*> HitCharacters;
+
+		//开始计算每个角色被命中的总伤害
+		for (auto HitPair : HitMap)
 		{
 			if (HitPair.Key && HasAuthority() && InstigatorController)
 			{
-				UGameplayStatics::ApplyDamage(
-					HitPair.Key,//Map中的角色
-					HitPair.Value * Damage,//Map中角色受到的伤害次数*单词伤害值
-					InstigatorController,
-					this,
-					UDamageType::StaticClass()
-				);
-
+				//不使用服务器回溯就直接算伤害,目前服务端开了这个功能就无法对客户端造成伤害
+				if(HasAuthority() && !bUseServerSideRewind)
+				//if (HasAuthority() )
+				{
+					UGameplayStatics::ApplyDamage(
+						HitPair.Key,
+						Damage,
+						InstigatorController,
+						this,
+						UDamageType::StaticClass()
+					);
+				}
+				HitCharacters.Add(HitPair.Key);
 			}
-
 		}
 
+		//是否使用了服务器回溯,客户端才有这个选项
+		if (!HasAuthority() && bUseServerSideRewind)
+		{
+			BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(OwnerPawn) : BlasterOwnerCharacter;
+			BlasterOwnerController = BlasterOwnerController == nullptr ? Cast<ABlasterPlayerController>(InstigatorController) : BlasterOwnerController;
+			if (BlasterOwnerCharacter && BlasterOwnerController && BlasterOwnerCharacter->GetLagCompensationComponent() && BlasterOwnerCharacter->IsLocallyControlled())
+			{
+				BlasterOwnerCharacter->GetLagCompensationComponent()->ShotgunServerScoreRequest(
+					HitCharacters,
+					Start,
+					HitTargets,
+					BlasterOwnerController->GetServerTime() - BlasterOwnerController->SingleTripTime
+				);
+			}
+		}
 
 	}
 }
