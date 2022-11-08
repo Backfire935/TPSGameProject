@@ -4,6 +4,7 @@
 #include "ProjectileRocket.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraComponent.h"
+#include "ProjectileBullet.h"
 #include "Sound/SoundCue.h"
 #include "Components/BoxComponent.h"
 #include "Components/AudioComponent.h"
@@ -17,6 +18,8 @@ AProjectileRocket::AProjectileRocket()
 	RocketMovementComponent = CreateDefaultSubobject<URocketMovementComponent>(TEXT("RocketMovementComponent"));
 	RocketMovementComponent->bRotationFollowsVelocity = true;
 	RocketMovementComponent->SetIsReplicated(true);//将组件设置为可网络复制
+	RocketMovementComponent->InitialSpeed = InitialSpeed;
+	RocketMovementComponent->MaxSpeed = InitialSpeed;
 }
 
 void AProjectileRocket::Destroyed()
@@ -24,6 +27,23 @@ void AProjectileRocket::Destroyed()
 
 	Super::Destroyed();
 }
+
+#if WITH_EDITOR
+void AProjectileRocket::PostEditChangeProperty(FPropertyChangedEvent& Event)
+{
+	Super::PostEditChangeProperty(Event);
+	FName PropertyName = Event.Property != nullptr ? Event.Property->GetFName() : NAME_None;
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(URocketMovementComponent, InitialSpeed))
+	{
+		if (RocketMovementComponent)
+		{
+			RocketMovementComponent->InitialSpeed = InitialSpeed;
+			RocketMovementComponent->MaxSpeed = InitialSpeed;
+		}
+	}
+
+}
+#endif
 
 void AProjectileRocket::BeginPlay()
 {
@@ -84,7 +104,7 @@ void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);//同时设置火箭弹的碰撞盒子为不可碰撞
 	}
 
-	if(TrailSystemComponent && TrailSystemComponent->GetSystemInstance())
+	if(TrailSystemComponent && TrailSystemComponent->GetSystemInstanceController())
 	{
 		TrailSystemComponent->GetSystemInstanceController()->Deactivate();//不再激活粒子系统，就不会继续突突突冒尾气
 	}

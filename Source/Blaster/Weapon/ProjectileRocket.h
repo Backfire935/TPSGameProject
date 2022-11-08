@@ -43,4 +43,9 @@ public:
 	AProjectileRocket();
 
 	virtual void Destroyed() override;
+
+
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& Event) override;
+#endif
 };

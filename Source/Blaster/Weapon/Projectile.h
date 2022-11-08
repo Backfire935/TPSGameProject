@@ -18,6 +18,18 @@ public:
 
 	virtual void Destroyed() override;
 
+	//用于服务端回溯
+	bool bUseServerSideRewind = false;
+
+	FVector_NetQuantize TraceStart;//只有整数没有小数
+	FVector_NetQuantize100 InitialVelocity;//这种类型的参数对网络复制进行了优化,整体大小比FVector_NetQuantize小
+
+	UPROPERTY(EditAnywhere)
+	float InitialSpeed = 15000;
+
+	//不暴露出去,存取对应的武器的伤害在网络上传出去
+		float Damage = 20.f;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -34,8 +46,6 @@ protected:
 
 	void ExplodeDamage();
 
-	UPROPERTY(EditAnywhere)
-		float Damage = 20.f;
 
 	UPROPERTY(EditAnywhere)
 		UParticleSystem* ImpactParticles;
