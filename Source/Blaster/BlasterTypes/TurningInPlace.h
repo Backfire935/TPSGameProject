@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 UENUM(BlueprintType)
 enum class ETurningInPlace : uint8

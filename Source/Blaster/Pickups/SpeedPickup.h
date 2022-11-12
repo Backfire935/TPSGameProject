@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -18,7 +18,7 @@ public:
 	ASpeedPickup();
 
 	UPROPERTY(EditAnywhere)
-		float  SpeedUpTime = 10.f;//ÀŸ∂»buff  Æ√Î
+		float  SpeedUpTime = 10.f;//ÈÄüÂ∫¶buff ÂçÅÁßí
 protected:
 
 	virtual void OnSphereOverlap(

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "AmmoPickup.h"
@@ -13,18 +13,18 @@ void AAmmoPickup::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 	ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(OtherActor);
 	if(BlasterCharacter)
 	{
-		if(!BlasterCharacter->IsWeaponEquipped())//Èç¹ûÃ»×°±¸ÎäÆ÷£¬¾ÍÎŞÊÂ·¢Éú
+		if(!BlasterCharacter->IsWeaponEquipped())//å¦‚æœæ²¡è£…å¤‡æ­¦å™¨ï¼Œå°±æ— äº‹å‘ç”Ÿ
 		{
 			return;
 		}
-		if(BlasterCharacter->GetEquippedWeapon()->GetWeaponType() != WeaponType )//Èç¹ûÊ°È¡µÄµ¯Ò©ºÍÊÖÉÏµÄÎäÆ÷ÖÖÀà²»Í¬£¬¾ÍÎŞÊÂ·¢Éú
+		if(BlasterCharacter->GetEquippedWeapon()->GetWeaponType() != WeaponType )//å¦‚æœæ‹¾å–çš„å¼¹è¯å’Œæ‰‹ä¸Šçš„æ­¦å™¨ç§ç±»ä¸åŒï¼Œå°±æ— äº‹å‘ç”Ÿ
 		{
 			return;
 		} 
 		UCombatComponent* Combat = BlasterCharacter->GetCombat();
 		if(Combat)
 		{
-			Combat->PickupAmmp(WeaponType,AmmoAmount);//´«ÈëĞèÒªÌí¼ÓµÄÎäÆ÷µ¯Ò©ÀàĞÍºÍµ¯Ò©ÊıÄ¿
+			Combat->PickupAmmp(WeaponType,AmmoAmount);//ä¼ å…¥éœ€è¦æ·»åŠ çš„æ­¦å™¨å¼¹è¯ç±»å‹å’Œå¼¹è¯æ•°ç›®
 		}
 		
 	}

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -15,10 +15,10 @@ class BLASTER_API AShotGun : public AHitScanWeapon
 	GENERATED_BODY()
 
 public:
-	void ShotgunTraceEndWithScatter(const FVector& HitTarget, TArray<FVector_NetQuantize>& HitTargets);//»ñÈ¡Åç×Ó×Óµ¯ÈºµÄÂäµã
+	void ShotgunTraceEndWithScatter(const FVector& HitTarget, TArray<FVector_NetQuantize>& HitTargets);//è·å–å–·å­å­å¼¹ç¾¤çš„è½ç‚¹
 
 	virtual void FireShotgun(const TArray<FVector_NetQuantize>& HitTargets);
 private:
 	UPROPERTY(EditAnywhere,Category = "Weapon Scatter")
-	uint32 NumberOfPellets = 10;//Åç×Óµ¯ÍèÊıÁ¿
+	uint32 NumberOfPellets = 10;//å–·å­å¼¹ä¸¸æ•°é‡
 };

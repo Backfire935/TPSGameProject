@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -8,7 +8,7 @@
 
 namespace MatchState
 {
-	extern  BLASTER_API const FName Cooldown;//ÒÑ¾­µ½´ïÁËÆ¥ÅäµÄ³ÖĞøÊ±¼ä£¬²¥·ÅÓ®¼Ò²¢¿ªÊ¼½áÊøÓÎÏ·¼ÆÊ±
+	extern  BLASTER_API const FName Cooldown;//å·²ç»åˆ°è¾¾äº†åŒ¹é…çš„æŒç»­æ—¶é—´ï¼Œæ’­æ”¾èµ¢å®¶å¹¶å¼€å§‹ç»“æŸæ¸¸æˆè®¡æ—¶
 
 }
 /**
@@ -28,14 +28,16 @@ public:
 
 	virtual void RequestRespawn(class ACharacter * ElimmedCharacter, AController *ElimmedController);
 
-	UPROPERTY(EditDefaultsOnly)
-	float WarmupTime = 10.f;//Ö»ÄÜ´ÓÄ¬ÈÏÀ¶Í¼ÖĞÉèÖÃ,ÈÈÉí½×¶ÎµÄÊ±¼ä
+	void PlayerLeftGame(class ABlasterPlayerState * PlayerLeaving);//ç¦»å¼€æ¸¸æˆ
 
 	UPROPERTY(EditDefaultsOnly)
-		float CooldownTime = 10.f;//Ö»ÄÜ´ÓÄ¬ÈÏÀ¶Í¼ÖĞÉèÖÃ,ÈÈÉí½×¶ÎµÄÊ±¼ä
+	float WarmupTime = 10.f;//åªèƒ½ä»é»˜è®¤è“å›¾ä¸­è®¾ç½®,çƒ­èº«é˜¶æ®µçš„æ—¶é—´
 
 	UPROPERTY(EditDefaultsOnly)
-		float MatchTime = 120.f;//Ö»ÄÜ´ÓÄ¬ÈÏÀ¶Í¼ÖĞÉèÖÃ,ÈÈÉí½×¶ÎµÄÊ±¼ä
+		float CooldownTime = 10.f;//åªèƒ½ä»é»˜è®¤è“å›¾ä¸­è®¾ç½®,çƒ­èº«é˜¶æ®µçš„æ—¶é—´
+
+	UPROPERTY(EditDefaultsOnly)
+		float MatchTime = 120.f;//åªèƒ½ä»é»˜è®¤è“å›¾ä¸­è®¾ç½®,çƒ­èº«é˜¶æ®µçš„æ—¶é—´
 
 	float LevelStartingTime = 0.f;
 
@@ -45,7 +47,7 @@ protected:
 	virtual void OnMatchStateSet() override;
 
 private:
-	float CountdownTime = 0.f;//µ¹¼ÆÊ±µÄÊ±¼ä
+	float CountdownTime = 0.f;//å€’è®¡æ—¶çš„æ—¶é—´
 
 public:
 	FORCEINLINE float GetCountdownTime() const { return CountdownTime; }

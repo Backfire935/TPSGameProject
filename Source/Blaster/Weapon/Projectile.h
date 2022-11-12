@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -18,29 +18,29 @@ public:
 
 	virtual void Destroyed() override;
 
-	//ÓÃÓÚ·şÎñ¶Ë»ØËİ
+	//ç”¨äºæœåŠ¡ç«¯å›æº¯
 	bool bUseServerSideRewind = false;
 
-	FVector_NetQuantize TraceStart;//Ö»ÓĞÕûÊıÃ»ÓĞĞ¡Êı
-	FVector_NetQuantize100 InitialVelocity;//ÕâÖÖÀàĞÍµÄ²ÎÊı¶ÔÍøÂç¸´ÖÆ½øĞĞÁËÓÅ»¯,ÕûÌå´óĞ¡±ÈFVector_NetQuantizeĞ¡
+	FVector_NetQuantize TraceStart;//åªæœ‰æ•´æ•°æ²¡æœ‰å°æ•°
+	FVector_NetQuantize100 InitialVelocity;//è¿™ç§ç±»å‹çš„å‚æ•°å¯¹ç½‘ç»œå¤åˆ¶è¿›è¡Œäº†ä¼˜åŒ–,æ•´ä½“å¤§å°æ¯”FVector_NetQuantizeå°
 
 	UPROPERTY(EditAnywhere)
 	float InitialSpeed = 15000;
 
-	//²»±©Â¶³öÈ¥,´æÈ¡¶ÔÓ¦µÄÎäÆ÷µÄÉËº¦ÔÚÍøÂçÉÏ´«³öÈ¥
+	//ä¸æš´éœ²å‡ºå»,å­˜å–å¯¹åº”çš„æ­¦å™¨çš„ä¼¤å®³åœ¨ç½‘ç»œä¸Šä¼ å‡ºå»
 		float Damage = 20.f;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UFUNCTION()//ÊÜµ½´ò»÷µÄĞ§¹û
+	UFUNCTION()//å—åˆ°æ‰“å‡»çš„æ•ˆæœ
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	UFUNCTION()
-		void SpawnTrailSystem();//Éú³É×Óµ¯µÄÎ²¼£
+		void SpawnTrailSystem();//ç”Ÿæˆå­å¼¹çš„å°¾è¿¹
 
-	void StartDestroyTimer();//ÉèÖÃ3sÑÓ³ÙÏú»Ù±£Ö¤»ğ¼ıµ¯µÄÎ²Æø²»»áÔÚ»ğ¼ıµ¯·¢ÉúÅö×²µÄÊ±ºòÁ¢¼´Ïú»Ù
+	void StartDestroyTimer();//è®¾ç½®3så»¶è¿Ÿé”€æ¯ä¿è¯ç«ç®­å¼¹çš„å°¾æ°”ä¸ä¼šåœ¨ç«ç®­å¼¹å‘ç”Ÿç¢°æ’çš„æ—¶å€™ç«‹å³é”€æ¯
 	
 	void DestroyTimerFinished();
 
@@ -57,10 +57,10 @@ protected:
 		class UBoxComponent* CollisionBox;
 
 	UPROPERTY(VisibleAnywhere)
-	class UProjectileMovementComponent* ProjectileMovementComponent;	//×Óµ¯ÔË¶¯×é¼ş
+	class UProjectileMovementComponent* ProjectileMovementComponent;	//å­å¼¹è¿åŠ¨ç»„ä»¶
 
 	UPROPERTY(EditAnywhere)
-		class UNiagaraSystem* TrailSystem;//ÒªÑ¡ÔñµÄÎ²ÆøÁ£×ÓÌØĞ§ÏµÍ³
+		class UNiagaraSystem* TrailSystem;//è¦é€‰æ‹©çš„å°¾æ°”ç²’å­ç‰¹æ•ˆç³»ç»Ÿ
 
 	UPROPERTY()
 		class  UNiagaraComponent* TrailSystemComponent;

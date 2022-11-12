@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "ProjectileWeapon.h"
@@ -7,70 +7,70 @@
 
 void AProjectileWeapon::Fire(const FVector& HitTarget)
 {
-	Super::Fire(HitTarget);//µ÷ÓÃ¸¸ÀàµÄ¿ª»ğ¶¯»­º¯Êı
+	Super::Fire(HitTarget);//è°ƒç”¨çˆ¶ç±»çš„å¼€ç«åŠ¨ç”»å‡½æ•°
 
 	if (!HasAuthority()) return;
 
 	APawn* InstigatorPawn = Cast<APawn>(GetOwner());
-	const USkeletalMeshSocket * MuzzleFlashSocket = 	GetWeaponMesh()->GetSocketByName(FName("MuzzleFlash"));//»ñÈ¡ÎäÆ÷Ç¹¿ÚµÄ²å²Û
+	const USkeletalMeshSocket * MuzzleFlashSocket = 	GetWeaponMesh()->GetSocketByName(FName("MuzzleFlash"));//è·å–æ­¦å™¨æªå£çš„æ’æ§½
 	UWorld* World = GetWorld();
-	if (MuzzleFlashSocket && MuzzleFlashSocket)//Ç¹¿Ú²å²ÛµÄÎ»ÖÃ
+	if (MuzzleFlashSocket && MuzzleFlashSocket)//æªå£æ’æ§½çš„ä½ç½®
 	{
-		FTransform SocketTransform = 	MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());//»ñÈ¡µ±Ç°ÊÖÉÏµÄÎäÆ÷µÄÇ¹¿Ú²å²Û
+		FTransform SocketTransform = 	MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());//è·å–å½“å‰æ‰‹ä¸Šçš„æ­¦å™¨çš„æªå£æ’æ§½
 		
-		//´ÓÃüÖĞÄ¿±ê-Ç¹¿Ú²å²ÛµÄÏòÁ¿
+		//ä»å‘½ä¸­ç›®æ ‡-æªå£æ’æ§½çš„å‘é‡
 		FVector ToTarget = HitTarget - SocketTransform.GetLocation();
 		FRotator TargetRotation = ToTarget.Rotation();
 
 		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = GetOwner();//ÉèÖÃ·¢ÉäÎïµÄÓµÓĞÕß
-		SpawnParams.Instigator = InstigatorPawn;//·¢Æğ¶ÔÏó
+		SpawnParams.Owner = GetOwner();//è®¾ç½®å‘å°„ç‰©çš„æ‹¥æœ‰è€…
+		SpawnParams.Instigator = InstigatorPawn;//å‘èµ·å¯¹è±¡
 
 		AProjectile* SpawnedProjectile = nullptr;
 
 
 		if(bUseServerSideRewind)
 		{
-			if(InstigatorPawn->HasAuthority())//ServerÊ¹ÓÃssrµÄÇé¿öÏÂ
+			if(InstigatorPawn->HasAuthority())//Serverä½¿ç”¨ssrçš„æƒ…å†µä¸‹
 			{
-				if(InstigatorPawn->IsLocallyControlled())//·şÎñ¶ËÖ÷»úÊ¹ÓÃ¿É¸´ÖÆµÄÅ×ÉäÎïµÄÇé¿ö
+				if(InstigatorPawn->IsLocallyControlled())//æœåŠ¡ç«¯ä¸»æœºä½¿ç”¨å¯å¤åˆ¶çš„æŠ›å°„ç‰©çš„æƒ…å†µ
 				{
-					SpawnedProjectile = World->SpawnActor<AProjectile>(ProjectileClass,SocketTransform.GetLocation(),TargetRotation,SpawnParams);//·¢ÉäµÄµ¯Ò©Àà£¬·¢ÉäµÄ²å²ÛµÄÎ»ÖÃ£¬Ä¿±êµÄĞı×ªÏòÁ¿£¬·¢ÉäÎïµÄÒ»ÏµÁĞĞÅÏ¢
-					SpawnedProjectile->bUseServerSideRewind = false;//·şÎñ¶ËÃ»±ØÒªÓÃSSR
-					SpawnedProjectile->Damage = Damage;//µ¯Ò©µÄÉËº¦ = ÎäÆ÷µÄÉËº¦
+					SpawnedProjectile = World->SpawnActor<AProjectile>(ProjectileClass,SocketTransform.GetLocation(),TargetRotation,SpawnParams);//å‘å°„çš„å¼¹è¯ç±»ï¼Œå‘å°„çš„æ’æ§½çš„ä½ç½®ï¼Œç›®æ ‡çš„æ—‹è½¬å‘é‡ï¼Œå‘å°„ç‰©çš„ä¸€ç³»åˆ—ä¿¡æ¯
+					SpawnedProjectile->bUseServerSideRewind = false;//æœåŠ¡ç«¯æ²¡å¿…è¦ç”¨SSR
+					SpawnedProjectile->Damage = Damage;//å¼¹è¯çš„ä¼¤å®³ = æ­¦å™¨çš„ä¼¤å®³
 				}
-				else//·şÎñ¶ËÉÏµÄ·Ç±¾»ú¿ØÖÆµÄÄ£Äâ¿ØÖÆÆ÷,Éú³É²»½øĞĞÍøÂç¸´ÖÆµÄÅ×ÉäÎï(¿Í»§¶ËRPCÖ®ºó½ô¸úµÄ·şÎñ¶Ërep_notifyÒÑ¾­¸´ÖÆÁËÒ»±éÁË)£¬²»Ê¹ÓÃSSR
+				else//æœåŠ¡ç«¯ä¸Šçš„éæœ¬æœºæ§åˆ¶çš„æ¨¡æ‹Ÿæ§åˆ¶å™¨,ç”Ÿæˆä¸è¿›è¡Œç½‘ç»œå¤åˆ¶çš„æŠ›å°„ç‰©(å®¢æˆ·ç«¯RPCä¹‹åç´§è·Ÿçš„æœåŠ¡ç«¯rep_notifyå·²ç»å¤åˆ¶äº†ä¸€éäº†)ï¼Œä½¿ç”¨SSR
 				{
-					SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);//·¢ÉäµÄµ¯Ò©Àà£¬·¢ÉäµÄ²å²ÛµÄÎ»ÖÃ£¬Ä¿±êµÄĞı×ªÏòÁ¿£¬·¢ÉäÎïµÄÒ»ÏµÁĞĞÅÏ¢
-					SpawnedProjectile->bUseServerSideRewind = false;//·şÎñ¶ËÃ»±ØÒªÓÃSSR
+					SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);//å‘å°„çš„å¼¹è¯ç±»ï¼Œå‘å°„çš„æ’æ§½çš„ä½ç½®ï¼Œç›®æ ‡çš„æ—‹è½¬å‘é‡ï¼Œå‘å°„ç‰©çš„ä¸€ç³»åˆ—ä¿¡æ¯
+					SpawnedProjectile->bUseServerSideRewind = true;//æœåŠ¡ç«¯ä½¿ç”¨SSRé¿å…é€ æˆåŒå€ä¼¤å®³ ProjectileBullet_if(OwnerCharacter->HasAuthority() && !bUseServerSideRewind)
 
 				}
 			}
-			else//¿Í»§¶ËÊ¹ÓÃssrµÄÇé¿öÏÂ
+			else//å®¢æˆ·ç«¯ä½¿ç”¨ssrçš„æƒ…å†µä¸‹
 			{
-				if (InstigatorPawn->IsLocallyControlled())//¿Í»§¶Ë±¾µØ¿ØÖÆµÄÇé¿öÏÂ£¬Éú³É·Ç¸´ÖÆµÄÅ×ÉäÎï£¬Ê¹ÓÃssr
+				if (InstigatorPawn->IsLocallyControlled())//å®¢æˆ·ç«¯æœ¬åœ°æ§åˆ¶çš„æƒ…å†µä¸‹ï¼Œç”Ÿæˆéå¤åˆ¶çš„æŠ›å°„ç‰©ï¼Œä½¿ç”¨ssr
 				{
-					SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);//·¢ÉäµÄµ¯Ò©Àà£¬·¢ÉäµÄ²å²ÛµÄÎ»ÖÃ£¬Ä¿±êµÄĞı×ªÏòÁ¿£¬·¢ÉäÎïµÄÒ»ÏµÁĞĞÅÏ¢
-					SpawnedProjectile->bUseServerSideRewind = true;//¿Í»§¶ËµÄ×Óµ¯Õâ¸öÊ±ºò¿ÉÒÔÓÃssrÁË
+					SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);//å‘å°„çš„å¼¹è¯ç±»ï¼Œå‘å°„çš„æ’æ§½çš„ä½ç½®ï¼Œç›®æ ‡çš„æ—‹è½¬å‘é‡ï¼Œå‘å°„ç‰©çš„ä¸€ç³»åˆ—ä¿¡æ¯
+					SpawnedProjectile->bUseServerSideRewind = true;//å®¢æˆ·ç«¯çš„å­å¼¹è¿™ä¸ªæ—¶å€™å¯ä»¥ç”¨ssräº†
 					SpawnedProjectile->TraceStart = SocketTransform.GetLocation();
 					SpawnedProjectile->InitialVelocity = SpawnedProjectile->GetActorForwardVector() * SpawnedProjectile->InitialSpeed;
-					SpawnedProjectile->Damage = Damage;//µ¯Ò©µÄÉËº¦ = ÎäÆ÷µÄÉËº¦
+					SpawnedProjectile->Damage = Damage;//å¼¹è¯çš„ä¼¤å®³ = æ­¦å™¨çš„ä¼¤å®³
 
 				}
-				else//¿Í»§¶Ë·Ç±¾µØ¿ØÖÆ£¬Éú³É²»½øĞĞÍøÂç¸´ÖÆµÄÅ×ÉäÎï£¬²»Ê¹ÓÃssr
+				else//å®¢æˆ·ç«¯éæœ¬åœ°æ§åˆ¶ï¼Œç”Ÿæˆä¸è¿›è¡Œç½‘ç»œå¤åˆ¶çš„æŠ›å°„ç‰©ï¼Œä¸ä½¿ç”¨ssr
 				{
-					SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);//·¢ÉäµÄµ¯Ò©Àà£¬·¢ÉäµÄ²å²ÛµÄÎ»ÖÃ£¬Ä¿±êµÄĞı×ªÏòÁ¿£¬·¢ÉäÎïµÄÒ»ÏµÁĞĞÅÏ¢
-					SpawnedProjectile->bUseServerSideRewind = false;//·şÎñ¶ËÃ»±ØÒªÓÃSSR
+					SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);//å‘å°„çš„å¼¹è¯ç±»ï¼Œå‘å°„çš„æ’æ§½çš„ä½ç½®ï¼Œç›®æ ‡çš„æ—‹è½¬å‘é‡ï¼Œå‘å°„ç‰©çš„ä¸€ç³»åˆ—ä¿¡æ¯
+					SpawnedProjectile->bUseServerSideRewind = false;//æœåŠ¡ç«¯æ²¡å¿…è¦ç”¨SSR
 				}
 			}
 		}
-		else//ÎäÆ÷²»Ê¹ÓÃssrµÄÇé¿ö
+		else//æ­¦å™¨ä¸ä½¿ç”¨ssrçš„æƒ…å†µ
 		{
 			if(InstigatorPawn->HasAuthority())
 			{
-				SpawnedProjectile = World->SpawnActor<AProjectile>(ProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);//·¢ÉäµÄµ¯Ò©Àà£¬·¢ÉäµÄ²å²ÛµÄÎ»ÖÃ£¬Ä¿±êµÄĞı×ªÏòÁ¿£¬·¢ÉäÎïµÄÒ»ÏµÁĞĞÅÏ¢
+				SpawnedProjectile = World->SpawnActor<AProjectile>(ProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);//å‘å°„çš„å¼¹è¯ç±»ï¼Œå‘å°„çš„æ’æ§½çš„ä½ç½®ï¼Œç›®æ ‡çš„æ—‹è½¬å‘é‡ï¼Œå‘å°„ç‰©çš„ä¸€ç³»åˆ—ä¿¡æ¯
 				SpawnedProjectile->bUseServerSideRewind = false;
-				SpawnedProjectile->Damage = Damage;//µ¯Ò©µÄÉËº¦ = ÎäÆ÷µÄÉËº¦
+				SpawnedProjectile->Damage = Damage;//å¼¹è¯çš„ä¼¤å®³ = æ­¦å™¨çš„ä¼¤å®³
 			}
 		}
 	}

@@ -1,10 +1,15 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "BlasterHUD.h"
 #include"GameFramework/PlayerController.h"
 #include"CharacterOverlay.h"
 #include"Announcement.h"
+#include "ElimAnnouncement.h"
+#include"Components/HorizontalBox.h"
+#include"Components/CanvasPanelSlot.h"
+#include"Blueprint/WidgetLayoutLibrary.h"
+
 void ABlasterHUD::DrawHUD()
 {
 	Super::DrawHUD();
@@ -14,9 +19,9 @@ void ABlasterHUD::DrawHUD()
 	{
 		GEngine->GameViewport->GetViewportSize(ViewportSize);
 		const FVector2D ViewportCenter(ViewportSize.X /2.f, ViewportSize.Y / 2.f);
-		float SpreadScaled = CrosshairSpreadMax * HUDPackage.CrosshairsSpread;//×¼ĞÄÆ«ÒÆµÄ¸¡µãÁ¿
-		FVector2D Spread;//×¼ĞÄÆ«ÒÆ×ø±ê
-		if (HUDPackage.CrosshairsCenter)//¿ªÊ¼»­ÉÏÏÂ×óÓÒºÍÖĞĞÄµÄ×¼ĞÄÎÆÀí
+		float SpreadScaled = CrosshairSpreadMax * HUDPackage.CrosshairsSpread;//å‡†å¿ƒåç§»çš„æµ®ç‚¹é‡
+		FVector2D Spread;//å‡†å¿ƒåç§»åæ ‡
+		if (HUDPackage.CrosshairsCenter)//å¼€å§‹ç”»ä¸Šä¸‹å·¦å³å’Œä¸­å¿ƒçš„å‡†å¿ƒçº¹ç†
 		{
 			Spread = FVector2D(0.f, 0.f);
 			DrawCrosshair(HUDPackage.CrosshairsCenter, ViewportCenter, Spread, HUDPackage.CrosshairsColor);
@@ -51,11 +56,71 @@ void ABlasterHUD::DrawHUD()
 
 void ABlasterHUD::AddAnnouncement()
 {
-	APlayerController* PlayerController = GetOwningPlayerController();//»ñÈ¡ÓµÓĞµÄÍæ¼Ò¿ØÖÆÆ÷
+	APlayerController* PlayerController = GetOwningPlayerController();//è·å–æ‹¥æœ‰çš„ç©å®¶æ§åˆ¶å™¨
 	if (PlayerController && AnnouncementClass)
 	{
-		Announcement = CreateWidget<UAnnouncement>(PlayerController, AnnouncementClass);//´´½¨¿Ø¼şµ½½ÇÉ«ÉÏ
+		Announcement = CreateWidget<UAnnouncement>(PlayerController, AnnouncementClass);//åˆ›å»ºæ§ä»¶åˆ°è§’è‰²ä¸Š
 		Announcement->AddToViewport();
+	}
+}
+
+void ABlasterHUD::AddElimAnnouncement(FString Attacker, FString Victim)
+{
+	OwningPlayer = OwningPlayer == nullptr ? GetOwningPlayerController() : OwningPlayer;
+	if(OwningPlayer && ElimAnnouncementClass)
+	{
+		//åˆ›å»ºä¸€ä¸ªæ·˜æ±°å®£å‘Šç»„ä»¶
+		UElimAnnouncement* ElimAnnouncementWidget = CreateWidget<UElimAnnouncement>(OwningPlayer, ElimAnnouncementClass);
+		if(ElimAnnouncementWidget)
+		{
+			//è°ƒå‡½æ•°ä¼ å‚
+			ElimAnnouncementWidget->SetElimAnnouncementText(Attacker, Victim);
+			//æ·»åŠ åˆ°è§†å£
+			ElimAnnouncementWidget->AddToViewport();
+
+			//å°†å·²æœ‰çš„ä¿¡æ¯å‘ä¸Šç§»ï¼Œä¸ºæ–°æ¶ˆæ¯è®©ä½ç½®
+			for(UElimAnnouncement* Msg : ElimMessages)
+			{
+				if(Msg && Msg->AnnouncementBox)
+				{
+					//è·å–ç”»æ¿æ§½
+					UCanvasPanelSlot* CanvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(Msg->AnnouncementBox);
+					if(CanvasSlot)
+					{
+					FVector2D Position = CanvasSlot->GetPosition();
+						//åŸç‚¹ä¸ºå·¦ä¸Šè§’ï¼ŒXå‘å³Yå‘ä¸‹
+					FVector2D NewPosition(
+						Position.X,
+						Position.Y - CanvasSlot->GetSize().Y
+						);
+					CanvasSlot->SetPosition(NewPosition);
+					}
+				}
+			}
+
+
+			ElimMessages.Add(ElimAnnouncementWidget);
+
+			//åˆ°æ—¶é—´çš„æ¶ˆæ¯é”€æ¯
+			FTimerHandle ElimMsgTimer;
+			FTimerDelegate ElimMsgDelegate;
+			ElimMsgDelegate.BindUFunction(this, FName("ElimAnnouncementTimerFinished"), ElimAnnouncementWidget);
+			GetWorldTimerManager().SetTimer(
+				ElimMsgTimer,
+				ElimMsgDelegate,//è§¦å‘çš„å§”æ‰˜
+				ElimAnnouncementTime,//æ—¶é—´
+				false//å®šæ—¶å™¨æ˜¯å¦å¾ªç¯
+			);
+		}
+	}
+}
+
+
+void ABlasterHUD::ElimAnnouncementTimerFinished(UElimAnnouncement* MsgToRemove)
+{
+	if (MsgToRemove)
+	{
+		MsgToRemove->RemoveFromParent();
 	}
 }
 
@@ -64,35 +129,35 @@ void ABlasterHUD::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ABlasterHUD::AddCharacterOverlay()//´Ëº¯ÊıÓÉÍæ¼Ò¿ØÖÆÆ÷ÔÚ¾­¹ı¿ª¾Öµ¹¼ÆÊ±ºó½øÈëÓÎÏ·×´Ì¬ºóµ÷ÓÃ
+void ABlasterHUD::AddCharacterOverlay()//æ­¤å‡½æ•°ç”±ç©å®¶æ§åˆ¶å™¨åœ¨ç»è¿‡å¼€å±€å€’è®¡æ—¶åè¿›å…¥æ¸¸æˆçŠ¶æ€åè°ƒç”¨
 {
-	APlayerController * PlayerController = GetOwningPlayerController();//»ñÈ¡ÓµÓĞµÄÍæ¼Ò¿ØÖÆÆ÷
+	APlayerController * PlayerController = GetOwningPlayerController();//è·å–æ‹¥æœ‰çš„ç©å®¶æ§åˆ¶å™¨
 	if (PlayerController && CharacterOverlayClass)
 	{
-		CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);//´´½¨¿Ø¼şµ½½ÇÉ«ÉÏ
+		CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);//åˆ›å»ºæ§ä»¶åˆ°è§’è‰²ä¸Š
 		CharacterOverlay->AddToViewport();
 	}
 }
 
 void ABlasterHUD::DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCenter, FVector2D Spread, FLinearColor CrosshairColor)
 {
-	const float TextureWidth = Texture->GetSizeX();//ÒªÉèÖÃµÄ×¼ĞÄµÄÎÆÀí¿í¶ÈµÈÓÚ´ÓÎäÆ÷ÀàÄÇÄÃµ½µÄÎÆÀíµÄ³ß´çµÄ¿í¶È
-	const float TextureHeight = Texture->GetSizeY();//Í¬ÉÏ
+	const float TextureWidth = Texture->GetSizeX();//è¦è®¾ç½®çš„å‡†å¿ƒçš„çº¹ç†å®½åº¦ç­‰äºä»æ­¦å™¨ç±»é‚£æ‹¿åˆ°çš„çº¹ç†çš„å°ºå¯¸çš„å®½åº¦
+	const float TextureHeight = Texture->GetSizeY();//åŒä¸Š
 	const FVector2D TextureDrawPoint(
 		ViewportCenter.X - TextureWidth / 2.f +Spread.X,
 		ViewportCenter.Y - TextureHeight / 2.f +Spread.Y
 	);
 
 	DrawTexture(
-		Texture,//ÎÆÀí
-		TextureDrawPoint.X,//ÆÁÄ»³ß´çX
-		TextureDrawPoint.Y,//ÆÁÄ»³ß´çY
-		TextureWidth,//ÎÆÀí¿í¶È
-		TextureHeight,//ÎÆÀí¸ß¶È
-		0.f,//ÎÆÀíU
-		0.f,//ÎÆÀíV
-		1.f,//ÎÆÀíU¿í¶È
-		1.f,//ÎÆÀíV¸ß¶È
-		CrosshairColor//»­³öÀ´µÄÎÆÀíÑÕÉ«
+		Texture,//çº¹ç†
+		TextureDrawPoint.X,//å±å¹•å°ºå¯¸X
+		TextureDrawPoint.Y,//å±å¹•å°ºå¯¸Y
+		TextureWidth,//çº¹ç†å®½åº¦
+		TextureHeight,//çº¹ç†é«˜åº¦
+		0.f,//çº¹ç†U
+		0.f,//çº¹ç†V
+		1.f,//çº¹ç†Uå®½åº¦
+		1.f,//çº¹ç†Vé«˜åº¦
+		CrosshairColor//ç”»å‡ºæ¥çš„çº¹ç†é¢œè‰²
 	);
 }

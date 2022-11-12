@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "BlasterPlayerController.generated.h"
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHighPingDelegate, bool, bPingTooHigh);
 /**
  * 
  */
@@ -15,62 +17,63 @@ class BLASTER_API ABlasterPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;//ÉèÖÃÍ¬²½
 
-	void SetHUDHealth(float Health, float MaxHealth);//ÉèÖÃÉúÃüÖµ
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;//è®¾ç½®åŒæ­¥
 
-	void SetHUDShield(float Shield, float MaxShield);//ÉèÖÃÉúÃüÖµ
+	void SetHUDHealth(float Health, float MaxHealth);//è®¾ç½®ç”Ÿå‘½å€¼
 
-	void SetHUDScore(float Score);//ÉèÖÃ»÷É±Êı,ÕâÀïÓÃfloatÊÇÒòÎªSetScore()Ä¬ÈÏÓÃµÄfloat
+	void SetHUDShield(float Shield, float MaxShield);//è®¾ç½®ç”Ÿå‘½å€¼
 
-	void SetHUDDefeats(int32 Defeats);//ÉèÖÃËÀÍö´ÎÊı
+	void SetHUDScore(float Score);//è®¾ç½®å‡»æ€æ•°,è¿™é‡Œç”¨floatæ˜¯å› ä¸ºSetScore()é»˜è®¤ç”¨çš„float
 
-	void SetHUDWeaponAmmo(int32 Ammo);//ÉèÖÃµ±Ç°µ¯¼Ğµ¯Ò©
+	void SetHUDDefeats(int32 Defeats);//è®¾ç½®æ­»äº¡æ¬¡æ•°
 
-	void SetHUDCarriedAmmo(int32 Ammo);//ÉèÖÃµ±Ç°µ¯¼Ğµ¯Ò©
+	void SetHUDWeaponAmmo(int32 Ammo);//è®¾ç½®å½“å‰å¼¹å¤¹å¼¹è¯
 
-	void SetHUDMatchCountDown(float CountdownTime);//ÉèÖÃ¶Ô¾ÖÄÚ¿ªÊ¼Ê±¼ä
+	void SetHUDCarriedAmmo(int32 Ammo);//è®¾ç½®å½“å‰å¼¹å¤¹å¼¹è¯
 
-	void SetHUDAnnouncementCountdown(float CountdownTime);//ÉèÖÃÓÎÏ·½áÊøÖØÖÃÊ±¼ä
+	void SetHUDMatchCountDown(float CountdownTime);//è®¾ç½®å¯¹å±€å†…å¼€å§‹æ—¶é—´
 
-	void SetHUDGrenades(int32 Grenades);//ÉèÖÃÊÖÀ×µÄÊıÁ¿
+	void SetHUDAnnouncementCountdown(float CountdownTime);//è®¾ç½®æ¸¸æˆç»“æŸé‡ç½®æ—¶é—´
+
+	void SetHUDGrenades(int32 Grenades);//è®¾ç½®æ‰‹é›·çš„æ•°é‡
 
 	virtual void OnPossess(APawn* InPawn) override; 
 
-	void SetElimText(bool bElim);//ÉèÖÃÌÔÌ­Ê±µÄHUDÏÔÊ¾
+	void SetElimText(bool bElim);//è®¾ç½®æ·˜æ±°æ—¶çš„HUDæ˜¾ç¤º
 	
 	virtual  void Tick(float DeltaTime) override;
 
-	virtual void ReceivedPlayer() override;//ÔÚ½ÓÊÕÍæ¼ÒµÄÊ±ºò¾ÍÖ´ĞĞGetServerTime£¬Ä¿µÄÊÇ¾¡¿ìÓë·şÎñ¶ËÊ±¼ä±£³ÖÒ»ÖÂ
+	virtual void ReceivedPlayer() override;//åœ¨æ¥æ”¶ç©å®¶çš„æ—¶å€™å°±æ‰§è¡ŒGetServerTimeï¼Œç›®çš„æ˜¯å°½å¿«ä¸æœåŠ¡ç«¯æ—¶é—´ä¿æŒä¸€è‡´
 
-	virtual float GetServerTime();//Óë·şÎñÆ÷Ê±¼äÍ¬²½
+	virtual float GetServerTime();//ä¸æœåŠ¡å™¨æ—¶é—´åŒæ­¥
 	/*
-	*·şÎñ¶ËºÍ¿Í»§¶ËÖ®¼äµÄÒì²½Ê±¼ä¼ÆËã
+	*æœåŠ¡ç«¯å’Œå®¢æˆ·ç«¯ä¹‹é—´çš„å¼‚æ­¥æ—¶é—´è®¡ç®—
 	*/
 	UFUNCTION(Server,Reliable)
-	void ServerRequestServerTime(float TimeOfClientRequest);//´«ÈëµÄÊÇ¿Í»§¶Ë·¢ËÍÇëÇóÊ±µÄÊ±¼ä£¬ÒªÇó»ñÈ¡·şÎñ¶ËµÄÊ±¼ä
+	void ServerRequestServerTime(float TimeOfClientRequest);//ä¼ å…¥çš„æ˜¯å®¢æˆ·ç«¯å‘é€è¯·æ±‚æ—¶çš„æ—¶é—´ï¼Œè¦æ±‚è·å–æœåŠ¡ç«¯çš„æ—¶é—´
 
 	UFUNCTION(Client, Reliable)
-		void ClientReportServerTime(float TimeOfClientRequest, float TimeServerReceivedClientRequest);//½«·şÎñ¶Ëµ±Ç°µÄÊ±¼ä·¢ËÍ¸ø¿Í»§¶Ë£¬À´»ØÓ¦¿Í»§¶Ë·¢ÆğµÄServerRequestServerTimeÇëÇó
+		void ClientReportServerTime(float TimeOfClientRequest, float TimeServerReceivedClientRequest);//å°†æœåŠ¡ç«¯å½“å‰çš„æ—¶é—´å‘é€ç»™å®¢æˆ·ç«¯ï¼Œæ¥å›åº”å®¢æˆ·ç«¯å‘èµ·çš„ServerRequestServerTimeè¯·æ±‚
 
-	float ClientServerDelta = 0.f;//¿Í»§¶ËºÍ·şÎñ¶ËµÄÊ±¼ä²îÒì
+	float ClientServerDelta = 0.f;//å®¢æˆ·ç«¯å’ŒæœåŠ¡ç«¯çš„æ—¶é—´å·®å¼‚
 
 	UPROPERTY(EditAnywhere,Category = Time)
-	float TimeSyncFrequency = 5.f;//Ã¿¸ôÒ»¶ÎÊ±¼ä×Ô¶¯¼ì²éÒ»´ÎÓë·şÎñÆ÷µÄÊ±²î£¬Ä¬ÈÏÊÇ5s
+	float TimeSyncFrequency = 5.f;//æ¯éš”ä¸€æ®µæ—¶é—´è‡ªåŠ¨æ£€æŸ¥ä¸€æ¬¡ä¸æœåŠ¡å™¨çš„æ—¶å·®ï¼Œé»˜è®¤æ˜¯5s
 
-	float TimeSyncRunningTime = 0.f;//¾àÀëÉÏÒ»´Î¼ì²éµÄÊ±¼ä
+	float TimeSyncRunningTime = 0.f;//è·ç¦»ä¸Šä¸€æ¬¡æ£€æŸ¥çš„æ—¶é—´
 
-	void CheckTimeSync(float DeltaTime);//¼ì²éÊ±¼äÍ¬²½µÄº¯Êı
+	void CheckTimeSync(float DeltaTime);//æ£€æŸ¥æ—¶é—´åŒæ­¥çš„å‡½æ•°
 
 	void OnMatchStateSet(FName State);
 
 	void HandleMatchHasStarted();
 
 	UFUNCTION(Server,Reliable)
-	void ServerCheckMatchState();//·şÎñ¶Ë¼ì²éÓÎÏ·×´Ì¬
+	void ServerCheckMatchState();//æœåŠ¡ç«¯æ£€æŸ¥æ¸¸æˆçŠ¶æ€
 
 		UFUNCTION(Client, Reliable)
-	void ClientJoinMidGame(FName StateOfMatch, float Warmup, float Match, float Cooldown,float StartingTime);//¿Í»§¶ËÖĞÍ¾¼ÓÈëÓÎÏ·Ê±Í¬²½Êı¾İ
+	void ClientJoinMidGame(FName StateOfMatch, float Warmup, float Match, float Cooldown,float StartingTime);//å®¢æˆ·ç«¯ä¸­é€”åŠ å…¥æ¸¸æˆæ—¶åŒæ­¥æ•°æ®
 
 		void HandleCooldown();
 
@@ -80,35 +83,58 @@ public:
 
 		float SingleTripTime = 0.f;
 
+		FHighPingDelegate HighPingDelegate;
+
+		void BroadcastElim(APlayerState* Attacker, APlayerState* Victim); 
+
+
 protected:
 	virtual void BeginPlay() override;
 
 	void SetHUDTime();
 
-	void PollInit();//ÓÃÓÚ¼ì²éCharacterOverlayÓÃ»§¿Ø¼şÊÇ·ñ´´½¨£¬Èô´´½¨ºÃÁËÔÙÓ¦ÓÃÆäÖĞµÄÊı¾İÖµ
+	void PollInit();//ç”¨äºæ£€æŸ¥CharacterOverlayç”¨æˆ·æ§ä»¶æ˜¯å¦åˆ›å»ºï¼Œè‹¥åˆ›å»ºå¥½äº†å†åº”ç”¨å…¶ä¸­çš„æ•°æ®å€¼
+
+	virtual void SetupInputComponent() override;
+
+	void ShowReturnToMainMenu();
+
+	UFUNCTION(Client,Reliable)
+	void ClientElimAnnouncement(APlayerState* Attacker, APlayerState* Victim);
 
 private:
+	/// <summary>
+	/// è¿”å›ä¸»èœå•
+	/// </summary>
+	UPROPERTY(EditAnywhere,Category = HUD)
+	TSubclassOf<class UUserWidget> ReturnToMainMenuWidget;
+
+	UPROPERTY()
+	class UReturnToMainMenu* ReturnToMainMenu;
+
+	bool bReturnToMenuOpen = false;
+
 	UPROPERTY()
 	class ABlasterHUD* BlasterHUD;
 
 	UPROPERTY()
 		class ABlasterGameMode* BlasterGameMode;
 
-	float LevelStartingTime;//ÓÎÏ·¿ªÊ¼µÄÊ±¼ä
+	float LevelStartingTime;//æ¸¸æˆå¼€å§‹çš„æ—¶é—´
 
 	float MatchTime = 0.f;//
 
-	float WarmupTime = 0.f;//ÈÈÉíÊ±¼ä
+	float WarmupTime = 0.f;//çƒ­èº«æ—¶é—´
 
 	uint32 CountdownInt = 0;
 
 	float CooldownTime = 0.f;
 
 	UPROPERTY(ReplicatedUsing = OnRep_MatchState)
-	FName MatchState;//ÓÃÓÚ×·×ÙÓÎÏ·µÄ×´Ì¬
+	FName MatchState;//ç”¨äºè¿½è¸ªæ¸¸æˆçš„çŠ¶æ€
 
 	UFUNCTION()
-	void OnRep_MatchState();//ÈÃ¿Í»§¶ËÒ²ÖªµÀÓÎÏ·µÄ×´Ì¬
+	void OnRep_MatchState();//è®©å®¢æˆ·ç«¯ä¹ŸçŸ¥é“æ¸¸æˆçš„çŠ¶æ€
 
 	UPROPERTY()
 	class UCharacterOverlay* CharacterOverlay;
@@ -144,8 +170,11 @@ private:
 	float PingAnimationRunningTime = 0.f;
 
 	UPROPERTY(EditAnywhere)
-	float CheckPingFrequency = 10.f;//¼ä¸ôÊ®Ãë¼ì²éÒ»´ÎpingÖµ
+	float CheckPingFrequency = 10.f;//é—´éš”åç§’æ£€æŸ¥ä¸€æ¬¡pingå€¼
+
+	UFUNCTION(Server, Reliable)
+	void ServerReportPingStatus(bool bHighPing);
 
 	UPROPERTY(EditAnywhere)
-	float HighPingThreshold = 100.f; //¸ßping¾¯¸æµÄãĞÖµ,100ÒÔÏÂ¶¼ÄÜÍæ
+	float HighPingThreshold = 100.f; //é«˜pingè­¦å‘Šçš„é˜ˆå€¼,100ä»¥ä¸‹éƒ½èƒ½ç©
 };

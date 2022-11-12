@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "ShieldPickup.h"
@@ -18,7 +18,7 @@ void AShieldPickup::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(OtherActor);
 	if (BlasterCharacter)
 	{
-		if (BlasterCharacter->GetShield() == BlasterCharacter->GetMaxShield()) return;//Âú¶Ü×´Ì¬ÏÂÅöµ½ÎÞÐ§
+		if (BlasterCharacter->GetShield() == BlasterCharacter->GetMaxShield()) return;//æ»¡ç›¾çŠ¶æ€ä¸‹ç¢°åˆ°æ— æ•ˆ
 		UBuffComponent* Buff = BlasterCharacter->GetBuff();
 		if (Buff)
 		{

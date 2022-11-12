@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "BuffComponent.h"
@@ -79,14 +79,14 @@ void UBuffComponent::SpeedUp(float DefaultWalkSpeed,float DefaultCrouchSpeed, fl
 		&UBuffComponent::SpeedDown,
 		SpeedTime
 	);
-	MulticastSpeedBuff(AcclerateSpeedWalk, AcclerateCrouch);//¶à²¥Ò»ÏÂÈÃÆäËû¿Í»§¶ËÒ²ÖªµÀ×Ô¼ºµÄËÙ¶ÈÌáÉıÁË
+	MulticastSpeedBuff(AcclerateSpeedWalk, AcclerateCrouch);//å¤šæ’­ä¸€ä¸‹è®©å…¶ä»–å®¢æˆ·ç«¯ä¹ŸçŸ¥é“è‡ªå·±çš„é€Ÿåº¦æå‡äº†
 }
 
 void UBuffComponent::SpeedDown() 
 {
 	Character->GetCharacterMovement()->MaxWalkSpeed = LastWalkSpeed;
 	Character->GetCharacterMovement()->MaxWalkSpeedCrouched = LastCrouchSpeed;
-	MulticastSpeedBuff(LastWalkSpeed, LastCrouchSpeed);//Ê±¼äµ½ÁË£¬¶à²¥Ò»ÏÂ½µ»ØÀ´
+	MulticastSpeedBuff(LastWalkSpeed, LastCrouchSpeed);//æ—¶é—´åˆ°äº†ï¼Œå¤šæ’­ä¸€ä¸‹é™å›æ¥
 
 }
 
@@ -100,7 +100,7 @@ void UBuffComponent::MulticastSpeedBuff_Implementation(float BaseSpeed, float Cr
 }
 
 
-void UBuffComponent::Heal(float HealAmount, float HealingTime)//Õâ¸öº¯ÊıÖ»ÊÇÓÃÀ´ÉèÖÃ²ÎÊıµÄ£¬ÕæÕıÆô¶¯ÖÎÁÆµÄÊÇtickcomponenttµ÷ÓÃhealrampup
+void UBuffComponent::Heal(float HealAmount, float HealingTime)//è¿™ä¸ªå‡½æ•°åªæ˜¯ç”¨æ¥è®¾ç½®å‚æ•°çš„ï¼ŒçœŸæ­£å¯åŠ¨æ²»ç–—çš„æ˜¯tickcomponenttè°ƒç”¨healrampup
 {
 	bHealing = true;
 	HealingRate = HealAmount / HealingTime;
@@ -109,14 +109,14 @@ void UBuffComponent::Heal(float HealAmount, float HealingTime)//Õâ¸öº¯ÊıÖ»ÊÇÓÃÀ´
 
 void UBuffComponent::HealRampUp(float DeltaTime)
 {
-	if (!bHealing || Character == nullptr || Character->IsElimed()) return;//ÒªÊÇ½ÇÉ«²»´æÔÚ»òÕßÒÑ¾­±»ÌÔÌ­ÁË¾Í²»ÖÎÁÆÁË
+	if (!bHealing || Character == nullptr || Character->IsElimed()) return;//è¦æ˜¯è§’è‰²ä¸å­˜åœ¨æˆ–è€…å·²ç»è¢«æ·˜æ±°äº†å°±ä¸æ²»ç–—äº†
 
-	const float HealThisFrame = HealingRate * DeltaTime;//Ã¿Ò»Ö¡µÄ»ØÑªÁ¿
-	Character->SetHealth(FMath::Clamp(Character->GetHealth() + HealThisFrame, 0.f, Character->GetMaxHealth()));//ÉèÖÃÑªÁ¿
+	const float HealThisFrame = HealingRate * DeltaTime;//æ¯ä¸€å¸§çš„å›è¡€é‡
+	Character->SetHealth(FMath::Clamp(Character->GetHealth() + HealThisFrame, 0.f, Character->GetMaxHealth()));//è®¾ç½®è¡€é‡
 	Character->UpdateHUDHealth();
 
-	HealedAmount += HealThisFrame * AmountToHeal;//»ØÑªÁ¿µÄ¼ÆÊı
-	if (Character->IsElimed() || Character->GetHealth() == Character->GetMaxHealth() || HealedAmount == AmountToHeal) //Èç¹ûÖÎÁÆ¹ı³ÌÖĞÍæ¼Ò±»ÌÔÌ­ÁË»òÕßÑªÁ¿»Ö¸´µ½ÁË×î´óÖµ»òÕßÑªÁ¿ÒÑ¾­»Ö¸´µ½ÁË×î´óµÄÖÎÁÆĞ§¹ûµ«ÊÇ»¹Ã»»ØÂú¶¼Í£Ö¹ÖÎÁÆ
+	HealedAmount += HealThisFrame * AmountToHeal;//å›è¡€é‡çš„è®¡æ•°
+	if (Character->IsElimed() || Character->GetHealth() == Character->GetMaxHealth() || HealedAmount == AmountToHeal) //å¦‚æœæ²»ç–—è¿‡ç¨‹ä¸­ç©å®¶è¢«æ·˜æ±°äº†æˆ–è€…è¡€é‡æ¢å¤åˆ°äº†æœ€å¤§å€¼æˆ–è€…è¡€é‡å·²ç»æ¢å¤åˆ°äº†æœ€å¤§çš„æ²»ç–—æ•ˆæœä½†æ˜¯è¿˜æ²¡å›æ»¡éƒ½åœæ­¢æ²»ç–—
 	{
 		HealedAmount = 0;
 		AmountToHeal = 0;
@@ -144,14 +144,14 @@ void UBuffComponent::RechargeShiled(float RechargeAmount, float RechargingTime ,
 
 void UBuffComponent::ChargeRampUp(float DeltaTime)
 {
-	if (!bRecharge || Character == nullptr || Character->IsElimed()) return;//ÒªÊÇ½ÇÉ«²»´æÔÚ»òÕßÒÑ¾­±»ÌÔÌ­ÁË¾Í²»ÖÎÁÆÁË
+	if (!bRecharge || Character == nullptr || Character->IsElimed()) return;//è¦æ˜¯è§’è‰²ä¸å­˜åœ¨æˆ–è€…å·²ç»è¢«æ·˜æ±°äº†å°±ä¸æ²»ç–—äº†
 
-	if(bSlowlyCharged)//ÊÇ·ñ¿ªÆôË²¼ä»Ö¸´»¤¶Ü
+	if(bSlowlyCharged)//æ˜¯å¦å¼€å¯ç¬é—´æ¢å¤æŠ¤ç›¾
 	{
-		const float RechargeThisFrame = ChargingShiledRate * DeltaTime;//Ã¿Ò»Ö¡µÄ»ØÑªÁ¿
-		Character->SetShield(FMath::Clamp(Character->GetShield() + RechargeThisFrame, 0.f, Character->GetMaxShield()));//ÉèÖÃ»¤¶ÜµÄÊıÖµ
-		Character->UpdateHUDShield();//¸üĞÂÒ»´Î»¤¶ÜHUD
-		RechargedAmount+= RechargeThisFrame * AmountToRechargeShiled;//ÒÑ¾­»Ö¸´µÄ»¤¶ÜµÄ¼ÆÊı
+		const float RechargeThisFrame = ChargingShiledRate * DeltaTime;//æ¯ä¸€å¸§çš„å›è¡€é‡
+		Character->SetShield(FMath::Clamp(Character->GetShield() + RechargeThisFrame, 0.f, Character->GetMaxShield()));//è®¾ç½®æŠ¤ç›¾çš„æ•°å€¼
+		Character->UpdateHUDShield();//æ›´æ–°ä¸€æ¬¡æŠ¤ç›¾HUD
+		RechargedAmount+= RechargeThisFrame * AmountToRechargeShiled;//å·²ç»æ¢å¤çš„æŠ¤ç›¾çš„è®¡æ•°
 
 		//FString Message1 = FString::SanitizeFloat(RechargedAmount);
 
@@ -165,20 +165,20 @@ void UBuffComponent::ChargeRampUp(float DeltaTime)
 		//	);
 		//}
 	
-		if (Character->IsElimed() || Character->GetShield() == Character->GetMaxShield() || RechargedAmount == AmountToRechargeShiled) //Èç¹ûÖÎÁÆ¹ı³ÌÖĞÍæ¼Ò±»ÌÔÌ­ÁË»òÕßÑªÁ¿»Ö¸´µ½ÁË×î´óÖµ»òÕßÑªÁ¿ÒÑ¾­»Ö¸´µ½ÁË×î´óµÄÖÎÁÆĞ§¹ûµ«ÊÇ»¹Ã»»ØÂú¶¼Í£Ö¹ÖÎÁÆ
+		if (Character->IsElimed() || Character->GetShield() == Character->GetMaxShield() || RechargedAmount == AmountToRechargeShiled) //å¦‚æœæ²»ç–—è¿‡ç¨‹ä¸­ç©å®¶è¢«æ·˜æ±°äº†æˆ–è€…è¡€é‡æ¢å¤åˆ°äº†æœ€å¤§å€¼æˆ–è€…è¡€é‡å·²ç»æ¢å¤åˆ°äº†æœ€å¤§çš„æ²»ç–—æ•ˆæœä½†æ˜¯è¿˜æ²¡å›æ»¡éƒ½åœæ­¢æ²»ç–—
 		{
-			RechargedAmount = 0;//³äÄÜ¼ÆÊıÇåÁã
+			RechargedAmount = 0;//å……èƒ½è®¡æ•°æ¸…é›¶
 			AmountToRechargeShiled = 0;
-			bRecharge = false;//³äÄÜ½áÊø
+			bRecharge = false;//å……èƒ½ç»“æŸ
 			return;
 		}
 	}
-	else//Ë²¼ä»Ö¸´»¤¶ÜµÄ»°
+	else//ç¬é—´æ¢å¤æŠ¤ç›¾çš„è¯
 	{
-		Character->SetShield(FMath::Clamp(Character->GetShield() + AmountToRechargeShiled, 0.f, Character->GetMaxShield()));//ÉèÖÃ»¤¶Ü
+		Character->SetShield(FMath::Clamp(Character->GetShield() + AmountToRechargeShiled, 0.f, Character->GetMaxShield()));//è®¾ç½®æŠ¤ç›¾
 		Character->UpdateHUDShield();
 		AmountToRechargeShiled = 0;
-		bRecharge = false;//³äÄÜ½áÊø
+		bRecharge = false;//å……èƒ½ç»“æŸ
 		return;
 	}
 

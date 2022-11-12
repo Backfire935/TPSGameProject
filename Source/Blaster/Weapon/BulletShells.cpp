@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "BulletShells.h"
@@ -12,11 +12,11 @@ ABulletShells::ABulletShells()
 	BulletShellMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletShellComp"));
 	SetRootComponent(BulletShellMesh);
 
-	BulletShellMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);//ÉèÖÃÍ¨µÀÅö×²£¬¶ÔÏà»úºöÂÔ
-	BulletShellMesh->SetSimulatePhysics(true);//¿ªÆôÄ£ÄâÎïÀíÊôÐÔ
-	BulletShellMesh->SetEnableGravity(true);//¿ªÆôÎïÀíÖØÁ¦
-	BulletShellMesh->SetNotifyRigidBodyCollision(true);//Ä£ÄâÉú³ÉÃüÖÐÊÂ¼þ
-	ShellEjectionImpulse = 10.f;//ÉèÖÃ×Óµ¯¿ÇÅ×³öµÄ³åÁ¿
+	BulletShellMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);//è®¾ç½®é€šé“ç¢°æ’žï¼Œå¯¹ç›¸æœºå¿½ç•¥
+	BulletShellMesh->SetSimulatePhysics(true);//å¼€å¯æ¨¡æ‹Ÿç‰©ç†å±žæ€§
+	BulletShellMesh->SetEnableGravity(true);//å¼€å¯ç‰©ç†é‡åŠ›
+	BulletShellMesh->SetNotifyRigidBodyCollision(true);//æ¨¡æ‹Ÿç”Ÿæˆå‘½ä¸­äº‹ä»¶
+	ShellEjectionImpulse = 10.f;//è®¾ç½®å­å¼¹å£³æŠ›å‡ºçš„å†²é‡
 
 }
 
@@ -25,20 +25,20 @@ void ABulletShells::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	BulletShellMesh->OnComponentHit.AddDynamic(this, &ABulletShells::OnHit);//½«×Óµ¯ÂäµØµÄÊÂ¼þÌí¼Óµ½Î¯ÍÐ
+	BulletShellMesh->OnComponentHit.AddDynamic(this, &ABulletShells::OnHit);//å°†å­å¼¹è½åœ°çš„äº‹ä»¶æ·»åŠ åˆ°å§”æ‰˜
 
-	BulletShellMesh->AddImpulse(GetActorForwardVector() * ShellEjectionImpulse);//¸ø×Óµ¯¿ÇÌí¼ÓÒ»¸öÏòÇ°µÄµ¥Î»³åÁ¿
+	BulletShellMesh->AddImpulse(GetActorForwardVector() * ShellEjectionImpulse);//ç»™å­å¼¹å£³æ·»åŠ ä¸€ä¸ªå‘å‰çš„å•ä½å†²é‡
 
-	SetLifeSpan(5.f);//¸øÕâ¸öÀàÉèÖÃ5sµÄÉúÃüÖÜÆÚ
+	SetLifeSpan(5.f);//ç»™è¿™ä¸ªç±»è®¾ç½®5sçš„ç”Ÿå‘½å‘¨æœŸ
 }
 
 void ABulletShells::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (BulletSound)//²¥·ÅÍê×Óµ¯¿ÇÂäµØµÄÉùÒôºóÏú»Ù×Óµ¯¿Ç
+	if (BulletSound)//æ’­æ”¾å®Œå­å¼¹å£³è½åœ°çš„å£°éŸ³åŽé”€æ¯å­å¼¹å£³
 	{
-		//BulletShellMesh->SetNotifyRigidBodyCollision(false);//Ä£ÄâÉú³ÉÃüÖÐÊÂ¼þ
-		//BulletShellMesh->SetSimulatePhysics(true);//¹Ø±ÕÄ£ÄâÎïÀíÊôÐÔ
-		UGameplayStatics::PlaySoundAtLocation(this, BulletSound, GetActorLocation());//ÔÚ×Óµ¯¿ÇÂäµØµÄÎ»ÖÃ²¥·ÅÒ»¸ö±»ÃüÖÐµÄÒôÐ§
+		//BulletShellMesh->SetNotifyRigidBodyCollision(false);//æ¨¡æ‹Ÿç”Ÿæˆå‘½ä¸­äº‹ä»¶
+		//BulletShellMesh->SetSimulatePhysics(true);//å…³é—­æ¨¡æ‹Ÿç‰©ç†å±žæ€§
+		UGameplayStatics::PlaySoundAtLocation(this, BulletSound, GetActorLocation());//åœ¨å­å¼¹å£³è½åœ°çš„ä½ç½®æ’­æ”¾ä¸€ä¸ªè¢«å‘½ä¸­çš„éŸ³æ•ˆ
 		
 	}
 	BulletShellMesh->SetNotifyRigidBodyCollision(false);

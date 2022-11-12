@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "BlasterPlayerController.h"
@@ -13,21 +13,22 @@
 #include "Kismet/GameplayStatics.h"
 #include"Blaster/BlasterComponents/CombatComponent.h"
 #include"Blaster/GameState/BlasterGameState.h"
+#include "Blaster/HUD/ReturnToMainMenu.h"
 #include "Blaster/PlayerState/BlasterPlayerState.h"
 #include "Components/Image.h"
 
-void ABlasterPlayerController::ServerRequestServerTime_Implementation(float TimeOfClientRequest)//ÓÉ¿Í»§¶Ë·¢ÆğµÄ£¬´«ÈëµÄÊÇ¿Í»§¶Ë·¢ËÍÇëÇóÊ±µÄÊ±¼ä£¬ÒªÇó»ñÈ¡·şÎñ¶ËµÄÊ±¼ä
+void ABlasterPlayerController::ServerRequestServerTime_Implementation(float TimeOfClientRequest)//ç”±å®¢æˆ·ç«¯å‘èµ·çš„ï¼Œä¼ å…¥çš„æ˜¯å®¢æˆ·ç«¯å‘é€è¯·æ±‚æ—¶çš„æ—¶é—´ï¼Œè¦æ±‚è·å–æœåŠ¡ç«¯çš„æ—¶é—´
 {
-	float ServerTimeOfReceipt = GetWorld()->GetTimeSeconds();//·şÎñ¶Ë½ÓÊÕµ½¿Í»§¶ËÇëÇóÊ±ºòµÄÊ±¼ä
+	float ServerTimeOfReceipt = GetWorld()->GetTimeSeconds();//æœåŠ¡ç«¯æ¥æ”¶åˆ°å®¢æˆ·ç«¯è¯·æ±‚æ—¶å€™çš„æ—¶é—´
 	ClientReportServerTime(TimeOfClientRequest,ServerTimeOfReceipt);
 }
 
-void ABlasterPlayerController::ClientReportServerTime_Implementation(float TimeOfClientRequest, float TimeServerReceivedClientRequest)//ÓÉ·şÎñ¶Ë·¢ÆğµÄ£¬½«·şÎñ¶Ëµ±Ç°µÄÊ±¼ä·¢ËÍ¸ø¿Í»§¶Ë£¬À´»ØÓ¦¿Í»§¶Ë·¢ÆğµÄServerRequestServerTimeÇëÇó
+void ABlasterPlayerController::ClientReportServerTime_Implementation(float TimeOfClientRequest, float TimeServerReceivedClientRequest)//ç”±æœåŠ¡ç«¯å‘èµ·çš„ï¼Œå°†æœåŠ¡ç«¯å½“å‰çš„æ—¶é—´å‘é€ç»™å®¢æˆ·ç«¯ï¼Œæ¥å›åº”å®¢æˆ·ç«¯å‘èµ·çš„ServerRequestServerTimeè¯·æ±‚
 {
-	float RoundTripTime = GetWorld()->GetTimeSeconds() - TimeOfClientRequest;//½«·şÎñ¶ËµÄµ±Ç°Ê±¼ä¼õÈ¥¿Í»§¶Ë·¢ËÍÇëÇóÊ±ºòµÄÊ±¼ä£¬µÃµ½ÍøÂç´«µİĞÅÏ¢µÄÑÓ³ÙÊ±¼ä¡£
+	float RoundTripTime = GetWorld()->GetTimeSeconds() - TimeOfClientRequest;//å°†æœåŠ¡ç«¯çš„å½“å‰æ—¶é—´å‡å»å®¢æˆ·ç«¯å‘é€è¯·æ±‚æ—¶å€™çš„æ—¶é—´ï¼Œå¾—åˆ°ç½‘ç»œä¼ é€’ä¿¡æ¯çš„å»¶è¿Ÿæ—¶é—´ã€‚
 	SingleTripTime = 0.5 * RoundTripTime;
-	float CurrentServerTime = TimeServerReceivedClientRequest + SingleTripTime;//·şÎñ¶Ë½ÓÊÕµ½¿Í»§¶ËÇëÇóÊ±ºòµÄÊ±¼ä + 0.5*ÍøÂç´«µİĞÅÏ¢µÄÑÓ³ÙÊ±¼ä = Óë¿Í»§¶ËÍ¬²½µÄ·şÎñ¶ËµÄÕæÕıÊ±¼ä
-	ClientServerDelta = CurrentServerTime - GetWorld()->GetTimeSeconds();//¿Í»§¶ËºÍ·şÎñ¶ËµÄÊ±¼ä²îÒì
+	float CurrentServerTime = TimeServerReceivedClientRequest + SingleTripTime;//æœåŠ¡ç«¯æ¥æ”¶åˆ°å®¢æˆ·ç«¯è¯·æ±‚æ—¶å€™çš„æ—¶é—´ + 0.5*ç½‘ç»œä¼ é€’ä¿¡æ¯çš„å»¶è¿Ÿæ—¶é—´ = ä¸å®¢æˆ·ç«¯åŒæ­¥çš„æœåŠ¡ç«¯çš„çœŸæ­£æ—¶é—´
+	ClientServerDelta = CurrentServerTime - GetWorld()->GetTimeSeconds();//å®¢æˆ·ç«¯å’ŒæœåŠ¡ç«¯çš„æ—¶é—´å·®å¼‚
 
 }
 
@@ -36,6 +37,74 @@ void ABlasterPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ABlasterPlayerController, MatchState);
 }
+
+void ABlasterPlayerController::BroadcastElim(APlayerState* Attacker, APlayerState* Victim)
+{
+	ClientElimAnnouncement(Attacker, Victim);
+
+}
+
+void ABlasterPlayerController::ClientElimAnnouncement_Implementation(APlayerState* Attacker, APlayerState* Victim)
+{
+	APlayerState* Self = GetPlayerState<APlayerState>();
+	if(Attacker && Victim && Self)
+	{
+		BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+		if(BlasterHUD)
+		{
+			//æˆ‘æ€äº†åˆ«äºº
+			if(Attacker == Self && Victim != Self)
+			{
+				BlasterHUD->AddElimAnnouncement("ä½ ", Victim->GetPlayerName());
+				return;
+			}
+			//åˆ«äººæ€äº†æˆ‘
+			if(Victim == Self && Attacker != Self)
+			{
+				BlasterHUD->AddElimAnnouncement(Attacker->GetPlayerName(), "ä½ ");
+				return;
+			}
+			//è‡ªå·±æŠŠè‡ªå·±å¹²æ‰äº†
+			if(Attacker == Victim && Attacker == Self)
+			{
+				BlasterHUD->AddElimAnnouncement("ä½ ", "ä½ è‡ªå·±");
+				return;
+			}
+			//åˆ«äººè‡ªæ€äº†
+			if (Attacker == Victim && Attacker != Self)
+			{
+				BlasterHUD->AddElimAnnouncement(Attacker->GetPlayerName(), "è‡ªå·±");
+				return;
+			}
+			//åˆ«äººæ€äº†åˆ«äºº
+			BlasterHUD->AddElimAnnouncement(Attacker->GetPlayerName(),Victim->GetPlayerName());
+		}
+	}
+}
+
+
+void ABlasterPlayerController::ShowReturnToMainMenu()
+{
+	//æ˜¾ç¤ºå›åˆ°ä¸»èœå•çš„ç•Œé¢
+	if (ReturnToMainMenuWidget == nullptr) return;
+	if (ReturnToMainMenu == nullptr)
+	{
+		ReturnToMainMenu = CreateWidget<UReturnToMainMenu>(this, ReturnToMainMenuWidget);
+	}
+	if(ReturnToMainMenu)
+	{
+		bReturnToMenuOpen = !bReturnToMenuOpen;
+		if(bReturnToMenuOpen)
+		{
+			ReturnToMainMenu->MenuSetup();
+		}
+		else
+		{
+			ReturnToMainMenu->MenuTearDown();
+		}
+	}
+}
+
 
 void ABlasterPlayerController::BeginPlay()
 {
@@ -50,8 +119,8 @@ void ABlasterPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	SetHUDTime();
-	CheckTimeSync(DeltaTime); //¼ì²éÊ±¼äÍ¬²½µÄº¯Êı
-	PollInit();//¼ì²éHUDÀàÊÇ·ñ´´½¨²¢ÄÃµ½ÁËÖµ
+	CheckTimeSync(DeltaTime); //æ£€æŸ¥æ—¶é—´åŒæ­¥çš„å‡½æ•°
+	PollInit();//æ£€æŸ¥HUDç±»æ˜¯å¦åˆ›å»ºå¹¶æ‹¿åˆ°äº†å€¼
 	CheckPing(DeltaTime);
 
 }
@@ -66,37 +135,60 @@ void ABlasterPlayerController::CheckPing(float DeltaTime)
 		{
 			float Ping = 0;
 			Ping = PlayerState->GetPingInMilliseconds();
-			if (Ping > HighPingThreshold)//µÃµ½pingÖµ²¢ºÍ¾¯¸æµÄãĞÖµ½øĞĞ±È½Ï
+			UE_LOG(LogTemp, Warning, TEXT("%.0f"), Ping);
+
+			if (Ping > HighPingThreshold)//å¾—åˆ°pingå€¼å¹¶å’Œè­¦å‘Šçš„é˜ˆå€¼è¿›è¡Œæ¯”è¾ƒ
 			{
 				HighPingWarning(Ping);
 				PingAnimationRunningTime = 0.f;
+				ServerReportPingStatus(true);//ä¼ é€’å»¶è¿ŸçŠ¶æ€ç¡®å®šï¼Œä»¥ä¾¿åç»­ç¡®å®šæ˜¯å¦å¯ç”¨ssr
+			}
+			else
+			{
+				ServerReportPingStatus(false);
 			}
 		}
-		HighPingRunningTime = 0;//¼ÆÊ±Æ÷ÇåÁã
+		HighPingRunningTime = 0;//è®¡æ—¶å™¨æ¸…é›¶
 	}
 	bool bHighPingAnimationPlaying =
 		BlasterHUD
 		&& BlasterHUD->CharacterOverlay
 		&& BlasterHUD->CharacterOverlay->HighPingAnimation
 		&& BlasterHUD->CharacterOverlay->IsAnimationPlaying(BlasterHUD->CharacterOverlay->HighPingAnimation);
-	if (bHighPingAnimationPlaying)//Èç¹ûÔÚ²¥·Å¸ßping¶¯»­£¬¾ÍÍ£Ö¹²¥·Å
+	if (bHighPingAnimationPlaying)//å¦‚æœåœ¨æ’­æ”¾é«˜pingåŠ¨ç”»ï¼Œå°±åœæ­¢æ’­æ”¾
 	{
-		PingAnimationRunningTime += DeltaTime;//¶¯»­²¥·ÅÊ±¼äµÄ¼ÆÊ±
-		if (PingAnimationRunningTime > HighPingDuration)//³¬¹ıÉèÖÃµÄÊ±¼ä
+		PingAnimationRunningTime += DeltaTime;//åŠ¨ç”»æ’­æ”¾æ—¶é—´çš„è®¡æ—¶
+		if (PingAnimationRunningTime > HighPingDuration)//è¶…è¿‡è®¾ç½®çš„æ—¶é—´
 		{
-			StopHighPingWarning();//Í£Ö¹²¥·Å
+			StopHighPingWarning();//åœæ­¢æ’­æ”¾
 		}
 	}
 }
 
-void ABlasterPlayerController::SetHUDTime()//¿ØÖÆÉèÖÃHUD,´Ëº¯ÊıÔÚÀàTickÖĞµ÷ÓÃ
+//åˆ¤æ–­pingæ˜¯å¦è¿‡é«˜
+void ABlasterPlayerController::ServerReportPingStatus_Implementation(bool bHighPing)
+{
+	HighPingDelegate.Broadcast(bHighPing);
+}
+
+void ABlasterPlayerController::CheckTimeSync(float DeltaTime)
+{
+	TimeSyncRunningTime += DeltaTime;//æ”¹å˜è¾¾åˆ°æ£€æŸ¥åŒæ­¥è¦æ±‚çš„æ—¶é—´
+	if (IsLocalController() && TimeSyncRunningTime > TimeSyncFrequency)
+	{
+		ServerRequestServerTime(GetWorld()->GetTimeSeconds());//è¯·æ±‚åŒæ­¥æ—¶é—´
+		TimeSyncRunningTime = 0.f;//è®¡æ—¶å™¨ç½®é›¶
+	}
+}
+
+void ABlasterPlayerController::SetHUDTime()//æ§åˆ¶è®¾ç½®HUD,æ­¤å‡½æ•°åœ¨ç±»Tickä¸­è°ƒç”¨
 {
 	float TimeLeft = 0.f;
 	if (MatchState == MatchState::WaitingToStart)  TimeLeft = WarmupTime - GetServerTime() + LevelStartingTime;
 	else if (MatchState == MatchState::InProgress) TimeLeft = WarmupTime + MatchTime - GetServerTime() + LevelStartingTime;
 	else if(MatchState == MatchState::Cooldown)TimeLeft =CooldownTime+ WarmupTime + MatchTime - GetServerTime() + LevelStartingTime;
 
-	//uint32 SecondsLeft = FMath::CeilToInt( MatchTime - GetServerTime());//ÓÎÏ·×ÜÊ±¼ä-ÓÎÏ·¿ªÊ¼µÄÊ±¼ä=ÓÎÏ·Ê£ÏÂµÄÊ±¼ä£¬CeilToIntº¯ÊıÄÚËäÈ»ÊÇÁ½¸ö¸¡µãĞÍ±äÁ¿ÔÚÃ¿Ö¡Ïà¼õ£¬µ«ÊÇÔÚ×ª»»³ÉuIntºó£¬Ö»ÓĞ·¢ÉúÕûÊıµÄ±ä»¯Ê±£¬ÏÂÃæµÄifÅĞ¶Ï²Å»áÉúĞ§
+	//uint32 SecondsLeft = FMath::CeilToInt( MatchTime - GetServerTime());//æ¸¸æˆæ€»æ—¶é—´-æ¸¸æˆå¼€å§‹çš„æ—¶é—´=æ¸¸æˆå‰©ä¸‹çš„æ—¶é—´ï¼ŒCeilToIntå‡½æ•°å†…è™½ç„¶æ˜¯ä¸¤ä¸ªæµ®ç‚¹å‹å˜é‡åœ¨æ¯å¸§ç›¸å‡ï¼Œä½†æ˜¯åœ¨è½¬æ¢æˆuIntåï¼Œåªæœ‰å‘ç”Ÿæ•´æ•°çš„å˜åŒ–æ—¶ï¼Œä¸‹é¢çš„ifåˆ¤æ–­æ‰ä¼šç”Ÿæ•ˆ
 	uint32 SecondsLeft = FMath::CeilToInt( TimeLeft);
 
 
@@ -107,30 +199,30 @@ void ABlasterPlayerController::SetHUDTime()//¿ØÖÆÉèÖÃHUD,´Ëº¯ÊıÔÚÀàTickÖĞµ÷ÓÃ
 		}*/
 	
 
-	if (CountdownInt != SecondsLeft)//Ã¿Ö¡¶¼¸üĞÂHUD»áÔö´ó¿ªÏú£¬ÕâÀïÅĞ¶ÏSecondsLeftÊÇ·ñ·¢Éú±ä»¯£¬·¢ÉúÁË±ä»¯²Å¸Ä±äHUD
+	if (CountdownInt != SecondsLeft)//æ¯å¸§éƒ½æ›´æ–°HUDä¼šå¢å¤§å¼€é”€ï¼Œè¿™é‡Œåˆ¤æ–­SecondsLeftæ˜¯å¦å‘ç”Ÿå˜åŒ–ï¼Œå‘ç”Ÿäº†å˜åŒ–æ‰æ”¹å˜HUD
 	{
 		if(MatchState == MatchState::WaitingToStart || MatchState == MatchState::Cooldown)
 		{
-			SetHUDAnnouncementCountdown(TimeLeft);//»¹Ã»¿ªÊ¼±ÈÈü»òÕßÒÑ¾­½áÊø±ÈÈüÔòÕ¹Ê¾ÌáÊ¾½çÃæ
+			SetHUDAnnouncementCountdown(TimeLeft);//è¿˜æ²¡å¼€å§‹æ¯”èµ›æˆ–è€…å·²ç»ç»“æŸæ¯”èµ›åˆ™å±•ç¤ºæç¤ºç•Œé¢
 		}
 		if(MatchState == MatchState::InProgress)
 		{
-			SetHUDMatchCountDown(TimeLeft);//ÒÑ¾­¿ªÊ¼ÓÎÏ·ÔòÕ¹Ê¾Íæ¼ÒHUD½çÃæ
+			SetHUDMatchCountDown(TimeLeft);//å·²ç»å¼€å§‹æ¸¸æˆåˆ™å±•ç¤ºç©å®¶HUDç•Œé¢
 		}
-		//SetHUDMatchCountDown(MatchTime - GetServerTime());//Ë¢ĞÂÒ»´ÎHUD
+		//SetHUDMatchCountDown(MatchTime - GetServerTime());//åˆ·æ–°ä¸€æ¬¡HUD
 	}
 
-	CountdownInt = SecondsLeft;//ÔËĞĞµ½ÕâËµÃ÷SecondsLeftÖµ·¢ÉúÁË¸Ä±ä£¬Õâ¸öÊ±ºòÒ²¸üĞÂÏÂCountdownIntµÄÖµ
+	CountdownInt = SecondsLeft;//è¿è¡Œåˆ°è¿™è¯´æ˜SecondsLeftå€¼å‘ç”Ÿäº†æ”¹å˜ï¼Œè¿™ä¸ªæ—¶å€™ä¹Ÿæ›´æ–°ä¸‹CountdownIntçš„å€¼
 }
 
 void ABlasterPlayerController::PollInit()
 {
-	if (CharacterOverlay == nullptr)//Èç¹ûHUDÃ»À´µÃ¼°´´½¨»òÕß´´½¨Ê§°Ü
+	if (CharacterOverlay == nullptr)//å¦‚æœHUDæ²¡æ¥å¾—åŠåˆ›å»ºæˆ–è€…åˆ›å»ºå¤±è´¥
 	{
 		if (BlasterHUD && BlasterHUD->CharacterOverlay)
 		{
 			CharacterOverlay = BlasterHUD->CharacterOverlay;
-			if (CharacterOverlay)//tickÖĞ¸üĞÂÒ»´Î
+			if (CharacterOverlay)//tickä¸­æ›´æ–°ä¸€æ¬¡
 			{
 				if(bInitializeHealth) SetHUDHealth(HUDHealth,HUDMaxHealth);
 				if(bInitializeShield) SetHUDShield(HUDShield,HUDMaxShield);
@@ -147,6 +239,14 @@ void ABlasterPlayerController::PollInit()
 			}
 		}
 	}
+}
+
+void ABlasterPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+	if (InputComponent == nullptr) return;
+	//ç»‘å®šEscåˆ°é€€å‡ºç•Œé¢ä¸Š
+	InputComponent->BindAction("Esc",IE_Pressed, this, &ABlasterPlayerController::ShowReturnToMainMenu);
 }
 
 void ABlasterPlayerController::OnPossess(APawn* InPawn)
@@ -175,17 +275,9 @@ void ABlasterPlayerController::SetElimText(bool bElim)
 	}
 }
 
-void ABlasterPlayerController::CheckTimeSync(float DeltaTime)
-{
-	TimeSyncRunningTime += DeltaTime;//¸Ä±ä´ïµ½¼ì²éÍ¬²½ÒªÇóµÄÊ±¼ä
-	if (IsLocalController() && TimeSyncRunningTime > TimeSyncFrequency)
-	{
-		ServerRequestServerTime(GetWorld()->GetTimeSeconds());//ÇëÇóÍ¬²½Ê±¼ä
-		TimeSyncRunningTime = 0.f;//¼ÆÊ±Æ÷ÖÃÁã
-	}
-}
 
-void ABlasterPlayerController::ReceivedPlayer()//ÔÚ½ÓÊÕÍæ¼ÒµÄÊ±ºò¾ÍÖ´ĞĞGetServerTime£¬Ä¿µÄÊÇ¾¡¿ìÓë·şÎñ¶ËÊ±¼ä±£³ÖÒ»ÖÂ
+
+void ABlasterPlayerController::ReceivedPlayer()//åœ¨æ¥æ”¶ç©å®¶çš„æ—¶å€™å°±æ‰§è¡ŒGetServerTimeï¼Œç›®çš„æ˜¯å°½å¿«ä¸æœåŠ¡ç«¯æ—¶é—´ä¿æŒä¸€è‡´
 {
 	Super::ReceivedPlayer();
 	if (IsLocalController())
@@ -194,10 +286,10 @@ void ABlasterPlayerController::ReceivedPlayer()//ÔÚ½ÓÊÕÍæ¼ÒµÄÊ±ºò¾ÍÖ´ĞĞGetServer
 	}
 }
 
-float ABlasterPlayerController::GetServerTime()//ºÍ·şÎñÆ÷Í¬²½Ê±¼ä
+float ABlasterPlayerController::GetServerTime()//å’ŒæœåŠ¡å™¨åŒæ­¥æ—¶é—´
 {
 	if (HasAuthority()) return GetWorld()->GetTimeSeconds();
-	else  return GetWorld()->GetTimeSeconds() + ClientServerDelta;//±¾µØµ±Ç°Ê±¼ä+Óë·şÎñÆ÷²»Í¬²½µÄÊ±¼ä = ºÍ·şÎñÆ÷Í¬²½µÄÊ±¼ä
+	else  return GetWorld()->GetTimeSeconds() + ClientServerDelta;//æœ¬åœ°å½“å‰æ—¶é—´+ä¸æœåŠ¡å™¨ä¸åŒæ­¥çš„æ—¶é—´ = å’ŒæœåŠ¡å™¨åŒæ­¥çš„æ—¶é—´
 }
 
 void ABlasterPlayerController::SetHUDHealth(float Health, float MaxHealth)
@@ -210,12 +302,12 @@ void ABlasterPlayerController::SetHUDHealth(float Health, float MaxHealth)
 		BlasterHUD->CharacterOverlay->HealthText;
 	if (bHUDValid)
 	{
-		const float HealthPercent = Health / MaxHealth;//ÉèÖÃÑªÁ¿°Ù·Ö±È
+		const float HealthPercent = Health / MaxHealth;//è®¾ç½®è¡€é‡ç™¾åˆ†æ¯”
 		BlasterHUD->CharacterOverlay->HealthBar->SetPercent(HealthPercent);
-		FString HealthText = FString::Printf(TEXT("%d/%d"),FMath::CeilToInt(Health), FMath::CeilToInt(MaxHealth));//¼ÆËã²¢×ª»»µ±Ç°ÑªÁ¿ÖµµÄÎÄ±¾
-		BlasterHUD->CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));//ÉèÖÃÑªÁ¿Öµ
+		FString HealthText = FString::Printf(TEXT("%d/%d"),FMath::CeilToInt(Health), FMath::CeilToInt(MaxHealth));//è®¡ç®—å¹¶è½¬æ¢å½“å‰è¡€é‡å€¼çš„æ–‡æœ¬
+		BlasterHUD->CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));//è®¾ç½®è¡€é‡å€¼
 	}
-	else//Èç¹û¿Ø¼ş³õÊ¼»¯Ê§°Ü£¬»¹ÓĞ¸ö×¨ÃÅÓÃÀ´³õÊ¼»¯µÄº¯Êıpollinit
+	else//å¦‚æœæ§ä»¶åˆå§‹åŒ–å¤±è´¥ï¼Œè¿˜æœ‰ä¸ªä¸“é—¨ç”¨æ¥åˆå§‹åŒ–çš„å‡½æ•°pollinit
 	{
 		bInitializeHealth = true;
 		HUDHealth = Health;
@@ -234,12 +326,12 @@ void ABlasterPlayerController::SetHUDShield(float Shield, float MaxShield)
 		BlasterHUD->CharacterOverlay->ShieldText;
 	if (bHUDValid)
 	{
-		const float ShieldPercent = Shield / MaxShield;//ÉèÖÃ»¤¶Ü°Ù·Ö±È
+		const float ShieldPercent = Shield / MaxShield;//è®¾ç½®æŠ¤ç›¾ç™¾åˆ†æ¯”
 		BlasterHUD->CharacterOverlay->ShieldBar->SetPercent(ShieldPercent);
-		FString ShieldText = FString::Printf(TEXT("%d/%d"), FMath::CeilToInt(Shield), FMath::CeilToInt(MaxShield));//¼ÆËã²¢×ª»»µ±Ç°»¤¶ÜÖµµÄÎÄ±¾
-		BlasterHUD->CharacterOverlay->ShieldText->SetText(FText::FromString(ShieldText));//ÉèÖÃ»¤¶ÜÖµ
+		FString ShieldText = FString::Printf(TEXT("%d/%d"), FMath::CeilToInt(Shield), FMath::CeilToInt(MaxShield));//è®¡ç®—å¹¶è½¬æ¢å½“å‰æŠ¤ç›¾å€¼çš„æ–‡æœ¬
+		BlasterHUD->CharacterOverlay->ShieldText->SetText(FText::FromString(ShieldText));//è®¾ç½®æŠ¤ç›¾å€¼
 	}
-	else//Èç¹û¿Ø¼ş³õÊ¼»¯Ê§°Ü£¬»¹ÓĞ¸ö×¨ÃÅÓÃÀ´³õÊ¼»¯µÄº¯Êıpollinit
+	else//å¦‚æœæ§ä»¶åˆå§‹åŒ–å¤±è´¥ï¼Œè¿˜æœ‰ä¸ªä¸“é—¨ç”¨æ¥åˆå§‹åŒ–çš„å‡½æ•°pollinit
 	{
 		bInitializeShield = true;
 		HUDShield = Shield;
@@ -261,7 +353,7 @@ void ABlasterPlayerController::SetHUDScore(float Score)
 		FString ScoreText = FString::Printf(TEXT("%d"),FMath::FloorToInt(Score));
 		BlasterHUD->CharacterOverlay->ScoreAmount->SetText(FText::FromString(ScoreText));
 	}
-	else//Èç¹û¿Ø¼ş³õÊ¼»¯Ê§°Ü£¬»¹ÓĞ¸ö×¨ÃÅÓÃÀ´³õÊ¼»¯µÄº¯Êıpollinit
+	else//å¦‚æœæ§ä»¶åˆå§‹åŒ–å¤±è´¥ï¼Œè¿˜æœ‰ä¸ªä¸“é—¨ç”¨æ¥åˆå§‹åŒ–çš„å‡½æ•°pollinit
 	{
 		bInitializeScore = true;
 		HUDScore = Score;
@@ -283,7 +375,7 @@ void ABlasterPlayerController::SetHUDDefeats(int32 Defeats)
 		BlasterHUD->CharacterOverlay->DefeatsAmount->SetText(FText::FromString(DefeatsText)); 
 
 	}
-	else//Èç¹û¿Ø¼ş³õÊ¼»¯Ê§°Ü£¬»¹ÓĞ¸ö×¨ÃÅÓÃÀ´³õÊ¼»¯µÄº¯Êıpollinit
+	else//å¦‚æœæ§ä»¶åˆå§‹åŒ–å¤±è´¥ï¼Œè¿˜æœ‰ä¸ªä¸“é—¨ç”¨æ¥åˆå§‹åŒ–çš„å‡½æ•°pollinit
 	{
 		bInitializeDefeats = true;
 		HUDDefeats = Defeats;
@@ -330,7 +422,7 @@ void ABlasterPlayerController::SetHUDCarriedAmmo(int32 Ammo)
 	}
 }
 
-void ABlasterPlayerController::SetHUDMatchCountDown(float CountdownTime)//CountdownTimeÊÇÒ»¾ÖÓÎÏ·µÄÏŞÖÆÊ±¼ä
+void ABlasterPlayerController::SetHUDMatchCountDown(float CountdownTime)//CountdownTimeæ˜¯ä¸€å±€æ¸¸æˆçš„é™åˆ¶æ—¶é—´
 {
 	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 
@@ -346,7 +438,7 @@ void ABlasterPlayerController::SetHUDMatchCountDown(float CountdownTime)//Countd
 			BlasterHUD->CharacterOverlay->MatchCountDownText->SetText(FText());
 			return;
 		}
-		int32 Minutes = FMath::FloorToInt(CountdownTime / 60.f);//×ÜÊ±³¤µÄÃëÊı£¬³ıÒÔ60¾ÍÊÇ·Ö£¬ËãÍêÈ¡int
+		int32 Minutes = FMath::FloorToInt(CountdownTime / 60.f);//æ€»æ—¶é•¿çš„ç§’æ•°ï¼Œé™¤ä»¥60å°±æ˜¯åˆ†ï¼Œç®—å®Œå–int
 		int32 Seconds = CountdownTime - Minutes * 60;
 
 		FString CountdownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
@@ -370,7 +462,7 @@ void ABlasterPlayerController::SetHUDAnnouncementCountdown(float CountdownTime)
 			return;
 		}
 
-		int32 Minutes = FMath::FloorToInt(CountdownTime / 60.f);//×ÜÊ±³¤µÄÃëÊı£¬³ıÒÔ60¾ÍÊÇ·Ö£¬ËãÍêÈ¡int
+		int32 Minutes = FMath::FloorToInt(CountdownTime / 60.f);//æ€»æ—¶é•¿çš„ç§’æ•°ï¼Œé™¤ä»¥60å°±æ˜¯åˆ†ï¼Œç®—å®Œå–int
 		int32 Seconds = CountdownTime - Minutes * 60;
 
 		FString CountdownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
@@ -435,17 +527,17 @@ void ABlasterPlayerController::ClientJoinMidGame_Implementation(FName StateOfMat
 	LevelStartingTime = StartingTime;
 	MatchState = StateOfMatch;
 	OnMatchStateSet(MatchState);
-	if (BlasterHUD && MatchState == MatchState::WaitingToStart)//Èç¹ûÍæ¼Ò²»ÊÇÔÚÈÈÉí½×¶Î½øÈëÓÎÏ·µÄ»°£¬¾Í²»µ÷³öÕâ¸ö½çÃæÁË
+	if (BlasterHUD && MatchState == MatchState::WaitingToStart)//å¦‚æœç©å®¶ä¸æ˜¯åœ¨çƒ­èº«é˜¶æ®µè¿›å…¥æ¸¸æˆçš„è¯ï¼Œå°±ä¸è°ƒå‡ºè¿™ä¸ªç•Œé¢äº†
 	{
-		BlasterHUD->AddAnnouncement();//Íæ¼Ò¿ØÖÆÆ÷ÔÚÓÎÏ·ÒÑ¿ªÊ¼¾Íµ÷³öÆÁÄ»ÌáÊ¾½çÃæ
+		BlasterHUD->AddAnnouncement();//ç©å®¶æ§åˆ¶å™¨åœ¨æ¸¸æˆå·²å¼€å§‹å°±è°ƒå‡ºå±å¹•æç¤ºç•Œé¢
 	}
 }
 
-void ABlasterPlayerController::OnRep_MatchState()//OnMatchStateSetº¯ÊıÏÈ±»ÓÎÏ·Ä£Ê½µ÷ÓÃºó¸üĞÂÁËMatchStateµÄÖµ£¬È»ºóÔÙ´¥·¢Õâ¸öº¯Êı£¬ËùÒÔ´ËÊ±MatchStateÒÑ¾­¸üĞÂ¹ıÁË£¬Ö±½Ó´«Èë·şÎñ¶ËµÄMatchStateÖµ¸ø¿Í»§¶Ë¼´¿É
+void ABlasterPlayerController::OnRep_MatchState()//OnMatchStateSetå‡½æ•°å…ˆè¢«æ¸¸æˆæ¨¡å¼è°ƒç”¨åæ›´æ–°äº†MatchStateçš„å€¼ï¼Œç„¶åå†è§¦å‘è¿™ä¸ªå‡½æ•°ï¼Œæ‰€ä»¥æ­¤æ—¶MatchStateå·²ç»æ›´æ–°è¿‡äº†ï¼Œç›´æ¥ä¼ å…¥æœåŠ¡ç«¯çš„MatchStateå€¼ç»™å®¢æˆ·ç«¯å³å¯
 {
 	if (MatchState == MatchState::InProgress)
 	{
-		HandleMatchHasStarted();//µ÷ÓÃ¿Í»§¶ËÉÏµÄHandleMatchHasStartº¯Êı
+		HandleMatchHasStarted();//è°ƒç”¨å®¢æˆ·ç«¯ä¸Šçš„HandleMatchHasStartå‡½æ•°
 	}
 	else if (MatchState == MatchState::Cooldown)
 	{
@@ -458,54 +550,54 @@ void ABlasterPlayerController::HandleMatchHasStarted()
 	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	if (BlasterHUD)
 	{
-		if(BlasterHUD->CharacterOverlay == nullptr) BlasterHUD->AddCharacterOverlay();//¿ª¾ÖÈÈÉíµ¹¼ÆÊ±½áÊøºóµ÷ÓÃHUDÀàµÄÏÔÊ¾½çÃæ,Èç¹ûÒÑ¾­ÓĞÁË¾Í²»Ìí¼ÓÁË
-		if (BlasterHUD->Announcement)//½øÈëÕıÊ½ÓÎÏ·ºóÒş²ØAnnouncement½çÃæ
+		if(BlasterHUD->CharacterOverlay == nullptr) BlasterHUD->AddCharacterOverlay();//å¼€å±€çƒ­èº«å€’è®¡æ—¶ç»“æŸåè°ƒç”¨HUDç±»çš„æ˜¾ç¤ºç•Œé¢,å¦‚æœå·²ç»æœ‰äº†å°±ä¸æ·»åŠ äº†
+		if (BlasterHUD->Announcement)//è¿›å…¥æ­£å¼æ¸¸æˆåéšè—Announcementç•Œé¢
 		{
 			BlasterHUD->Announcement->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 }
 
-void ABlasterPlayerController::HandleCooldown()//´¦ÀíÓÎÏ·½áÊø
+void ABlasterPlayerController::HandleCooldown()//å¤„ç†æ¸¸æˆç»“æŸ
 {
 	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	if (BlasterHUD)
 	{
-		BlasterHUD->CharacterOverlay->RemoveFromParent();//±ÈÈü½áÊøºó¹Øµô½ÇÉ«ÀàµÄHUD
+		BlasterHUD->CharacterOverlay->RemoveFromParent();//æ¯”èµ›ç»“æŸåå…³æ‰è§’è‰²ç±»çš„HUD
 		bool bHUDValid = BlasterHUD->Announcement
 			&& BlasterHUD->Announcement->AnnouncementText
 			&& BlasterHUD->Announcement->InfoText;
-		if (bHUDValid)//½øÈëÕıÊ½ÓÎÏ·ºóÒş²ØAnnouncement½çÃæ
+		if (bHUDValid)//è¿›å…¥æ­£å¼æ¸¸æˆåéšè—Announcementç•Œé¢
 		{
 			BlasterHUD->Announcement->SetVisibility(ESlateVisibility::Visible);
-			FString AnnouncementText("ĞÂµÄÓÎÏ·Òª¿ªÊ¼la");
-			BlasterHUD->Announcement->AnnouncementText->SetText(FText::FromString(AnnouncementText));//½«ÌáÊ¾ĞÅÏ¢À¸ÎÄ±¾¸ÄÎªĞÂµÄĞû¸æĞÅÏ¢
+			FString AnnouncementText("æ–°çš„æ¸¸æˆè¦å¼€å§‹la");
+			BlasterHUD->Announcement->AnnouncementText->SetText(FText::FromString(AnnouncementText));//å°†æç¤ºä¿¡æ¯æ æ–‡æœ¬æ”¹ä¸ºæ–°çš„å®£å‘Šä¿¡æ¯
 
-			ABlasterGameState* BlasterGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));//»ñÈ¡ÓÎÏ·×´Ì¬
-			ABlasterPlayerState* BlasterPlayerState = GetPlayerState<ABlasterPlayerState>();//»ñÈ¡×Ô¼ºµÄÓÎÏ·×´Ì¬
+			ABlasterGameState* BlasterGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));//è·å–æ¸¸æˆçŠ¶æ€
+			ABlasterPlayerState* BlasterPlayerState = GetPlayerState<ABlasterPlayerState>();//è·å–è‡ªå·±çš„æ¸¸æˆçŠ¶æ€
 			if(BlasterGameState && BlasterPlayerState)
 			{
-				TArray<ABlasterPlayerState*> TopPlayers = BlasterGameState->TopScoringPlayers;//´ÓÓÎÏ·×´Ì¬ÖĞ»ñÈ¡Íæ¼Ò×´Ì¬
+				TArray<ABlasterPlayerState*> TopPlayers = BlasterGameState->TopScoringPlayers;//ä»æ¸¸æˆçŠ¶æ€ä¸­è·å–ç©å®¶çŠ¶æ€
 				FString InfoTextString;
-				if(TopPlayers.Num() == 0)//Èç¹ûÊı×é´óĞ¡Îª0£¬ÔòËµÃ÷»¹Ã»ÓĞÈËÄÃµ½·ÖÊı
+				if(TopPlayers.Num() == 0)//å¦‚æœæ•°ç»„å¤§å°ä¸º0ï¼Œåˆ™è¯´æ˜è¿˜æ²¡æœ‰äººæ‹¿åˆ°åˆ†æ•°
 				{
-					InfoTextString = FString("Õâ³¡ÓÎÏ·Ã»ÓĞÓ®¼Ò.");
+					InfoTextString = FString("è¿™åœºæ¸¸æˆæ²¡æœ‰èµ¢å®¶.");
 					//InfoTextString = FString("There is no winner.");
 				}
-				else if(TopPlayers.Num() == 1 &&	TopPlayers[0] == BlasterPlayerState)//ÓĞÈËÄÃµ½ÁËµÚÒ»¶øÇÒÕâ¸öÈËÊÇ×Ô¼º
+				else if(TopPlayers.Num() == 1 &&	TopPlayers[0] == BlasterPlayerState)//æœ‰äººæ‹¿åˆ°äº†ç¬¬ä¸€è€Œä¸”è¿™ä¸ªäººæ˜¯è‡ªå·±
 				{
-					InfoTextString = FString("ÄãÔÚÕâ³¡¶Ô¾ÖµÃ·Ö×î¸ß");
+					InfoTextString = FString("ä½ åœ¨è¿™åœºå¯¹å±€å¾—åˆ†æœ€é«˜");
 				}
-				else if(TopPlayers.Num() ==1)//ÓĞÈËÄÃµ½ÁËµÚÒ»µ«²»ÊÇ×Ô¼º
+				else if(TopPlayers.Num() ==1)//æœ‰äººæ‹¿åˆ°äº†ç¬¬ä¸€ä½†ä¸æ˜¯è‡ªå·±
 				{
-					InfoTextString = FString::Printf(TEXT("Ó®¼ÒÊÇ:\n%s"), *TopPlayers[0]->GetPlayerName());//»ñÈ¡¸ÃÍæ¼ÒµÄÃû³Æ
+					InfoTextString = FString::Printf(TEXT("èµ¢å®¶æ˜¯:\n%s"), *TopPlayers[0]->GetPlayerName());//è·å–è¯¥ç©å®¶çš„åç§°
 				}
-				else if(TopPlayers.Num()>1)//²»Ö¹Ò»ÈË»ñµÃÁËµÚÒ»µÄµÃ·Ö
+				else if(TopPlayers.Num()>1)//ä¸æ­¢ä¸€äººè·å¾—äº†ç¬¬ä¸€çš„å¾—åˆ†
 				{
-					InfoTextString = FString("±¾³¡±ÈÈü²úÉúÁË¶àÃûÓÅÊ¤Õß:\n");
+					InfoTextString = FString("æœ¬åœºæ¯”èµ›äº§ç”Ÿäº†å¤šåä¼˜èƒœè€…:\n");
 					for(auto TiedPlayer : TopPlayers)
 					{
-						InfoTextString.Append(FString::Printf(TEXT("%s\n"), *TiedPlayer->GetPlayerName()));//½«ËùÓĞµÄÓÅÊ¤ÕßµÄÃû×ÖĞ´½øÈ¥
+						InfoTextString.Append(FString::Printf(TEXT("%s\n"), *TiedPlayer->GetPlayerName()));//å°†æ‰€æœ‰çš„ä¼˜èƒœè€…çš„åå­—å†™è¿›å»
 					}
 				}
 
@@ -518,12 +610,12 @@ void ABlasterPlayerController::HandleCooldown()//´¦ÀíÓÎÏ·½áÊø
 	ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(GetPawn());
 	if(BlasterCharacter && BlasterCharacter->GetCombat())
 	{
-		BlasterCharacter->bDisableGameplay = true;//½ûÓÃÒ»Ğ©Íæ¼ÒÊäÈë
-		BlasterCharacter->GetCombat()->FireButtonPressed(false);//ÈôÖ®Ç°Íæ¼ÒÔÚÊÖ³ÖÎäÆ÷¿ª»ğ£¬´ËÊ±»áÍ£Ö¹¿ª»ğ
+		BlasterCharacter->bDisableGameplay = true;//ç¦ç”¨ä¸€äº›ç©å®¶è¾“å…¥
+		BlasterCharacter->GetCombat()->FireButtonPressed(false);//è‹¥ä¹‹å‰ç©å®¶åœ¨æ‰‹æŒæ­¦å™¨å¼€ç«ï¼Œæ­¤æ—¶ä¼šåœæ­¢å¼€ç«
 	}
 }
 
-void ABlasterPlayerController::HighPingWarning(float ping)//²¥·Å¸ßping¾¯¸æ¶¯»­
+void ABlasterPlayerController::HighPingWarning(float ping)//æ’­æ”¾é«˜pingè­¦å‘ŠåŠ¨ç”»
 {
 	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	bool bHUDValid = BlasterHUD &&
@@ -538,8 +630,8 @@ void ABlasterPlayerController::HighPingWarning(float ping)//²¥·Å¸ßping¾¯¸æ¶¯»­
 				0.f,
 			5
 			);
-		FString Text = FString::Printf(TEXT("%.0fms"), ping);//½«ping´Ófloat×ªÎªFString
-		BlasterHUD->CharacterOverlay->PingText->SetText(FText::FromString(Text));//½«ping´ÓFString×ªÎªFText
+		FString Text = FString::Printf(TEXT("%.0fms"), ping);//å°†pingä»floatè½¬ä¸ºFString
+		BlasterHUD->CharacterOverlay->PingText->SetText(FText::FromString(Text));//å°†pingä»FStringè½¬ä¸ºFText
 	}
 }
 
@@ -557,9 +649,9 @@ void ABlasterPlayerController::StopHighPingWarning()
 		BlasterHUD->CharacterOverlay->HighPingImage->SetOpacity(0.F);
 		if(BlasterHUD->CharacterOverlay->IsAnimationPlaying(BlasterHUD->CharacterOverlay->HighPingAnimation))
 		{
-			BlasterHUD->CharacterOverlay->StopAnimation(BlasterHUD->CharacterOverlay->HighPingAnimation);//Í£Ö¹²¥·Å
+			BlasterHUD->CharacterOverlay->StopAnimation(BlasterHUD->CharacterOverlay->HighPingAnimation);//åœæ­¢æ’­æ”¾
 		}
-		BlasterHUD->CharacterOverlay->PingText->SetText(FText());//ÖÃ¿Õ
+		BlasterHUD->CharacterOverlay->PingText->SetText(FText());//ç½®ç©º
 	}
 
 }

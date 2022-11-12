@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -33,7 +33,7 @@ protected:
 		);
 
 	UPROPERTY(EditAnywhere)
-	float BaseTurnRate = 45.f;//×ÔÐý×ªÐ§¹û
+	float BaseTurnRate = 45.f;//è‡ªæ—‹è½¬æ•ˆæžœ
 private:
 
 	UPROPERTY(EditAnywhere)

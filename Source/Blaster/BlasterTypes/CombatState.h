@@ -1,13 +1,13 @@
-#pragma once
+Ôªø#pragma once
 
 UENUM(BlueprintType)
 enum class ECombatState : uint8
 {
-	ECS_Unoccupied UMETA(DisplayName = "Unoccupied"),//ø’œ–µƒ
+	ECS_Unoccupied UMETA(DisplayName = "Unoccupied"),//Á©∫Èó≤ÁöÑ
 
-	ECS_Reloading UMETA(DisplayName = "Reloading"),//ªªµØ
+	ECS_Reloading UMETA(DisplayName = "Reloading"),//Êç¢Âºπ
 
-	ECS_ThrowingGrenade UMETA(DisplayName = "Throwing Grenade"),//ªªµØ
+	ECS_ThrowingGrenade UMETA(DisplayName = "Throwing Grenade"),//Êç¢Âºπ
 
 	ECS_Max UMETA(DisplayName = "DefaultMax")
 

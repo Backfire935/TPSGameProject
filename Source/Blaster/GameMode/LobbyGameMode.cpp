@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "LobbyGameMode.h"
@@ -8,14 +8,14 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	int32 NumberOfPlayers = GameState.Get()->PlayerArray.Num();     //Íæ¼ÒÊýÁ¿
+	int32 NumberOfPlayers = GameState.Get()->PlayerArray.Num();     //çŽ©å®¶æ•°é‡
 
 	if (NumberOfPlayers >= 2)
 	{
 		UWorld* World = GetWorld();
 		if (World)
 		{
-			bUseSeamlessTravel = true; //Ê¹ÓÃÎÞ·ìµØÍ¼ÂÃÐÐ
+			bUseSeamlessTravel = true; //ä½¿ç”¨æ— ç¼åœ°å›¾æ—…è¡Œ
 			World->ServerTravel(FString("/Game/Maps/BlasterMap?listen"));
 		}
 	}

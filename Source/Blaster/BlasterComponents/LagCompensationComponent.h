@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -7,23 +7,23 @@
 #include "LagCompensationComponent.generated.h"
 
 class ABlasterCharacter;
-//ÓÃÀ´½øĞĞ·şÎñ¶Ëµ¹´øµÄÀà
-//ÖÍºó²¹³¥Àà
-//¸ú×ÙËùÓĞÍæ¼ÒµÄÎ»ÖÃ
-//´æ´¢hitbox
+//ç”¨æ¥è¿›è¡ŒæœåŠ¡ç«¯å€’å¸¦çš„ç±»
+//æ»åè¡¥å¿ç±»
+//è·Ÿè¸ªæ‰€æœ‰ç©å®¶çš„ä½ç½®
+//å­˜å‚¨hitbox
 USTRUCT(BlueprintType)
 struct FBoxInformation
 {
 	GENERATED_BODY()
 
 		UPROPERTY()
-		FVector Location;//HitBoxÎ»ÖÃĞÅÏ¢
+		FVector Location;//HitBoxä½ç½®ä¿¡æ¯
 
 	UPROPERTY()
-		FRotator Rotation;//HitBoxĞı×ªĞÅÏ¢
+		FRotator Rotation;//HitBoxæ—‹è½¬ä¿¡æ¯
 
 	UPROPERTY()
-		FVector BoxExtent;//ºĞÌå´óĞ¡ĞÅÏ¢
+		FVector BoxExtent;//ç›’ä½“å¤§å°ä¿¡æ¯
 };
 
 USTRUCT(BlueprintType)
@@ -32,10 +32,10 @@ struct FFramePackage
 	GENERATED_BODY()
 
 	UPROPERTY()
-		float time;//Ö¡°üÊ±¼äĞÅÏ¢
+		float time;//å¸§åŒ…æ—¶é—´ä¿¡æ¯
 
 	UPROPERTY()
-	TMap<FName, FBoxInformation> HitBoxInfo;//HitBoxÓë¶ÔÓ¦µÄinfoÊı¾İ½á¹¹×é³ÉµÄmap
+	TMap<FName, FBoxInformation> HitBoxInfo;//HitBoxä¸å¯¹åº”çš„infoæ•°æ®ç»“æ„ç»„æˆçš„map
 
 	UPROPERTY()
 	ABlasterCharacter* Character;
@@ -79,8 +79,10 @@ public:
 
 	void ShowFramePackage(const FFramePackage & Package , const FColor& Color);
 
-	//·¢ËÍĞÅÏ¢¸ø·şÎñ¶Ë»ØËİµÄº¯Êı
-	//·¢ËÍ¿ªÇ¹ÆğÊ¼µãºÍÃüÖĞµãÒÔ¼°»÷ÖĞÄ¿±êµÄĞÅÏ¢
+	//å‘é€ä¿¡æ¯ç»™æœåŠ¡ç«¯å›æº¯çš„å‡½æ•°
+	//å‘é€å¼€æªèµ·å§‹ç‚¹å’Œå‘½ä¸­ç‚¹ä»¥åŠå‡»ä¸­ç›®æ ‡çš„ä¿¡æ¯
+
+	//å°„çº¿ç±»æ­¦å™¨ç”¨çš„
 	UFUNCTION()
 	FServerSideRewindResult ServerSideRewind(
 		class ABlasterCharacter * HitCharacter, 
@@ -88,6 +90,16 @@ public:
 		const FVector_NetQuantize& HitLocation , 
 		float HitTime);
 
+	//æŠ›å°„ç±»æ­¦å™¨ç”¨çš„
+	UFUNCTION()
+	FServerSideRewindResult ProjectileServerSideRewind(
+		ABlasterCharacter* HitCharacter,
+		const FVector_NetQuantize& TraceStart,
+		const FVector_NetQuantize100& InitialVelocity,
+		float HitTime
+	);
+
+	//å–·å­ä¸“ç”¨
 	UFUNCTION()
 	FShotgunServerSideRewindResult ShotgunServerSideRewind(
 		const TArray<ABlasterCharacter*>& HitCharacters,
@@ -95,7 +107,9 @@ public:
 		const TArray<FVector_NetQuantize>& HitLocations,
 		float HitTime);
 
-	//RPCµ÷ÓÃ£¬¿Í»§¶ËÏò·şÎñ¶Ë·¢ÆğµÄhitÈ·ÈÏÇëÇó
+
+
+	//RPCè°ƒç”¨ï¼Œå®¢æˆ·ç«¯å‘æœåŠ¡ç«¯å‘èµ·çš„hitç¡®è®¤è¯·æ±‚
 	UFUNCTION(Server,Reliable)
 	void ServerScoreRequest(
 		ABlasterCharacter* HitCharacter,
@@ -103,6 +117,14 @@ public:
 		const FVector_NetQuantize & HitLocation,
 		float HitTime
 	);
+
+	UFUNCTION(Server, Reliable)
+		void ProjectileServerScoreRequest(
+			ABlasterCharacter* HitCharacter,
+			const FVector_NetQuantize& TraceStart,
+			const FVector_NetQuantize& HitLocation,
+			float HitTime
+		);
 
 	UFUNCTION(Server, Reliable)
 	void ShotgunServerScoreRequest(
@@ -120,10 +142,10 @@ private:
 	UPROPERTY()
 	class ABlasterPlayerController* Controller;
 
-	TDoubleLinkedList<FFramePackage> FrameHistory;//Ë«Á´±íÓÃÓÚ´æ´¢Ò»¶ÎÊ±¼äÄÚµÄÖ¡°üÁ÷Ë®
+	TDoubleLinkedList<FFramePackage> FrameHistory;//åŒé“¾è¡¨ç”¨äºå­˜å‚¨ä¸€æ®µæ—¶é—´å†…çš„å¸§åŒ…æµæ°´
 
 	UPROPERTY(EditAnywhere)
-	float MaxRecordTime = 4.0f;//´òËã´æ´¢µÄÊ±¼ä
+	float MaxRecordTime = 4.0f;//æ‰“ç®—å­˜å‚¨çš„æ—¶é—´
 
 protected:
 	virtual void BeginPlay() override;
@@ -131,35 +153,46 @@ protected:
 	void SaveFramePackage(FFramePackage & Package);
 
 	UFUNCTION()
-	FFramePackage InterpBetweenFrames(const FFramePackage& OlderPackage, const FFramePackage& YoungerPackage, float HitTime);//¼ÆËãÁ½Ö¡Ö®¼äµÄ²åÖ¡°ü
+	FFramePackage InterpBetweenFrames(const FFramePackage& OlderPackage, const FFramePackage& YoungerPackage, float HitTime);//è®¡ç®—ä¸¤å¸§ä¹‹é—´çš„æ’å¸§åŒ…
+
+	
 
 	UFUNCTION()
-	FServerSideRewindResult ConfirmHit(
-		const FFramePackage & Package, 
-		ABlasterCharacter *	HitCharacter,
-		const FVector_NetQuantize& TraceStart, 
-		const FVector_NetQuantize&HitLocation );//ÓÃÄÃµ½µÄ°üµÄĞÅÏ¢»ØËİ½ÇÉ«µÄÎ»ÖÃ£¬²¢¼ÆËãÉäÏßÃüÖĞÇé¿ö£¬·µ»ØÊÇ·ñÃüÖĞºÍÊÇ·ñ±¬Í·µÄ²¼¶û½á¹¹Ìå
+	void CacheBoxPositions(ABlasterCharacter *HitCharacter, FFramePackage & OutFramePackage);//ç¼“å­˜åŒ…çš„ä½ç½®ä¿¡æ¯
 
 	UFUNCTION()
-	void CacheBoxPositions(ABlasterCharacter *HitCharacter, FFramePackage & OutFramePackage);//»º´æ°üµÄÎ»ÖÃĞÅÏ¢
+	void MoveBoxes(ABlasterCharacter* HitCharacter, const FFramePackage& Package);//ç§»åŠ¨è§’è‰²çš„ä½ç½®åˆ°åŒ…çš„ä½ç½®
 
 	UFUNCTION()
-	void MoveBoxes(ABlasterCharacter* HitCharacter, const FFramePackage& Package);//ÒÆ¶¯½ÇÉ«µÄÎ»ÖÃµ½°üµÄÎ»ÖÃ
+	void ResetHitBoxes(ABlasterCharacter* HitCharacter, const FFramePackage& Package);//å°†è§’è‰²çš„ä½ç½®ç§»å›å»
 
 	UFUNCTION()
-	void ResetHitBoxes(ABlasterCharacter* HitCharacter, const FFramePackage& Package);//½«½ÇÉ«µÄÎ»ÖÃÒÆ»ØÈ¥
-
-	UFUNCTION()
-	void EnableCharacterMeshCollision( ABlasterCharacter *HitCharacter, ECollisionEnabled::Type CollisionEnabled);//¿ª¹Ø½ÇÉ«Ä£ĞÍÅö×²
-
+	void EnableCharacterMeshCollision( ABlasterCharacter *HitCharacter, ECollisionEnabled::Type CollisionEnabled);//å¼€å…³è§’è‰²æ¨¡å‹ç¢°æ’
 
 	void SaveFramePackage();
 
-	//Åç×ÓµÄ²¿·Ö
 	UFUNCTION()
-	FFramePackage GetFrameToCheck(ABlasterCharacter * HitCharacter, float HitTime);
+		FFramePackage GetFrameToCheck(ABlasterCharacter* HitCharacter, float HitTime);
 
 
+	//å°„çº¿ç±»æ­¦å™¨
+	UFUNCTION()
+		FServerSideRewindResult ConfirmHit(
+			const FFramePackage& Package,
+			ABlasterCharacter* HitCharacter,
+			const FVector_NetQuantize& TraceStart,
+			const FVector_NetQuantize& HitLocation);//ç”¨æ‹¿åˆ°çš„åŒ…çš„ä¿¡æ¯å›æº¯è§’è‰²çš„ä½ç½®ï¼Œå¹¶è®¡ç®—å°„çº¿å‘½ä¸­æƒ…å†µï¼Œè¿”å›æ˜¯å¦å‘½ä¸­å’Œæ˜¯å¦çˆ†å¤´çš„å¸ƒå°”ç»“æ„ä½“
+
+	//æŠ›å°„ç±»æ­¦å™¨
+	FServerSideRewindResult	ProjectileConfirmHit(
+		const FFramePackage& Package,
+		ABlasterCharacter * HitCharacter,
+		const FVector_NetQuantize& TraceStart,
+		const FVector_NetQuantize100& InitialVelocity,
+		float HitTime
+	);
+
+	//å–·å­ç±»
 	UFUNCTION()
 	FShotgunServerSideRewindResult ShotgunConfirmHit(
 		const TArray<FFramePackage>& FramePackages,

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "HealthPickup.h"
@@ -22,7 +22,7 @@ void AHealthPickup::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(OtherActor);
 	if (BlasterCharacter)
 	{
-		if (BlasterCharacter->GetHealth() == BlasterCharacter->GetMaxHealth()) return;//ÂúÑª×´Ì¬ÏÂÅöµ½ÎÞÐ§
+		if (BlasterCharacter->GetHealth() == BlasterCharacter->GetMaxHealth()) return;//æ»¡è¡€çŠ¶æ€ä¸‹ç¢°åˆ°æ— æ•ˆ
 		UBuffComponent* Buff = BlasterCharacter->GetBuff();
 		if(Buff)
 		{

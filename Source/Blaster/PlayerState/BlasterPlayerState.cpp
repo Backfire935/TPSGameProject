@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "BlasterPlayerState.h"
@@ -10,7 +10,9 @@ void ABlasterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
-	DOREPLIFETIME(ABlasterPlayerState, Defeats);//½«DefeatsÊôĞÔ×¢²áµ½ÍøÂç¸´ÖÆ
+	DOREPLIFETIME(ABlasterPlayerState, Defeats);//å°†Defeatså±æ€§æ³¨å†Œåˆ°ç½‘ç»œå¤åˆ¶
+	DOREPLIFETIME(ABlasterPlayerState, Team);//å°†Teamå±æ€§æ³¨å†Œåˆ°ç½‘ç»œå¤åˆ¶
+
 }
 
 void ABlasterPlayerState::OnRep_Score()
@@ -37,12 +39,12 @@ void ABlasterPlayerState::OnRep_Defeats()
 		Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(Character->Controller) : Controller;
 		if (Controller)
 		{
-			Controller->SetHUDDefeats(Defeats);//ÉèÖÃËÀÍöÊıÁ¿
+			Controller->SetHUDDefeats(Defeats);//è®¾ç½®æ­»äº¡æ•°é‡
 		}
 	}
 }
 
-void ABlasterPlayerState::AddToScore(float ScoreAmount)//¼Ó·Ö
+void ABlasterPlayerState::AddToScore(float ScoreAmount)//åŠ åˆ†
 {
 	SetScore(GetScore() + ScoreAmount);
 	Character = Character == nullptr ? Cast<ABlasterCharacter>(GetPawn()) : Character;
@@ -51,7 +53,7 @@ void ABlasterPlayerState::AddToScore(float ScoreAmount)//¼Ó·Ö
 		Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(Character->Controller) : Controller;
 		if (Controller)
 		{
-			Controller->SetHUDScore(GetScore());//ÉèÖÃ»÷É±ÊıÁ¿
+			Controller->SetHUDScore(GetScore());//è®¾ç½®å‡»æ€æ•°é‡
 		}
 	}
 }
@@ -65,7 +67,7 @@ void ABlasterPlayerState::AddToDefeats(int32 DefeatsAmount)
 		Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(Character->Controller) : Controller;
 		if (Controller)
 		{
-			Controller->SetHUDDefeats(Defeats);//ÉèÖÃËÀÍöÊıÁ¿
+			Controller->SetHUDDefeats(Defeats);//è®¾ç½®æ­»äº¡æ•°é‡
 		}
 	}
 }

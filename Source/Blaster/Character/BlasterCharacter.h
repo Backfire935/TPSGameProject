@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -12,6 +12,8 @@
 
 #include "BlasterCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLeftGame);
+
 UCLASS()
 class BLASTER_API ABlasterCharacter : public ACharacter, public IInteractWithCrosshairsInterface
 {
@@ -22,42 +24,53 @@ public:
 	ABlasterCharacter();
 
 	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;//Íæ¼ÒÊäÈë¿Ø¼ş
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;//ÉèÖÃÍ¬²½
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;//ç©å®¶è¾“å…¥æ§ä»¶
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;//è®¾ç½®åŒæ­¥
 	virtual void PostInitializeComponents() override;
 	void PlayFireMontage(bool bAiming);
 	void PlayReloadMontage();
 	void PlayElimMontage();
 	void PlayThrowGrenadeMontage();
-	virtual void OnRep_ReplicatedMovement() override;//½«½ÇÉ«×ªÏòÓ¦ÓÃµ½Ä£Äâ´úÀíµÄ»Øµ÷
+	virtual void OnRep_ReplicatedMovement() override;//å°†è§’è‰²è½¬å‘åº”ç”¨åˆ°æ¨¡æ‹Ÿä»£ç†çš„å›è°ƒ
 
-	void Elim();//Õâ¸öÖ»ÔÚserverÉÏµ÷ÓÃ
+	void Elim(bool bPlayerLeftGame);//è¿™ä¸ªåªåœ¨serverä¸Šè°ƒç”¨
 	void DropOrDestroyWeapon(class AWeapon* Weapon);
 	void DropOrDestroyWeapons();
-	//Ïú»ÙÎäÆ÷µÄÎÊÌâ
-
+	//é”€æ¯æ­¦å™¨çš„é—®é¢˜
 
 
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastElim();//Íæ¼ÒÌÔÌ­Ê±
+	void MulticastElim(bool bPlayerLeftGame);//ç©å®¶æ·˜æ±°æ—¶
 
 	virtual void Destroyed() override;
 
 	UPROPERTY(Replicated)
-	bool bDisableGameplay = false;//ÓÃÓÚÔÚÓÎÏ·½«½áÊøÊ±½ûÓÃ,ÒÆ¶¯£¬¿ª»ğ£¬Ãé×¼£¬»»µ¯£¬×°±¸ÎäÆ÷£¬ÌøÔ¾£¬ÏÂ¶×
+	bool bDisableGameplay = false;//ç”¨äºåœ¨æ¸¸æˆå°†ç»“æŸæ—¶ç¦ç”¨,ç§»åŠ¨ï¼Œå¼€ç«ï¼Œç„å‡†ï¼Œæ¢å¼¹ï¼Œè£…å¤‡æ­¦å™¨ï¼Œè·³è·ƒï¼Œä¸‹è¹²
 
-	UFUNCTION(BlueprintImplementableEvent)//¿ÉÔÚÀ¶Í¼»ò¹Ø¿¨À¶Í¼ÖĞÊµÏÖµÄº¯Êı
+	UFUNCTION(BlueprintImplementableEvent)//å¯åœ¨è“å›¾æˆ–å…³å¡è“å›¾ä¸­å®ç°çš„å‡½æ•°
 	void ShowSniperScopeWidget(bool bShowScope);
 
-	void UpdateHUDHealth();//¸üĞÂÉúÃüÖµ
-	void UpdateHUDShield();//¸üĞÂ»¤¶Ü
+	void UpdateHUDHealth();//æ›´æ–°ç”Ÿå‘½å€¼
+	void UpdateHUDShield();//æ›´æ–°æŠ¤ç›¾
 
-	void UpdateHUDAmmo();//¸üĞÂµ¯Ò©HUD
+	void UpdateHUDAmmo();//æ›´æ–°å¼¹è¯HUD
 
 	void SpawnDefaultWeapon();
 
 	UPROPERTY()
 		TMap<FName, class UBoxComponent*> HitCollisionBoxes;
+
+	UFUNCTION(Server, Reliable)
+		void ServerLeaveGame();//å®¢æˆ·ç«¯RPCè¯·æ±‚æœåŠ¡ç«¯ç¦»å¼€æ¸¸æˆ
+
+	FOnLeftGame OnLeftGame;
+
+	UFUNCTION(NetMulticast,Reliable)
+	void MulticastGainedTheLead();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastLostTheLead();
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -66,36 +79,36 @@ protected:
 	void Turn(float Value);
 	void LookUp(float Value);
 
-	void EquipButtonPressed(); //E¼ü
-	void CrouchButtonPressed(); //Ctrl¼ü
-	void AimButtonPressed();//Êó±êÓÒ¼üÃé×¼
-	void AimButtonReleased();//Êó±êÓÒ¼üËÉ¿ª½â³ıÃé×¼
-	void ReloadButtonPressed();//°´RÖØ×°µ¯¼Ğ
-	void SwapPrimaryWeapon();//°´1ÇĞ»»µ½Ö÷ÎäÆ÷
-	void SwapSecondaryWeapon();//°´2ÇĞ»»µ½¸±ÎäÆ÷
-	void GrenadeButtonPressed();//°´4ÌÍÊÖÀ×
-	void DropCurrentWeapon();//°´G¶ªÆúµ±Ç°ÎäÆ÷
+	void EquipButtonPressed(); //Eé”®
+	void CrouchButtonPressed(); //Ctrlé”®
+	void AimButtonPressed();//é¼ æ ‡å³é”®ç„å‡†
+	void AimButtonReleased();//é¼ æ ‡å³é”®æ¾å¼€è§£é™¤ç„å‡†
+	void ReloadButtonPressed();//æŒ‰Ré‡è£…å¼¹å¤¹
+	void SwapPrimaryWeapon();//æŒ‰1åˆ‡æ¢åˆ°ä¸»æ­¦å™¨
+	void SwapSecondaryWeapon();//æŒ‰2åˆ‡æ¢åˆ°å‰¯æ­¦å™¨
+	void GrenadeButtonPressed();//æŒ‰4ææ‰‹é›·
+	void DropCurrentWeapon();//æŒ‰Gä¸¢å¼ƒå½“å‰æ­¦å™¨
 
 	void AimOffset(float DeltaTime);
 	void CalculateAO_Pitch();
-	//»ñÈ¡YawµÄoffset
+	//è·å–Yawçš„offset
 	void SimProxiesTurn();
 	virtual void Jump() override;
 	void FireButtonPressed();
 	void FireButtonReleased();
 	void PlayHitReactMontage();
-	void TabButtonPressed();//²é¿´Õ½¼¨±í
-	void TabButtonReleased();//¹Ø±ÕÕ½¼¨±í
+	void TabButtonPressed();//æŸ¥çœ‹æˆ˜ç»©è¡¨
+	void TabButtonReleased();//å…³é—­æˆ˜ç»©è¡¨
 
 	UFUNCTION()
 	void ReceiveDamage(AActor *DamagedActor, float Damage, const UDamageType * DamageType, class AController* InstigatorController, AActor * DamageCauser);
 
-	void PollInit();//³õÊ¼»¯Ïà¹ØÀà
+	void PollInit();//åˆå§‹åŒ–ç›¸å…³ç±»
 
-	void RotateInPlace(float DeltaTime);//¿ØÖÆ½ÇÉ«×ªÏòµÄº¯Êı
+	void RotateInPlace(float DeltaTime);//æ§åˆ¶è§’è‰²è½¬å‘çš„å‡½æ•°
 
 	//
-	//ÉíÌåµÄhitbox
+	//èº«ä½“çš„hitbox
 	//
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* head;
@@ -169,7 +182,7 @@ private:
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeapon *LastWeapon);
 
-	//½ÇÉ«×é¼şÀà
+	//è§’è‰²ç»„ä»¶ç±»
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UCombatComponent* Combat;
@@ -178,9 +191,9 @@ private:
 	class UBuffComponent* Buff;
 
 	UPROPERTY(VisibleAnywhere)
-	class ULagCompensationComponent* LagCompensation;
+	class ULagCompensationComponent* LagCompensationComp;
 
-	UFUNCTION(Server, Reliable)//RPC ºô½ĞÖ÷»úµ÷ÓÃº¯Êı
+	UFUNCTION(Server, Reliable)//RPC å‘¼å«ä¸»æœºè°ƒç”¨å‡½æ•°
 	void ServerEquipButtonPressed();
 
 	float AO_Yaw;
@@ -189,11 +202,11 @@ private:
 		float	InterpAO_Yaw;
 		FRotator StartingAimRotation;
 
-		ETurningInPlace TurningInPlace;//×ªÏòµÄÃ¶¾ÙÀàĞÍ
+		ETurningInPlace TurningInPlace;//è½¬å‘çš„æšä¸¾ç±»å‹
 
-		void TurnInPlace(float DeltaTime);//×ªÏòº¯Êı
+		void TurnInPlace(float DeltaTime);//è½¬å‘å‡½æ•°
 
-		//¼¸ÖÖÃÉÌ«Ææ¶¯»­
+		//å‡ ç§è’™å¤ªå¥‡åŠ¨ç”»
 		UPROPERTY(EditAnywhere, category = Combat )
 		class UAnimMontage* FireWeaponMontage;
 
@@ -212,13 +225,13 @@ private:
 		void HideCameraIfCharacterClose();
 
 		UPROPERTY(EditAnywhere, category = Combat)
-		float CameraThreshold = 200.f;//Ïà»úãĞÖµ
+		float CameraThreshold = 200.f;//ç›¸æœºé˜ˆå€¼
 
 		bool bRotateRootBone;
 
-		float TurnThreshold = 3.5f;//´ïµ½×ªÏòÒªÇóµÄ²îÖµ½Ç¶È
+		float TurnThreshold = 3.5f;//è¾¾åˆ°è½¬å‘è¦æ±‚çš„å·®å€¼è§’åº¦
 
-		FRotator ProxyRotationLastFrame;//ÉÏÒ»Ö¡µÄ´úÀíĞı×ª
+		FRotator ProxyRotationLastFrame;//ä¸Šä¸€å¸§çš„ä»£ç†æ—‹è½¬
 		FRotator ProxyRotation;
 
 		float ProxyYaw;
@@ -227,7 +240,7 @@ private:
 
 		float CalculateSpeed();
 
-	//ÉúÃüÖµ
+	//ç”Ÿå‘½å€¼
 		UPROPERTY(EditAnywhere, Category = "Player Stats")
 		float MaxHealth = 100.f;
 
@@ -237,7 +250,7 @@ private:
 		UFUNCTION()
 		void OnRep_Health(float LastHealth);
 
-	//»¤¶Ü
+	//æŠ¤ç›¾
 		UPROPERTY(EditAnywhere, Category = "Player Stats")
 			float MaxShield = 100.f;
 
@@ -260,28 +273,30 @@ private:
 
 		void ElimTimerFinished();
 
+		bool bLeftGame = false;
+
 		UPROPERTY(VisibleAnywhere)
 		UTimelineComponent* DissolveTimeline;
 
 		UPROPERTY(EditAnywhere)
 			UCurveFloat* DissolveCurve;
 
-		//ÈÜ½âĞ§¹û
-		FOnTimelineFloat DissolveTrack;//ÈÜ½âĞ§¹ûµÄÊ±¼äÖá
+		//æº¶è§£æ•ˆæœ
+		FOnTimelineFloat DissolveTrack;//æº¶è§£æ•ˆæœçš„æ—¶é—´è½´
 
 		UFUNCTION()
 		void UpdateDissolveMaterial(float DissolveValue);
 		void StartDissolve();
 
-		//ÔÚÔËĞĞÊ±¿ÉÒÔ¸Ä±äµÄ¶¯Ì¬²ÄÖÊÊµÀı
+		//åœ¨è¿è¡Œæ—¶å¯ä»¥æ”¹å˜çš„åŠ¨æ€æè´¨å®ä¾‹
 		UPROPERTY(VisibleAnywhere, category = Elim)
-		UMaterialInstanceDynamic* DynamicDissolveMaterialInstance;//¶¯Ì¬ÈÜ½â²ÄÖÊÊµÀı
+		UMaterialInstanceDynamic* DynamicDissolveMaterialInstance;//åŠ¨æ€æº¶è§£æè´¨å®ä¾‹
 
-		//ÔÚÀ¶Í¼ÖĞÉèÖÃµÄ¶¯Ì¬²ÄÖÊÊµÀı
+		//åœ¨è“å›¾ä¸­è®¾ç½®çš„åŠ¨æ€æè´¨å®ä¾‹
 		UPROPERTY(EditAnywhere, Category = Elim)
 		UMaterialInstance* DissolveMaterialInstance;
 
-		//ÌÔÌ­Ğ§¹û
+		//æ·˜æ±°æ•ˆæœ
 		UPROPERTY(EditAnywhere)
 		UParticleSystem* ElimBotEffect;
 
@@ -293,7 +308,13 @@ private:
 
 		class ABlasterPlayerState *BlasterPlayerState;
 
-	//Í¶ÖÀÎï
+		UPROPERTY(EditAnywhere)
+		class UNiagaraSystem* CrownSystem;
+
+		UPROPERTY()
+		class UNiagaraComponent* CrownComponent;
+
+	//æŠ•æ·ç‰©
 	UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* AttachedGrenade;
 
@@ -302,9 +323,9 @@ private:
 
 public:	
 
-	void  SetOverlappingWeapon(AWeapon* Weapon);//ÈôÊÇ·şÎñÆ÷±¾»úÊ°È¡µ½ÁË
-	bool IsWeaponEquipped();//ÓÃÓÚºÍBlasterAnimInstanceÀ¶Í¼Í¨ĞÅµÄº¯Êı£¬·µ»ØÊÇ·ñ×°±¸ÎäÆ÷µÄĞÅÏ¢
-	bool IsAiming();//ÓÃÓÚºÍBlasterAnimInstanceÀ¶Í¼Í¨ĞÅµÄº¯Êı£¬·µ»ØÊÇ·ñÕıÔÚÃé×¼
+	void  SetOverlappingWeapon(AWeapon* Weapon);//è‹¥æ˜¯æœåŠ¡å™¨æœ¬æœºæ‹¾å–åˆ°äº†
+	bool IsWeaponEquipped();//ç”¨äºå’ŒBlasterAnimInstanceè“å›¾é€šä¿¡çš„å‡½æ•°ï¼Œè¿”å›æ˜¯å¦è£…å¤‡æ­¦å™¨çš„ä¿¡æ¯
+	bool IsAiming();//ç”¨äºå’ŒBlasterAnimInstanceè“å›¾é€šä¿¡çš„å‡½æ•°ï¼Œè¿”å›æ˜¯å¦æ­£åœ¨ç„å‡†
 
 	AWeapon *GetEquippedWeapon();
 
@@ -335,7 +356,7 @@ public:
 	FORCEINLINE UStaticMeshComponent* GetAttachedGrenade() const { return AttachedGrenade; }
 
 	FORCEINLINE UBuffComponent* GetBuff() const { return Buff; }
-	FORCEINLINE ULagCompensationComponent* GetLagCompensationComponent() const { return LagCompensation; }
+	FORCEINLINE ULagCompensationComponent* GetLagCompensationComponent() const { return LagCompensationComp; }
 
 
 	bool IsLocallyReloading();

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -35,5 +35,5 @@ private:
 		float ChargingTime = 0.f;
 
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
-		bool bChargeSlowly = false;//ÊÇ·ñ»ºÂı»Ö¸´»¤¶Ü
+		bool bChargeSlowly = false;//æ˜¯å¦ç¼“æ…¢æ¢å¤æŠ¤ç›¾
 };

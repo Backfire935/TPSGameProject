@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "ProjectileRocket.h"
@@ -17,7 +17,7 @@ AProjectileRocket::AProjectileRocket()
 
 	RocketMovementComponent = CreateDefaultSubobject<URocketMovementComponent>(TEXT("RocketMovementComponent"));
 	RocketMovementComponent->bRotationFollowsVelocity = true;
-	RocketMovementComponent->SetIsReplicated(true);//½«×é¼şÉèÖÃÎª¿ÉÍøÂç¸´ÖÆ
+	RocketMovementComponent->SetIsReplicated(true);//å°†ç»„ä»¶è®¾ç½®ä¸ºå¯ç½‘ç»œå¤åˆ¶
 	RocketMovementComponent->InitialSpeed = InitialSpeed;
 	RocketMovementComponent->MaxSpeed = InitialSpeed;
 }
@@ -50,12 +50,12 @@ void AProjectileRocket::BeginPlay()
 	Super::BeginPlay();
 	if (!HasAuthority())
 	{
-		CollisionBox->OnComponentHit.AddDynamic(this, &AProjectileRocket::OnHit);//Ìí¼Ó×Óµ¯×²»÷Ê±µÄ´ò»÷Ğ§¹û
+		CollisionBox->OnComponentHit.AddDynamic(this, &AProjectileRocket::OnHit);//æ·»åŠ å­å¼¹æ’å‡»æ—¶çš„æ‰“å‡»æ•ˆæœ
 	}
 
-	SpawnTrailSystem();//Éú³ÉÎ²¼£
+	SpawnTrailSystem();//ç”Ÿæˆå°¾è¿¹
 
-	if(RocketLoopInAir && LoopingSoundAttenuation)//Éú³Éµ¼µ¯µÄºôºôÉù
+	if(RocketLoopInAir && LoopingSoundAttenuation)//ç”Ÿæˆå¯¼å¼¹çš„å‘¼å‘¼å£°
 	{
 		RocketLoopComponent = UGameplayStatics::SpawnSoundAttached(
 				RocketLoopInAir,
@@ -77,41 +77,41 @@ void AProjectileRocket::BeginPlay()
 
 void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,FVector NormalImpulse, const FHitResult& Hit)
 {
-	if(OtherActor == GetOwner())//Èç¹ûÅĞ¶Ï³öÒªÕ¨µÄÄ¿±êÊÇ×Ô¼ºµÄ»°
+	if(OtherActor == GetOwner())//å¦‚æœåˆ¤æ–­å‡ºè¦ç‚¸çš„ç›®æ ‡æ˜¯è‡ªå·±çš„è¯
 	{
 		return;
 	}
-	ExplodeDamage();//Ó¦ÓÃÉËº¦
+	ExplodeDamage();//åº”ç”¨ä¼¤å®³
 
-	StartDestroyTimer();//ÉèÖÃ3sÑÓ³ÙÏú»Ù±£Ö¤»ğ¼ıµ¯µÄÎ²Æø²»»áÔÚ»ğ¼ıµ¯·¢ÉúÅö×²µÄÊ±ºòÁ¢¼´Ïú»Ù
+	StartDestroyTimer();//è®¾ç½®3så»¶è¿Ÿé”€æ¯ä¿è¯ç«ç®­å¼¹çš„å°¾æ°”ä¸ä¼šåœ¨ç«ç®­å¼¹å‘ç”Ÿç¢°æ’çš„æ—¶å€™ç«‹å³é”€æ¯
 
 	if (ImpactParticles)
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, GetActorTransform());//ÔÚ±»»÷ÖĞµÄÎ»ÖÃ·ÅÖÃÒ»¸öÇ¹ºÛµÄÌù»¨
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, GetActorTransform());//åœ¨è¢«å‡»ä¸­çš„ä½ç½®æ”¾ç½®ä¸€ä¸ªæªç—•çš„è´´èŠ±
 	}
 	if (ImpactSound)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());//ÔÚ±»»÷ÖĞµÄÎ»ÖÃ²¥·ÅÒ»¸ö±»ÃüÖĞµÄÒôĞ§
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());//åœ¨è¢«å‡»ä¸­çš„ä½ç½®æ’­æ”¾ä¸€ä¸ªè¢«å‘½ä¸­çš„éŸ³æ•ˆ
 	}
 
 	if (ProjectileMesh)
 	{
-		ProjectileMesh->SetVisibility(false);//ÏÈÉèÖÃÄ£ĞÍ²»¿É¼û£¬¹ı3sÔÙ±»º¯ÊıÏú»ÙÄ£ĞÍÊµÌå
+		ProjectileMesh->SetVisibility(false);//å…ˆè®¾ç½®æ¨¡å‹ä¸å¯è§ï¼Œè¿‡3så†è¢«å‡½æ•°é”€æ¯æ¨¡å‹å®ä½“
 	}
 
 	if(CollisionBox)
 	{
-		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);//Í¬Ê±ÉèÖÃ»ğ¼ıµ¯µÄÅö×²ºĞ×ÓÎª²»¿ÉÅö×²
+		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);//åŒæ—¶è®¾ç½®ç«ç®­å¼¹çš„ç¢°æ’ç›’å­ä¸ºä¸å¯ç¢°æ’
 	}
 
 	if(TrailSystemComponent && TrailSystemComponent->GetSystemInstanceController())
 	{
-		TrailSystemComponent->GetSystemInstanceController()->Deactivate();//²»ÔÙ¼¤»îÁ£×ÓÏµÍ³£¬¾Í²»»á¼ÌĞøÍ»Í»Í»Ã°Î²Æø
+		TrailSystemComponent->GetSystemInstanceController()->Deactivate();//ä¸å†æ¿€æ´»ç²’å­ç³»ç»Ÿï¼Œå°±ä¸ä¼šç»§ç»­çªçªçªå†’å°¾æ°”
 	}
 
-	if(RocketLoopInAir && RocketLoopComponent->IsPlaying())//Èç¹û×²µ½Ä¿±êºó»¹ÔÚ²¥·ÅÉùÒô
+	if(RocketLoopInAir && RocketLoopComponent->IsPlaying())//å¦‚æœæ’åˆ°ç›®æ ‡åè¿˜åœ¨æ’­æ”¾å£°éŸ³
 	{
-		RocketLoopComponent->Stop();//Í£Ö¹²¥·ÅºôºôÉù
+		RocketLoopComponent->Stop();//åœæ­¢æ’­æ”¾å‘¼å‘¼å£°
 	}
 //	Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 }

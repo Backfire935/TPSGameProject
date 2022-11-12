@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -20,7 +20,7 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	UFUNCTION()//ÊÜµ½´ò»÷µÄĞ§¹û
+	UFUNCTION()//å—åˆ°æ‰“å‡»çš„æ•ˆæœ
 		virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 private:
@@ -28,7 +28,7 @@ private:
 	UStaticMeshComponent* BulletShellMesh; 
 
 	UPROPERTY(EditAnywhere)
-	float ShellEjectionImpulse;//×Óµ¯¿Çµ¯³ö³åÁ¿
+	float ShellEjectionImpulse;//å­å¼¹å£³å¼¹å‡ºå†²é‡
 
 	UPROPERTY(EditAnywhere)
 	class USoundCue* BulletSound;

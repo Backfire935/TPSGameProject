@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "ShotGun.h"
@@ -22,32 +22,32 @@ void AShotGun::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 	
 	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName("MuzzleFlash");
 
-	if (MuzzleFlashSocket)//Ò»¸öÖ±ÏßÎäÆ÷¹¥»÷¼ì²â
+	if (MuzzleFlashSocket)//ä¸€ä¸ªç›´çº¿æ­¦å™¨æ”»å‡»æ£€æµ‹
 	{
 		const FTransform SocketTransform = MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());
-		const FVector Start = SocketTransform.GetLocation();//¿ª»ğ¼ì²âµÄÆğÊ¼µã
+		const FVector Start = SocketTransform.GetLocation();//å¼€ç«æ£€æµ‹çš„èµ·å§‹ç‚¹
 
-		//¶ÔÓ¦ÃüÖĞµÄ½ÇÉ«ºÍ±»ÃüÖĞµÄ´ÎÊı
-		TMap<ABlasterCharacter*, uint32> HitMap;//½«±»ÃüÖĞµÄ¶ÔÏó¶¼¼Ó½øÈ¥
+		//å¯¹åº”å‘½ä¸­çš„è§’è‰²å’Œè¢«å‘½ä¸­çš„æ¬¡æ•°
+		TMap<ABlasterCharacter*, uint32> HitMap;//å°†è¢«å‘½ä¸­çš„å¯¹è±¡éƒ½åŠ è¿›å»
 
 		for(FVector_NetQuantize HitTarget : HitTargets)
 		{
 			FHitResult FireHit;
 			WeaponTraceHit(Start, HitTarget, FireHit);
 
-			ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(FireHit.GetActor());//»ñÈ¡»÷ÖĞµÄÄ¿±ê
-			if (BlasterCharacter )//ÔÚ±¾µØÖ´ĞĞ£¬²»¼ì²éÈ¨ÍşĞÔºÍÔì³ÉÉËº¦µÄÍæ¼Ò¿ØÖÆÆ÷
+			ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(FireHit.GetActor());//è·å–å‡»ä¸­çš„ç›®æ ‡
+			if (BlasterCharacter )//åœ¨æœ¬åœ°æ‰§è¡Œï¼Œä¸æ£€æŸ¥æƒå¨æ€§å’Œé€ æˆä¼¤å®³çš„ç©å®¶æ§åˆ¶å™¨
 			{
-				if (HitMap.Contains(BlasterCharacter))//ÒÑ¾­»÷ÖĞ¹ıÕâ¸öÈËHits¾Í+1
+				if (HitMap.Contains(BlasterCharacter))//å·²ç»å‡»ä¸­è¿‡è¿™ä¸ªäººHitså°±+1
 				{
 					HitMap[BlasterCharacter]++;
 				}
-				else//ÒÔÇ°Ã»»÷ÖĞ¹ıÕâ¸öÈË¾ÍÌí¼Ó½øÈ¥²¢ÇÒÖÃHitsÎª1
+				else//ä»¥å‰æ²¡å‡»ä¸­è¿‡è¿™ä¸ªäººå°±æ·»åŠ è¿›å»å¹¶ä¸”ç½®Hitsä¸º1
 				{
 					HitMap.Emplace(BlasterCharacter, 1);
 				}
 
-				if (ImpactParticles)//Éú³É´ò»÷µÄÌù»¨Ğ§¹û
+				if (ImpactParticles)//ç”Ÿæˆæ‰“å‡»çš„è´´èŠ±æ•ˆæœ
 				{
 					UGameplayStatics::SpawnEmitterAtLocation(
 						GetWorld(),
@@ -57,7 +57,7 @@ void AShotGun::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 					);
 				}
 
-				if (HitSound)//Éú³ÉÃüÖĞÒôĞ§
+				if (HitSound)//ç”Ÿæˆå‘½ä¸­éŸ³æ•ˆ
 				{
 					UGameplayStatics::PlaySoundAtLocation(
 						this,
@@ -74,18 +74,19 @@ void AShotGun::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 
 		TArray<ABlasterCharacter*> HitCharacters;
 
-		//¿ªÊ¼¼ÆËãÃ¿¸ö½ÇÉ«±»ÃüÖĞµÄ×ÜÉËº¦
+		//å¼€å§‹è®¡ç®—æ¯ä¸ªè§’è‰²è¢«å‘½ä¸­çš„æ€»ä¼¤å®³
 		for (auto HitPair : HitMap)
 		{
 			if (HitPair.Key && HasAuthority() && InstigatorController)
 			{
-				//²»Ê¹ÓÃ·şÎñÆ÷»ØËİ¾ÍÖ±½ÓËãÉËº¦,Ä¿Ç°·şÎñ¶Ë¿ªÁËÕâ¸ö¹¦ÄÜ¾ÍÎŞ·¨¶Ô¿Í»§¶ËÔì³ÉÉËº¦
-				if(HasAuthority() && !bUseServerSideRewind)
+				bool bCauseAuthDamage = !bUseServerSideRewind || OwnerPawn->IsLocallyControlled();
+				//ä¸ä½¿ç”¨æœåŠ¡å™¨å›æº¯å°±ç›´æ¥ç®—ä¼¤å®³,ç›®å‰æœåŠ¡ç«¯å¼€äº†è¿™ä¸ªåŠŸèƒ½å°±æ— æ³•å¯¹å®¢æˆ·ç«¯é€ æˆä¼¤å®³
+				if(HasAuthority() && bCauseAuthDamage)
 				//if (HasAuthority() )
 				{
 					UGameplayStatics::ApplyDamage(
 						HitPair.Key,
-						Damage,
+						Damage * HitPair.Value,
 						InstigatorController,
 						this,
 						UDamageType::StaticClass()
@@ -95,7 +96,7 @@ void AShotGun::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 			}
 		}
 
-		//ÊÇ·ñÊ¹ÓÃÁË·şÎñÆ÷»ØËİ,¿Í»§¶Ë²ÅÓĞÕâ¸öÑ¡Ïî
+		//æ˜¯å¦ä½¿ç”¨äº†æœåŠ¡å™¨å›æº¯,å®¢æˆ·ç«¯æ‰æœ‰è¿™ä¸ªé€‰é¡¹
 		if (!HasAuthority() && bUseServerSideRewind)
 		{
 			BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(OwnerPawn) : BlasterOwnerCharacter;
@@ -114,25 +115,25 @@ void AShotGun::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 	}
 }
 
-void AShotGun::ShotgunTraceEndWithScatter(const FVector& HitTarget, TArray<FVector_NetQuantize>& HitTargets)//»ñÈ¡Åç×Ó×Óµ¯ÈºµÄÂäµã
+void AShotGun::ShotgunTraceEndWithScatter(const FVector& HitTarget, TArray<FVector_NetQuantize>& HitTargets)//è·å–å–·å­å­å¼¹ç¾¤çš„è½ç‚¹
 {
 	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName("MuzzleFlash");
 
-	if (MuzzleFlashSocket == nullptr) return;//Ò»¸öÖ±ÏßÎäÆ÷¹¥»÷¼ì²â
+	if (MuzzleFlashSocket == nullptr) return;//ä¸€ä¸ªç›´çº¿æ­¦å™¨æ”»å‡»æ£€æµ‹
 
 	const FTransform SocketTransform = MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());
-	const FVector TraceStart = SocketTransform.GetLocation();//¿ª»ğ¼ì²âµÄÆğÊ¼µã
+	const FVector TraceStart = SocketTransform.GetLocation();//å¼€ç«æ£€æµ‹çš„èµ·å§‹ç‚¹
 
-	const FVector  ToTargetNormalized = (HitTarget - TraceStart).GetSafeNormal();//Ò»¸ö´ÓÉäÏßÆğÊ¼µãµ½±»»÷ÖĞÄ¿±êµÄÏòÁ¿
-	const FVector  SphereCenter = TraceStart + ToTargetNormalized * DistanceToSphere;//µ½Åç×ÓÉä³ÌÖÕµãµÄÖĞµãÏòÁ¿
+	const FVector  ToTargetNormalized = (HitTarget - TraceStart).GetSafeNormal();//ä¸€ä¸ªä»å°„çº¿èµ·å§‹ç‚¹åˆ°è¢«å‡»ä¸­ç›®æ ‡çš„å‘é‡
+	const FVector  SphereCenter = TraceStart + ToTargetNormalized * DistanceToSphere;//åˆ°å–·å­å°„ç¨‹ç»ˆç‚¹çš„ä¸­ç‚¹å‘é‡
 
 
-	for(uint32 i =0; i < NumberOfPellets; i++)//ÉèÖÃÑ­»·´óĞ¡ÎªÒ»´Î·¢Éä×Óµ¯µÄÊıÁ¿
+	for(uint32 i =0; i < NumberOfPellets; i++)//è®¾ç½®å¾ªç¯å¤§å°ä¸ºä¸€æ¬¡å‘å°„å­å¼¹çš„æ•°é‡
 	{
-		const FVector  RandVec = UKismetMathLibrary::RandomUnitVector() * FMath::FRandRange(0.f, SphereRadius);//Ëæ»ú·½Ïòµ¥Î»ÏòÁ¿*Ëæ»ú³¤¶È 
-		const FVector EndLoc = SphereCenter + RandVec;//ÖĞĞÄµ½ËÄÖÜµÄËæ»úÀ©É¢ÏòÁ¿
-		 FVector ToEndLoc = EndLoc - TraceStart;//Á½µã¼äµÄÏß¶Î
-		 FVector EndEnd = (TraceStart + ToEndLoc * TRACE_LENGTH / ToEndLoc.Size());//µ¥¸öÉäÏßÏòÁ¿
+		const FVector  RandVec = UKismetMathLibrary::RandomUnitVector() * FMath::FRandRange(0.f, SphereRadius);//éšæœºæ–¹å‘å•ä½å‘é‡*éšæœºé•¿åº¦ 
+		const FVector EndLoc = SphereCenter + RandVec;//ä¸­å¿ƒåˆ°å››å‘¨çš„éšæœºæ‰©æ•£å‘é‡
+		 FVector ToEndLoc = EndLoc - TraceStart;//ä¸¤ç‚¹é—´çš„çº¿æ®µ
+		 FVector EndEnd = (TraceStart + ToEndLoc * TRACE_LENGTH / ToEndLoc.Size());//å•ä¸ªå°„çº¿å‘é‡
 
 		HitTargets.Add(EndEnd);
 	}

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "HitScanWeapon.h"
@@ -23,21 +23,22 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 
 	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName("MuzzleFlash");
 
-	if (MuzzleFlashSocket)//Ò»¸öÖ±ÏßÎäÆ÷¹¥»÷¼ì²â
+	if (MuzzleFlashSocket)//ä¸€ä¸ªç›´çº¿æ­¦å™¨æ”»å‡»æ£€æµ‹
 	{
 		FTransform SocketTransform = MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());
-		FVector Start = SocketTransform.GetLocation();//¿ª»ğ¼ì²âµÄÆğÊ¼µã
+		FVector Start = SocketTransform.GetLocation();//å¼€ç«æ£€æµ‹çš„èµ·å§‹ç‚¹
 
 		FHitResult FireHit;
 
 		WeaponTraceHit(Start, HitTarget, FireHit);
 
-		ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(FireHit.GetActor());//»ñÈ¡»÷ÖĞµÄÄ¿±ê
+		ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(FireHit.GetActor());//è·å–å‡»ä¸­çš„ç›®æ ‡
 		if (BlasterCharacter && InstigatorController)
 		{
-			//²»Ê¹ÓÃ·şÎñÆ÷»ØËİ¾ÍÖ±½ÓËãÉËº¦,Ä¿Ç°·şÎñ¶Ë¿ªÁËÕâ¸ö¹¦ÄÜ¾ÍÎŞ·¨¶Ô·şÎñ¶ËÔì³ÉÉËº¦
+			//ä¸ä½¿ç”¨æœåŠ¡å™¨å›æº¯å°±ç›´æ¥ç®—ä¼¤å®³,ç›®å‰æœåŠ¡ç«¯å¼€äº†è¿™ä¸ªåŠŸèƒ½å°±æ— æ³•å¯¹æœåŠ¡ç«¯é€ æˆä¼¤å®³
 			//if(HasAuthority() && !bUseServerSideRewind)
-			if (HasAuthority() )
+			bool bCauseAuthDamage = !bUseServerSideRewind || OwnerPawn->IsLocallyControlled();
+			if (HasAuthority() && bCauseAuthDamage)
 			{
 				UGameplayStatics::ApplyDamage(
 					BlasterCharacter,
@@ -47,7 +48,7 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 					UDamageType::StaticClass()
 				);
 			}
-			 if(!HasAuthority() && bUseServerSideRewind)//ÊÇ·ñÊ¹ÓÃÁË·şÎñÆ÷»ØËİ,¿Í»§¶Ë²ÅÓĞÕâ¸öÑ¡Ïî
+			 if(!HasAuthority() && bUseServerSideRewind)//æ˜¯å¦ä½¿ç”¨äº†æœåŠ¡å™¨å›æº¯,å®¢æˆ·ç«¯æ‰æœ‰è¿™ä¸ªé€‰é¡¹
 			{
 				BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(OwnerPawn) : BlasterOwnerCharacter;
 				BlasterOwnerController = BlasterOwnerController == nullptr ? Cast<ABlasterPlayerController>(InstigatorController) : BlasterOwnerController;
@@ -107,7 +108,7 @@ void AHitScanWeapon::WeaponTraceHit(const FVector& TraceStart,const FVector & Hi
 	UWorld* World = GetWorld();
 	if(World)
 	{
-		FVector End =  TraceStart + (HitTarget - TraceStart) * 1.25;//1.25±¶Ä¿±êµãµ½´ËµÄ¹¥»÷¾àÀë
+		FVector End =  TraceStart + (HitTarget - TraceStart) * 1.25;//1.25å€ç›®æ ‡ç‚¹åˆ°æ­¤çš„æ”»å‡»è·ç¦»
 
 		World->LineTraceSingleByChannel(
 			OutHit,
@@ -121,15 +122,6 @@ void AHitScanWeapon::WeaponTraceHit(const FVector& TraceStart,const FVector & Hi
 		{
 			BeamEnd = OutHit.ImpactPoint;
 		}
-
-		DrawDebugSphere(
-			GetWorld(),
-			BeamEnd,
-			16.f,
-			12,
-			FColor::Orange,
-			true
-		);
 
 		if (BeamParticles)
 		{

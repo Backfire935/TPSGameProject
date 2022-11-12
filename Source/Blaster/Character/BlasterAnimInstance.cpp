@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "BlasterAnimInstance.h"
@@ -11,65 +11,65 @@ void UBlasterAnimInstance::NativeInitializeAnimation()
 {	
 	Super::NativeInitializeAnimation();
 
-	BlasterCharacter =Cast<ABlasterCharacter>(TryGetPawnOwner());    //TryGetPawnOwner»ñÈ¡PawnÀà£¬Cast½øĞĞÀàĞÍ×ª»»
+	BlasterCharacter =Cast<ABlasterCharacter>(TryGetPawnOwner());    //TryGetPawnOwnerè·å–Pawnç±»ï¼ŒCastè¿›è¡Œç±»å‹è½¬æ¢
 }
 
 void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 {
 	Super::NativeUpdateAnimation(DeltaTime);
 
-	if (BlasterCharacter == nullptr)	//¼ì²é¿ÕÖ¸Õë!!!
+	if (BlasterCharacter == nullptr)	//æ£€æŸ¥ç©ºæŒ‡é’ˆ!!!
 	{
-		BlasterCharacter = Cast<ABlasterCharacter>(TryGetPawnOwner());    //TryGetPawnOwner»ñÈ¡PawnÀà£¬Cast½øĞĞÀàĞÍ×ª»»
+		BlasterCharacter = Cast<ABlasterCharacter>(TryGetPawnOwner());    //TryGetPawnOwnerè·å–Pawnç±»ï¼ŒCastè¿›è¡Œç±»å‹è½¬æ¢
 	}
 
-	if (BlasterCharacter == nullptr)	return;//ÀàĞÍ×ª»»Ê§°Ü£¬return	
+	if (BlasterCharacter == nullptr)	return;//ç±»å‹è½¬æ¢å¤±è´¥ï¼Œreturn	
 	
 	FVector  Velocity = BlasterCharacter->GetVelocity();
 	Velocity.Z = 0.f;
 
-	Speed = Velocity.Size(); //»ñÈ¡ÈıÎ¬ÏòÁ¿µÄÄ£³¤£¬ÆäÖĞZÎª0
+	Speed = Velocity.Size(); //è·å–ä¸‰ç»´å‘é‡çš„æ¨¡é•¿ï¼Œå…¶ä¸­Zä¸º0
 	
-	bIsInAir = BlasterCharacter->GetCharacterMovement()->IsFalling();		//½ÇÉ«ÊÇ·ñÔÚ¿ÕÖĞ
+	bIsInAir = BlasterCharacter->GetCharacterMovement()->IsFalling();		//è§’è‰²æ˜¯å¦åœ¨ç©ºä¸­
 
-	bIsAccelerating = BlasterCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f ? true : false; //»ñÈ¡½ÇÉ«µ±Ç°¼ÓËÙ¶È£¬Ö»Òª±È0´ó¾ÍÊÇÔÚ¼ÓËÙ
+	bIsAccelerating = BlasterCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f ? true : false; //è·å–è§’è‰²å½“å‰åŠ é€Ÿåº¦ï¼Œåªè¦æ¯”0å¤§å°±æ˜¯åœ¨åŠ é€Ÿ
 
-	bWeaponEquipped = BlasterCharacter->IsWeaponEquipped();//»ñÈ¡ÊÇ·ñ×°±¸ÎäÆ÷
+	bWeaponEquipped = BlasterCharacter->IsWeaponEquipped();//è·å–æ˜¯å¦è£…å¤‡æ­¦å™¨
 
-	EquippedWeapon = BlasterCharacter->GetEquippedWeapon();//»ñÈ¡×°±¸µÄÎäÆ÷
+	EquippedWeapon = BlasterCharacter->GetEquippedWeapon();//è·å–è£…å¤‡çš„æ­¦å™¨
 
-	bIsCrouched = BlasterCharacter->bIsCrouched;//»ñÈ¡ÊÇ·ñÏÂ¶×
+	bIsCrouched = BlasterCharacter->bIsCrouched;//è·å–æ˜¯å¦ä¸‹è¹²
 
-	bAiming = BlasterCharacter->IsAiming();//»ñÈ¡ÊÇ·ñÔÚÃé×¼
+	bAiming = BlasterCharacter->IsAiming();//è·å–æ˜¯å¦åœ¨ç„å‡†
 
-	TurningInPlace = BlasterCharacter->GetTurningInPlace();//»ñÈ¡½ÇÉ«³¯Ïò
+	TurningInPlace = BlasterCharacter->GetTurningInPlace();//è·å–è§’è‰²æœå‘
 
-	bRotateRootBone = BlasterCharacter->ShouldRotateRootBone();//»ñÈ¡Ä£Äâ½ÇÉ«ÊÇ·ñÓ¦¸ÃĞı×ª¹Ç÷À
+	bRotateRootBone = BlasterCharacter->ShouldRotateRootBone();//è·å–æ¨¡æ‹Ÿè§’è‰²æ˜¯å¦åº”è¯¥æ—‹è½¬éª¨éª¼
 
-	bElimed = BlasterCharacter->IsElimed();//ÉèÖÃ½ÇÉ«³õÊ¼ÊÇ·ñ±»ÌÔÌ­
+	bElimed = BlasterCharacter->IsElimed();//è®¾ç½®è§’è‰²åˆå§‹æ˜¯å¦è¢«æ·˜æ±°
 
-	FRotator AimRotation =  BlasterCharacter->GetBaseAimRotation();//»ñÈ¡Êó±êµÄ×ª¶¯
+	FRotator AimRotation =  BlasterCharacter->GetBaseAimRotation();//è·å–é¼ æ ‡çš„è½¬åŠ¨
 
 	FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(BlasterCharacter->GetVelocity());
 
-	FRotator DeltaRot = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation);//Ã¿Ò»Ö¡¼ÆËãMovementRotation-AimRotationºóµÄ½Ç¶È²î
+	FRotator DeltaRot = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation);//æ¯ä¸€å¸§è®¡ç®—MovementRotation-AimRotationåçš„è§’åº¦å·®
 
 	DeltaRotation = FMath::RInterpTo(DeltaRotation, DeltaRot, DeltaTime, 3.f);
-	YawOffset = DeltaRotation.Yaw;//×óÓÒÆ«ÒÆÁ¿
+	YawOffset = DeltaRotation.Yaw;//å·¦å³åç§»é‡
 	 
 	CharacterRotationLastFrame = CharacterRotation;
 	CharacterRotation = BlasterCharacter->GetActorRotation();
 	const FRotator Delta = UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame);
 	const float Target = Delta.Yaw / DeltaTime;
-	const float Interp = FMath::FInterpTo(Lean, Target, DeltaTime, 3.f);//µ±Ç°£¬Ä¿±ê£¬Æ½»¬Ê±³¤£¬²åÖµ
-	Lean = FMath::Clamp(Interp, -90.f, 90.f);//ÉèÖÃÆ«ÒÆ±ß½ç
+	const float Interp = FMath::FInterpTo(Lean, Target, DeltaTime, 3.f);//å½“å‰ï¼Œç›®æ ‡ï¼Œå¹³æ»‘æ—¶é•¿ï¼Œæ’å€¼
+	Lean = FMath::Clamp(Interp, -90.f, 90.f);//è®¾ç½®åç§»è¾¹ç•Œ
 
 	AO_Yaw = BlasterCharacter->GetAO_Yaw();
 	AO_Pitch = BlasterCharacter->GetAO_Pitch();
 
 	if (bWeaponEquipped && EquippedWeapon && EquippedWeapon->GetWeaponMesh() && BlasterCharacter->GetMesh())
 	{
-		LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("LeftHandSocket"), ERelativeTransformSpace::RTS_World);//»ñÈ¡²å²Û
+		LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("LeftHandSocket"), ERelativeTransformSpace::RTS_World);//è·å–æ’æ§½
 
 		FVector OutPosition;
 		FRotator OutRotation;
@@ -82,21 +82,21 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		{
 			bLocallyControlled = true;
 			FTransform RightHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("Hand_R"), ERelativeTransformSpace::RTS_World);
-			FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(RightHandTransform.GetLocation(), RightHandTransform.GetLocation() + (RightHandTransform.GetLocation() - BlasterCharacter->GetHitTarget()));//¿´ÏòµÄĞı×ª ÓÒÊÖµÄÎ»ÖÃµ½»÷ÖĞµÄÎ»ÖÃ
+			FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(RightHandTransform.GetLocation(), RightHandTransform.GetLocation() + (RightHandTransform.GetLocation() - BlasterCharacter->GetHitTarget()));//çœ‹å‘çš„æ—‹è½¬ å³æ‰‹çš„ä½ç½®åˆ°å‡»ä¸­çš„ä½ç½®
 			RightHandRotation = FMath::RInterpTo(RightHandRotation, LookAtRotation , DeltaTime, 30.f);
 		}
 		
-		bUseFABRIK = BlasterCharacter->GetCombatState() == ECombatState::ECS_Unoccupied;//Ö»Òª²»ÊÇÆÕÍ¨×´Ì¬¶¼½ûÓÃIK¶¯»­
+		bUseFABRIK = BlasterCharacter->GetCombatState() == ECombatState::ECS_Unoccupied;//åªè¦ä¸æ˜¯æ™®é€šçŠ¶æ€éƒ½ç¦ç”¨IKåŠ¨ç”»
 		if(BlasterCharacter->IsLocallyControlled()  && BlasterCharacter->GetCombatState() != ECombatState::ECS_ThrowingGrenade)
 		{
-			bUseFABRIK = !BlasterCharacter->IsLocallyReloading();//Ö»Òª±¾µØ²»ÊÇ´¦ÓÚ»»µ¯¶¯»­¶¼¿ªÆô
+			bUseFABRIK = !BlasterCharacter->IsLocallyReloading();//åªè¦æœ¬åœ°ä¸æ˜¯å¤„äºæ¢å¼¹åŠ¨ç”»éƒ½å¼€å¯
 		}
-		bUseAimOffsets = BlasterCharacter->GetCombatState() == ECombatState::ECS_Unoccupied && !BlasterCharacter->GetDisableGamePlay();////Ö»Òª²»ÊÇÆÕÍ¨×´Ì¬¶¼½ûÓÃIK¶¯»­,½ûÓÃAimOffsets¶øÇÒµ±½ûÖ¹ÊäÈëµÄÖ¸ÁîÉèÖÃÊ±Ò²½ûÓÃ
-		bTransformRightHand = BlasterCharacter->GetCombatState() == ECombatState::ECS_Unoccupied && !BlasterCharacter->GetDisableGamePlay();//»»µ¯×´Ì¬ÏÂ½ûÓÃÓÒÊÖÒÆ¶¯¶øÇÒµ±½ûÖ¹ÊäÈëµÄÖ¸ÁîÉèÖÃÊ±Ò²½ûÓÃ
+		bUseAimOffsets = BlasterCharacter->GetCombatState() == ECombatState::ECS_Unoccupied && !BlasterCharacter->GetDisableGamePlay();////åªè¦ä¸æ˜¯æ™®é€šçŠ¶æ€éƒ½ç¦ç”¨IKåŠ¨ç”»,ç¦ç”¨AimOffsetsè€Œä¸”å½“ç¦æ­¢è¾“å…¥çš„æŒ‡ä»¤è®¾ç½®æ—¶ä¹Ÿç¦ç”¨
+		bTransformRightHand = BlasterCharacter->GetCombatState() == ECombatState::ECS_Unoccupied && !BlasterCharacter->GetDisableGamePlay();//æ¢å¼¹çŠ¶æ€ä¸‹ç¦ç”¨å³æ‰‹ç§»åŠ¨è€Œä¸”å½“ç¦æ­¢è¾“å…¥çš„æŒ‡ä»¤è®¾ç½®æ—¶ä¹Ÿç¦ç”¨
 	/*	FTransform MuzzleTipTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("MuzzleFlash"), ERelativeTransformSpace::RTS_World);
 		FVector MuzzleX(FRotationMatrix(MuzzleTipTransform.GetRotation().Rotator()).GetUnitAxis(EAxis::X));
 		DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), MuzzleTipTransform.GetLocation() + MuzzleX * 1000.f, FColor::Red);
-		DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(),BlasterCharacter->GetHitTarget(), FColor::Orange);ÉäÏß¼ì²âÅö×²*/
+		DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(),BlasterCharacter->GetHitTarget(), FColor::Orange);å°„çº¿æ£€æµ‹ç¢°æ’*/
 	}
 
 

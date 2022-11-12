@@ -8,6 +8,8 @@
 #include "GameFramework/PlayerStart.h"
 #include"Blaster/PlayerState/BlasterPlayerState.h"
 #include"Blaster/GameState/BlasterGameState.h"
+#include "Blaster/Weapon/Weapon.h"
+
 namespace MatchState
 {
 	const FName Cooldown = FName("Cooldown");
@@ -80,11 +82,38 @@ void ABlasterGameMode::PlayerEliminated(class ABlasterCharacter* ElimmedCharacte
 
 	ABlasterGameState* BlasterGameState = GetGameState<ABlasterGameState>();
 
-
 	if (AttackerPlayerState && AttackerPlayerState != VictimPlayerState && BlasterGameState)
 	{
+		TArray<ABlasterPlayerState*> PlayersCurrentlyInTheLead;
+		for(auto LeadPlayer : BlasterGameState->TopScoringPlayers)
+		{
+			PlayersCurrentlyInTheLead.Add(LeadPlayer);
+		}
+
+		//AWeapon* Weapon =  Cast<ABlasterCharacter>(AttackerPlayerState->GetPlayerController()->GetCharacter())->GetEquippedWeapon();
+
 		AttackerPlayerState->AddToScore(1.f);//加一次击杀计数
 		BlasterGameState->UpdateTopScore(AttackerPlayerState);//如果攻击者拿到了最高分就会被设置为分数最高的人
+		if(BlasterGameState->TopScoringPlayers.Contains(AttackerPlayerState))
+		{
+			ABlasterCharacter* Leader = Cast<ABlasterCharacter>(AttackerPlayerState->GetPawn());
+			if(Leader)
+			{
+				Leader->MulticastGainedTheLead();//拿到第一，给他第一的标
+			}
+
+		}
+
+		for(int32 i=0; i< PlayersCurrentlyInTheLead.Num(); i++)
+		{
+			if(!BlasterGameState->TopScoringPlayers.Contains(PlayersCurrentlyInTheLead[i]))
+			{
+				ABlasterCharacter* Loser = Cast<ABlasterCharacter>(PlayersCurrentlyInTheLead[i]->GetPawn());
+				Loser->MulticastLostTheLead();//不是第一了，把特效jue了
+			}
+		}
+
+
 	}
 
 	if (VictimPlayerState)
@@ -95,7 +124,16 @@ void ABlasterGameMode::PlayerEliminated(class ABlasterCharacter* ElimmedCharacte
 
 	if (ElimmedCharacter)
 	{
-		ElimmedCharacter->Elim();
+		ElimmedCharacter->Elim(false);
+	}
+
+	for(FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		ABlasterPlayerController* BlasterPlayerController = Cast<ABlasterPlayerController>(*It);
+		if(BlasterPlayerController && AttackerPlayerState && VictimPlayerState )
+		{
+			BlasterPlayerController->BroadcastElim(AttackerPlayerState,VictimPlayerState);
+		}
 	}
 }
 
@@ -113,5 +151,18 @@ void ABlasterGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AController*
 		int32 Selection = FMath::RandRange(0, PlayerStarts.Num() - 1);
 		RestartPlayerAtPlayerStart( ElimmedController, PlayerStarts[Selection]);//在玩家开始点重启玩家
 	}
+}
+
+void ABlasterGameMode::PlayerLeftGame(ABlasterPlayerState* PlayerLeaving)
+{
+	if (PlayerLeaving == nullptr) return;
+	//调用淘汰玩家函数，为bLeftGame变量传递真值
+	ABlasterGameState* BlasterGameState = GetGameState<ABlasterGameState>();
+	if(BlasterGameState && BlasterGameState->TopScoringPlayers.Contains(PlayerLeaving))
+	{
+		BlasterGameState->TopScoringPlayers.Remove(PlayerLeaving);
+	}
+	ABlasterCharacter * CharacterLeaving =  Cast<ABlasterCharacter>(PlayerLeaving->GetPawn());
+
 }
 

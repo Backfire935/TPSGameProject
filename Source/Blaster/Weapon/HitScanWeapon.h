@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -34,5 +34,5 @@ protected:
 	UPROPERTY(EditAnywhere)
 		class UParticleSystem* ImpactParticles;
 
-	void WeaponTraceHit(const FVector & TraceStart, const FVector& HitTarget, FHitResult& OutHit);//ÎäÆ÷»÷ÖÐ¸ú×Ù
+	void WeaponTraceHit(const FVector & TraceStart, const FVector& HitTarget, FHitResult& OutHit);//æ­¦å™¨å‡»ä¸­è·Ÿè¸ª
 };

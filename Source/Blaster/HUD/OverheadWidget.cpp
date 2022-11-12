@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "OverheadWidget.h"
@@ -15,8 +15,8 @@ void UOverheadWidget::SetDisplayText(FString TextToDisplay)
 
 void UOverheadWidget::ShowPlayerNetRole(APawn* InPawn)
 {
-	//ENetRole LocalRole = InPawn->GetLocalRole();  //»ñÈ¡±¾µØµÄ½ÇÉ«
-	ENetRole RemoteRole = InPawn->GetRemoteRole();  //»ñÈ¡ÔÚÏßµÄ½ÇÉ«
+	//ENetRole LocalRole = InPawn->GetLocalRole();  //èŽ·å–æœ¬åœ°çš„è§’è‰²
+	ENetRole RemoteRole = InPawn->GetRemoteRole();  //èŽ·å–åœ¨çº¿çš„è§’è‰²
 
 	APlayerState* PlayerState =  InPawn->GetPlayerState();
 	FString PlayerName = FString("");

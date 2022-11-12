@@ -1,16 +1,18 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "ProjectileBullet.h"
 #include "Kismet/GamePlayStatics.h"
-#include "GameFramework/Character.h"
+#include "Blaster/Character/BlasterCharacter.h"
+#include "Blaster/PlayerController/BlasterPlayerController.h"
+#include "Blaster/BlasterComponents/LagCompensationComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 AProjectileBullet::AProjectileBullet()
 {
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
-	ProjectileMovementComponent->SetIsReplicated(true);//½«×é¼şÉèÖÃÎª¿ÉÍøÂç¸´ÖÆ
+	ProjectileMovementComponent->SetIsReplicated(true);//å°†ç»„ä»¶è®¾ç½®ä¸ºå¯ç½‘ç»œå¤åˆ¶
 	ProjectileMovementComponent->InitialSpeed = InitialSpeed;
 	ProjectileMovementComponent->MaxSpeed = InitialSpeed;
 }
@@ -36,15 +38,30 @@ void AProjectileBullet::PostEditChangeProperty(FPropertyChangedEvent& Event)
 
 void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	ACharacter * OwnerCharacter = Cast<ACharacter>(GetOwner());
+	ABlasterCharacter * OwnerCharacter = Cast<ABlasterCharacter>(GetOwner());
 	if (OwnerCharacter)
 	{
-		AController* OwnerController = OwnerCharacter->Controller;
+		ABlasterPlayerController* OwnerController =Cast<ABlasterPlayerController>(OwnerCharacter->Controller);
 		if (OwnerController)
 		{
-			UGameplayStatics::ApplyDamage(OtherActor, Damage, OwnerController , this, UDamageType::StaticClass());//¶ÔÄ¿±êactor´«µİÉËº¦
-
-		}
+			if(OwnerCharacter->HasAuthority() && !bUseServerSideRewind)
+			{
+				UGameplayStatics::ApplyDamage(OtherActor, Damage, OwnerController, this, UDamageType::StaticClass());//å¯¹ç›®æ ‡actorä¼ é€’ä¼¤å®³
+				Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
+				return;
+			}
+			ABlasterCharacter* HitCharacter = Cast<ABlasterCharacter>(OtherActor);
+			if(bUseServerSideRewind && OwnerCharacter->GetLagCompensationComponent() && OwnerCharacter->IsLocallyControlled() && HitCharacter)
+			{
+				OwnerCharacter->GetLagCompensationComponent()->ProjectileServerScoreRequest(
+					HitCharacter,
+					TraceStart,
+					InitialVelocity,
+					OwnerController->GetServerTime() - OwnerController->SingleTripTime
+				);
+			}
+		} 
+		
 	}
 
 	Super::OnHit(  HitComp,  OtherActor, OtherComp,  NormalImpulse,  Hit);
@@ -53,11 +70,11 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 void AProjectileBullet::BeginPlay()
 {
 	Super::BeginPlay();
-
+	/*
 	FPredictProjectilePathParams PathParams;
-	PathParams.bTraceWithChannel = true;//Ê¹ÓÃÌØ¶¨Åö×²Í¨µÀÀ´¸ú×Ù
-	PathParams.bTraceWithCollision = true;//ÔÊĞíÔ¤²âÍ¶ÉäÂ·¾¶£¬ÔÚÊÀ½çÖĞ×·×ÙÅö×²ÎïÌå,¿ÉÒÔÉú³ÉÃüÖĞÊÂ¼ş
-	PathParams.DrawDebugTime = 5.f;//³ÖĞø5sµÄÊ±¼ä
+	PathParams.bTraceWithChannel = true;//ä½¿ç”¨ç‰¹å®šç¢°æ’é€šé“æ¥è·Ÿè¸ª
+	PathParams.bTraceWithCollision = true;//å…è®¸é¢„æµ‹æŠ•å°„è·¯å¾„ï¼Œåœ¨ä¸–ç•Œä¸­è¿½è¸ªç¢°æ’ç‰©ä½“,å¯ä»¥ç”Ÿæˆå‘½ä¸­äº‹ä»¶
+	PathParams.DrawDebugTime = 5.f;//æŒç»­5sçš„æ—¶é—´
 	PathParams.DrawDebugType = EDrawDebugTrace::ForDuration;
 	PathParams.LaunchVelocity = GetActorForwardVector() * InitialSpeed;
 	PathParams.MaxSimTime = 4.f;
@@ -71,4 +88,5 @@ void AProjectileBullet::BeginPlay()
 	FPredictProjectilePathResult PathResult;
 
 	UGameplayStatics::PredictProjectilePath(this, PathParams, PathResult);
+	*/
 }

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -36,9 +36,9 @@ public:
 	TSubclassOf<class UUserWidget> CharacterOverlayClass;
 	
 	UPROPERTY()
-	class UCharacterOverlay* CharacterOverlay;//ÓĞÑªÌõºÍÑªÁ¿Öµµ¯Ò©µÈ¸÷¸ö±äÁ¿µÄÀà
+	class UCharacterOverlay* CharacterOverlay;//æœ‰è¡€æ¡å’Œè¡€é‡å€¼å¼¹è¯ç­‰å„ä¸ªå˜é‡çš„ç±»
 
-	void AddCharacterOverlay();//´Ëº¯ÊıÓÉÍæ¼Ò¿ØÖÆÆ÷ÔÚ¾­¹ı¿ª¾Öµ¹¼ÆÊ±ºó½øÈëÓÎÏ·×´Ì¬ºóµ÷ÓÃ
+	void AddCharacterOverlay();//æ­¤å‡½æ•°ç”±ç©å®¶æ§åˆ¶å™¨åœ¨ç»è¿‡å¼€å±€å€’è®¡æ—¶åè¿›å…¥æ¸¸æˆçŠ¶æ€åè°ƒç”¨
 	
 	////
 
@@ -50,17 +50,38 @@ public:
 
 	void AddAnnouncement();
 
+	void AddElimAnnouncement(FString Attacker,FString Victim);
 
 protected:
 	virtual void BeginPlay() override;
 
 
 private:
+
+	UPROPERTY()
+	class APlayerController *OwningPlayer;
+
+
 	FHUDPackage HUDPackage;
 	void DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCenter, FVector2D Spread, FLinearColor CrosshairColor);
 
 	UPROPERTY(EditAnywhere)
 	float CrosshairSpreadMax = 16.f;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UElimAnnouncement> ElimAnnouncementClass;
+
+	//å‡»æ€æ¶ˆæ¯åœ¨å±å¹•ä¸Šåœç•™çš„æ—¶é—´
+	UPROPERTY(EditAnywhere)
+	float ElimAnnouncementTime = 4.f;
+
+	//å‡»æ€æ¶ˆæ¯æ—¶é—´åˆ°äº†åå°±æ¶ˆå¤±
+	UFUNCTION()
+	void ElimAnnouncementTimerFinished(UElimAnnouncement* MsgToRemove);
+
+	UPROPERTY()
+	TArray<UElimAnnouncement*> ElimMessages;
+
 public:
-	FORCEINLINE void SetHUDPackage(const FHUDPackage& Package) { HUDPackage = Package; }//×÷ÎªÒ»¸ö½á¹¹Ìå£¬ÕûÌå»ñÈ¡
+	FORCEINLINE void SetHUDPackage(const FHUDPackage& Package) { HUDPackage = Package; }//ä½œä¸ºä¸€ä¸ªç»“æ„ä½“ï¼Œæ•´ä½“è·å–
 };

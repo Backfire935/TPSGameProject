@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -15,14 +15,14 @@ class BLASTER_API UOverheadWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-		UPROPERTY(meta = (BindWidget))//À¶Í¼ÖĞË­µÄÀàÉèÖÃ¼Ì³ĞÁËÕâ¸öC++Àà£¬Ë­µÄ¿Ø¼şÀ¶Í¼µÄÍ¬Ãû¿Ø¼ş¾ÍºÍÕâÀïµÄÍ¬Ãû¿Ø¼ş°ó¶¨ÁË
-		class UTextBlock* DisplayText; //ÎÄ±¾¿é
+		UPROPERTY(meta = (BindWidget))//è“å›¾ä¸­è°çš„ç±»è®¾ç½®ç»§æ‰¿äº†è¿™ä¸ªC++ç±»ï¼Œè°çš„æ§ä»¶è“å›¾çš„åŒåæ§ä»¶å°±å’Œè¿™é‡Œçš„åŒåæ§ä»¶ç»‘å®šäº†
+		class UTextBlock* DisplayText; //æ–‡æœ¬å—
 
-		void SetDisplayText(FString TextToDisplay); //ÉèÖÃÒªÕ¹ÏÖµÄÎÄ×ÖÄÚÈİ
+		void SetDisplayText(FString TextToDisplay); //è®¾ç½®è¦å±•ç°çš„æ–‡å­—å†…å®¹
 		
 		UFUNCTION(BlueprintCallable)
-		void ShowPlayerNetRole(APawn *InPawn);	//ÉèÖÃÍæ¼ÒÍøÂç½ÇÉ«
+		void ShowPlayerNetRole(APawn *InPawn);	//è®¾ç½®ç©å®¶ç½‘ç»œè§’è‰²
 protected:
-	virtual void OnLevelRemovedFromWorld(ULevel * InLevel, UWorld *InWorld) override;	//ÒÆ³ı¿Ø¼ş
+	virtual void OnLevelRemovedFromWorld(ULevel * InLevel, UWorld *InWorld) override;	//ç§»é™¤æ§ä»¶
 
 };

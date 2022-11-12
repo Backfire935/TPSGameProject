@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "CombatComponent.h"
@@ -21,7 +21,7 @@ UCombatComponent::UCombatComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;//ÉèÖÃÎªÃ¿Ö¡Ö´ĞĞ
+	PrimaryComponentTick.bCanEverTick = true;//è®¾ç½®ä¸ºæ¯å¸§æ‰§è¡Œ
 	BaseWalkSpeed = 600.f;
 	AimWalkSpeed = 400.f;
 
@@ -32,30 +32,30 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UCombatComponent, EquippedWeapon);//×¢²áCombatComponentÀàÖĞÉùÃ÷µÄAWeaponÀàĞÍµÄEquippedWeapon±äÁ¿
+	DOREPLIFETIME(UCombatComponent, EquippedWeapon);//æ³¨å†ŒCombatComponentç±»ä¸­å£°æ˜çš„AWeaponç±»å‹çš„EquippedWeaponå˜é‡
 
-	DOREPLIFETIME(UCombatComponent, SecondaryWeapon);//×¢²áµÚ¶ş°ÑÎäÆ÷
+	DOREPLIFETIME(UCombatComponent, SecondaryWeapon);//æ³¨å†Œç¬¬äºŒæŠŠæ­¦å™¨
 
-	DOREPLIFETIME(UCombatComponent, bAiming);//×¢²áCombatComponentÀàÖĞÉùÃ÷µÄboolÀàĞÍµÄbAiming±äÁ¿
+	DOREPLIFETIME(UCombatComponent, bAiming);//æ³¨å†ŒCombatComponentç±»ä¸­å£°æ˜çš„boolç±»å‹çš„bAimingå˜é‡
 
 	DOREPLIFETIME(UCombatComponent, CombatState);
 
 	DOREPLIFETIME(UCombatComponent, Grenades);
 
-	DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly); //×¢²á±¾ÀàÖĞÉùÃ÷µÄint32ÀàĞÍµÄ±¸µ¯Á¿±äÁ¿µÄÍøÂçÍ¬²½
+	DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly); //æ³¨å†Œæœ¬ç±»ä¸­å£°æ˜çš„int32ç±»å‹çš„å¤‡å¼¹é‡å˜é‡çš„ç½‘ç»œåŒæ­¥
 }
 
 void UCombatComponent::PickupAmmp(EWeaponType WeaponType, int32 AmmoAmount)
 {
-	if (CarriedAmmoMap.Contains(WeaponType))//È·±£ÊÇÓĞÕâÖÖÎäÆ÷ÀàĞÍµÄ
+	if (CarriedAmmoMap.Contains(WeaponType))//ç¡®ä¿æ˜¯æœ‰è¿™ç§æ­¦å™¨ç±»å‹çš„
 	{
-		CarriedAmmoMap[WeaponType] += AmmoAmount;//¸øÖ¸¶¨µÄÎäÆ÷ÀàĞÍ¼Ó±¸µ¯
+		CarriedAmmoMap[WeaponType] += AmmoAmount;//ç»™æŒ‡å®šçš„æ­¦å™¨ç±»å‹åŠ å¤‡å¼¹
 
 		UpdateCarriedAmmo();
 	}
 	if(EquippedWeapon && EquippedWeapon->IsEmpty() && EquippedWeapon->GetWeaponType() == WeaponType)
 	{
-		Reload();//Èç¹ûÎäÆ÷Ã»×Óµ¯ÁËÇÒ´ËÊ±¼ñµ½ÁË×Óµ¯£¬×Ô¶¯×°Ìî
+		Reload();//å¦‚æœæ­¦å™¨æ²¡å­å¼¹äº†ä¸”æ­¤æ—¶æ¡åˆ°äº†å­å¼¹ï¼Œè‡ªåŠ¨è£…å¡«
 	}
 
 
@@ -68,15 +68,15 @@ void UCombatComponent::BeginPlay()
 	// ...
 	if (Character)
 	{
-		Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;//¿ØÖÆËÙ¶È
+		Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;//æ§åˆ¶é€Ÿåº¦
 		if (Character->GetFollowCamera())
 		{
-			DefaultFOV = Character->GetFollowCamera()->FieldOfView;//»ñÈ¡Ïà»úÊÓÒ°
+			DefaultFOV = Character->GetFollowCamera()->FieldOfView;//è·å–ç›¸æœºè§†é‡
 			CurrentFOV = DefaultFOV;
 		}
-		if (Character->HasAuthority())//¿ØÖÆ±¸µ¯
+		if (Character->HasAuthority())//æ§åˆ¶å¤‡å¼¹
 		{
-			InitializeCarriedAmmo();//³õÊ¼»¯±¸µ¯
+			InitializeCarriedAmmo();//åˆå§‹åŒ–å¤‡å¼¹
 		}
 	}
 
@@ -114,7 +114,7 @@ void UCombatComponent::FireTimerFinished()
 {
 	if (EquippedWeapon == nullptr) return;
 	bCanFire = true;
-	if (bFireButtonPressed && EquippedWeapon->bAutoMatic)//Èç¹ûÕâÀï²»ÔÊĞíÈ«×Ô¶¯£¬µÚ¶ş´Î»áÖ±½ÓÍ£ÔÚÕâÀï
+	if (bFireButtonPressed && EquippedWeapon->bAutoMatic)//å¦‚æœè¿™é‡Œä¸å…è®¸å…¨è‡ªåŠ¨ï¼Œç¬¬äºŒæ¬¡ä¼šç›´æ¥åœåœ¨è¿™é‡Œ
 	{
 		Fire();
 	}
@@ -122,18 +122,18 @@ void UCombatComponent::FireTimerFinished()
 	ReloadEmptyWeapon();
 }
 
-void UCombatComponent::OnRep_EquippedWeapon()//RPCµ÷ÓÃÆäËû¿Í»§¶ËÄ£Äâ×ßÂ·×ËÌ¬µÄ¿ª¹Ø
+void UCombatComponent::OnRep_EquippedWeapon()//RPCè°ƒç”¨å…¶ä»–å®¢æˆ·ç«¯æ¨¡æ‹Ÿèµ°è·¯å§¿æ€çš„å¼€å…³
 {
 	if (EquippedWeapon && Character)
 	{
 		EquippedWeapon->SetWeaponState(EWeaponState::Weapon_Equipped);
 
-		AttachActorToRightHand(EquippedWeapon);//¶«Î÷·ÅÓÒÊÖÉÏ
+		AttachActorToRightHand(EquippedWeapon);//ä¸œè¥¿æ”¾å³æ‰‹ä¸Š
 
-		Character->GetCharacterMovement()->bOrientRotationToMovement = false;//¹Ø±Õ½ÇÉ«ÏòÒÆ¶¯µÄ·½ÏòĞı×ª
-		Character->bUseControllerRotationYaw = true; //¿ªÆô½ÇÉ«¸úËæÊó±êµÄ×óÓÒĞı×ª
+		Character->GetCharacterMovement()->bOrientRotationToMovement = false;//å…³é—­è§’è‰²å‘ç§»åŠ¨çš„æ–¹å‘æ—‹è½¬
+		Character->bUseControllerRotationYaw = true; //å¼€å¯è§’è‰²è·Ÿéšé¼ æ ‡çš„å·¦å³æ—‹è½¬
 
-		PlayEquipWeaponSound(EquippedWeapon);//²¥·Å×°±¸ÎäÆ÷µÄÒôĞ§
+		PlayEquipWeaponSound(EquippedWeapon);//æ’­æ”¾è£…å¤‡æ­¦å™¨çš„éŸ³æ•ˆ
 		EquippedWeapon->EnableCustomDepth(false);
 		EquippedWeapon->SetHUDAmmo();
 	}
@@ -144,29 +144,29 @@ void UCombatComponent::OnRep_SecondaryWeapon()
 	if(SecondaryWeapon && Character)
 	{
 		SecondaryWeapon->SetWeaponState(EWeaponState::Weapon_EquippedSecondary);
-		AttachActorToBackpack(SecondaryWeapon);//°ÑµÚ¶ş°ÑÎäÆ÷×°ºó±³°üÉÏ
-		PlayEquipWeaponSound(SecondaryWeapon);//²¥·Å×°±¸ÎäÆ÷µÄÒôĞ§
+		AttachActorToBackpack(SecondaryWeapon);//æŠŠç¬¬äºŒæŠŠæ­¦å™¨è£…åèƒŒåŒ…ä¸Š
+		PlayEquipWeaponSound(SecondaryWeapon);//æ’­æ”¾è£…å¤‡æ­¦å™¨çš„éŸ³æ•ˆ
 		SecondaryWeapon->EnableCustomDepth(true);
 	
 	}
 }
 
-void UCombatComponent::FireButtonPressed(bool bPressed)//°´ÏÂ¿ª»ğ°´Å¥ºó
+void UCombatComponent::FireButtonPressed(bool bPressed)//æŒ‰ä¸‹å¼€ç«æŒ‰é’®å
 {
 	bFireButtonPressed = bPressed;
 
-	if (bFireButtonPressed && EquippedWeapon)//Èç¹û²»¼Ó¼ì²éÎäÆ÷»áµ¼ÖÂµã»÷´°¿ÚµÄÊ±ºòÒòÎªÃ»ÓĞÎäÆ÷¶øµ¼ÖÂbPressed=false¶øÎŞ·¨¿ª»ğ
+	if (bFireButtonPressed && EquippedWeapon)//å¦‚æœä¸åŠ æ£€æŸ¥æ­¦å™¨ä¼šå¯¼è‡´ç‚¹å‡»çª—å£çš„æ—¶å€™å› ä¸ºæ²¡æœ‰æ­¦å™¨è€Œå¯¼è‡´bPressed=falseè€Œæ— æ³•å¼€ç«
 	{
 		Fire();
 	}
 
 }
 
-void UCombatComponent::ShotGunShellReload()//Õâ¸öº¯ÊıÊÇÓÃÀ´±©Â¶¸øÀ¶Í¼ÓÃµÄ
+void UCombatComponent::ShotGunShellReload()//è¿™ä¸ªå‡½æ•°æ˜¯ç”¨æ¥æš´éœ²ç»™è“å›¾ç”¨çš„
 {
 	if(Character && Character->HasAuthority())
 	{
-		UpdateShotgunAmmoValues();//Ã¿´Î+1×Óµ¯
+		UpdateShotgunAmmoValues();//æ¯æ¬¡+1å­å¼¹
 	}
 	
 }
@@ -179,7 +179,7 @@ void UCombatComponent::Fire()
 	{
 		bCanFire = false;
 
-		if (EquippedWeapon)//Ôö¼Ó¿ª»ğ×¼ĞÄÉ¢²¼
+		if (EquippedWeapon)//å¢åŠ å¼€ç«å‡†å¿ƒæ•£å¸ƒ
 		{
 			CrosshairShootingFactor = 0.75f;
 
@@ -215,7 +215,7 @@ void UCombatComponent::FireProjectileWeapon()
 	if(EquippedWeapon && Character)
 	{
 		HitTarget = EquippedWeapon->bUseScatter ? EquippedWeapon->TraceWithScatter(HitTarget) : HitTarget;
-		if(!Character->HasAuthority()) LocalFire(HitTarget);//·ÀÖ¹·şÎñ¶Ëµ÷ÓÃÁ½´Î£¬Ò»´Îlocalfire£¬Ò»´Îserverfire
+		if(!Character->HasAuthority()) LocalFire(HitTarget);//é˜²æ­¢æœåŠ¡ç«¯è°ƒç”¨ä¸¤æ¬¡ï¼Œä¸€æ¬¡localfireï¼Œä¸€æ¬¡serverfire
 		ServerFire(HitTarget);
 	}
 
@@ -226,19 +226,19 @@ void UCombatComponent::FireHitScanWeapon()
 	if(EquippedWeapon && Character)
 	{
 		HitTarget = EquippedWeapon->bUseScatter ? EquippedWeapon->TraceWithScatter(HitTarget) : HitTarget;
-		if (!Character->HasAuthority()) LocalFire(HitTarget);//·ÀÖ¹·şÎñ¶Ëµ÷ÓÃÁ½´Î£¬Ò»´Îlocalfire£¬Ò»´Îserverfire
+		if (!Character->HasAuthority()) LocalFire(HitTarget);//é˜²æ­¢æœåŠ¡ç«¯è°ƒç”¨ä¸¤æ¬¡ï¼Œä¸€æ¬¡localfireï¼Œä¸€æ¬¡serverfire
 		ServerFire(HitTarget);
 	}
 }
 
 void UCombatComponent::FireShotgun()
 {
-	AShotGun* ShotGun = Cast<AShotGun>(EquippedWeapon);//½«ÎäÆ÷ÀàĞÍ×ª»»ÎªÅç×Ó
+	AShotGun* ShotGun = Cast<AShotGun>(EquippedWeapon);//å°†æ­¦å™¨ç±»å‹è½¬æ¢ä¸ºå–·å­
 	if(ShotGun && Character)
 	{
 		TArray<FVector_NetQuantize> HitTargets;
-		ShotGun->ShotgunTraceEndWithScatter(HitTarget, HitTargets);//»ñÈ¡Åç×Ó×Óµ¯ÈºµÄÂäµã
-		if (!Character->HasAuthority()) LocalShotgunFire(HitTargets);//·ÀÖ¹·şÎñ¶Ëµ÷ÓÃÁ½´Î£¬Ò»´Îlocalfire£¬Ò»´Îserverfire
+		ShotGun->ShotgunTraceEndWithScatter(HitTarget, HitTargets);//è·å–å–·å­å­å¼¹ç¾¤çš„è½ç‚¹
+		if (!Character->HasAuthority()) LocalShotgunFire(HitTargets);//é˜²æ­¢æœåŠ¡ç«¯è°ƒç”¨ä¸¤æ¬¡ï¼Œä¸€æ¬¡localfireï¼Œä¸€æ¬¡serverfire
 		ServerShotgunFire(HitTargets);
 	}
 
@@ -248,12 +248,12 @@ void UCombatComponent::FireShotgun()
 bool UCombatComponent::CanFire()
 {
 	if (EquippedWeapon == nullptr) return false;
-	if (bLocallyReloading) return false;//±¾µØ¼ì²éÒ»´ÎÊÇ·ñÔÚ»»µ¯£¬ÊÇÔò²»ÔÊĞí¿ª»ğ
-	if(!EquippedWeapon->IsEmpty() && bCanFire && CombatState == ECombatState::ECS_Reloading && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_ShotGun)//ÎäÆ÷ÎªÅç×Ó²¢ÇÒÔÚ»»µ¯µÄÇé¿öÏÂ
+	if (bLocallyReloading) return false;//æœ¬åœ°æ£€æŸ¥ä¸€æ¬¡æ˜¯å¦åœ¨æ¢å¼¹ï¼Œæ˜¯åˆ™ä¸å…è®¸å¼€ç«
+	if(!EquippedWeapon->IsEmpty() && bCanFire && CombatState == ECombatState::ECS_Reloading && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_ShotGun)//æ­¦å™¨ä¸ºå–·å­å¹¶ä¸”åœ¨æ¢å¼¹çš„æƒ…å†µä¸‹
 	{
-		return true;//ÔÊĞí¿ª»ğ
+		return true;//å…è®¸å¼€ç«
 	}
-	return !EquippedWeapon->IsEmpty() && bCanFire && CombatState == ECombatState::ECS_Unoccupied;//×Óµ¯²»Îª0ÇÒÔÊĞí¿ª»ğ
+	return !EquippedWeapon->IsEmpty() && bCanFire && CombatState == ECombatState::ECS_Unoccupied;//å­å¼¹ä¸ä¸º0ä¸”å…è®¸å¼€ç«
 
 }
 
@@ -262,7 +262,7 @@ void UCombatComponent::OnRep_CarriedAmmo()
 	Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(Character->Controller) : Controller;
 	if (Controller)
 	{
-		Controller->SetHUDCarriedAmmo(CarriedAmmo);//ÉèÖÃ±¸µ¯HUD
+		Controller->SetHUDCarriedAmmo(CarriedAmmo);//è®¾ç½®å¤‡å¼¹HUD
 	}
 	bool bJumpToShotGunEnd = CombatState == ECombatState::ECS_Reloading &&
 		EquippedWeapon != nullptr &&
@@ -270,7 +270,7 @@ void UCombatComponent::OnRep_CarriedAmmo()
 		CarriedAmmo == 0;
 	if(bJumpToShotGunEnd)
 	{
-			//Èç¹û×°ÂúÁË¾ÍÖ±½ÓÌøµ½×°ÌîÍê±ÏµÄ¶¯»­
+			//å¦‚æœè£…æ»¡äº†å°±ç›´æ¥è·³åˆ°è£…å¡«å®Œæ¯•çš„åŠ¨ç”»
 			JumpToShotGunEnd();
 	}
 }
@@ -292,27 +292,27 @@ void UCombatComponent::InitializeCarriedAmmo()
 void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 {
 	FVector2D ViewportSize;
-	if (GEngine && GEngine->GameViewport)//´ÓGEngine»ñÈ¡ÊÓ¿Ú
+	if (GEngine && GEngine->GameViewport)//ä»GEngineè·å–è§†å£
 	{
-		GEngine->GameViewport->GetViewportSize(ViewportSize);//»ñÈ¡ÓÎÏ·ÆÁÄ»µÄ´óĞ¡
+		GEngine->GameViewport->GetViewportSize(ViewportSize);//è·å–æ¸¸æˆå±å¹•çš„å¤§å°
 
 	}
-	FVector2D CrosshairLocation(ViewportSize.X / 2.0F, ViewportSize.Y / 2.0f);//ÆÁÄ»´óĞ¡³ıÒÔ¶ş¾ÍÊÇÖĞĞÄµãµÄ×ø±ê,²»¹ıÊÇÆÁÄ»×ø±ê£¬²»ÊÇÊÀ½ç×ø±ê
+	FVector2D CrosshairLocation(ViewportSize.X / 2.0F, ViewportSize.Y / 2.0f);//å±å¹•å¤§å°é™¤ä»¥äºŒå°±æ˜¯ä¸­å¿ƒç‚¹çš„åæ ‡,ä¸è¿‡æ˜¯å±å¹•åæ ‡ï¼Œä¸æ˜¯ä¸–ç•Œåæ ‡
 
 	FVector CrosshairWorldPosition;
 	FVector CrosshairWorldDirection;
 
-	//½«¸ø¶¨µÄ2DÆÁÄ»¿Õ¼ä×ø±ê×ª»»ÎªÈıÎ¬ÊÀ½ç¿Õ¼äµãºÍ·½Ïò
+	//å°†ç»™å®šçš„2Då±å¹•ç©ºé—´åæ ‡è½¬æ¢ä¸ºä¸‰ç»´ä¸–ç•Œç©ºé—´ç‚¹å’Œæ–¹å‘
 	bool bScreenToWorld = 	UGameplayStatics::DeprojectScreenToWorld(
 		UGameplayStatics::GetPlayerController(this, 0),
 		CrosshairLocation,
 		CrosshairWorldPosition,
 		CrosshairWorldDirection
-	);//ÔËĞĞºórosshairWorldPosition,CrosshairWorldDirection±»Ìî³äÊı¾İ
+	);//è¿è¡ŒårosshairWorldPosition,CrosshairWorldDirectionè¢«å¡«å……æ•°æ®
 
 	if (bScreenToWorld)
 	{
-		FVector Start = CrosshairWorldPosition;//×Óµ¯Éä³öÈ¥¿ªÊ¼µÄÎ»ÖÃ
+		FVector Start = CrosshairWorldPosition;//å­å¼¹å°„å‡ºå»å¼€å§‹çš„ä½ç½®
 
 		if (Character)
 		{
@@ -321,7 +321,7 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 			//DrawDebugSphere(GetWorld(), Start, 16.f, 12, FColor::Red, false);
 		}
 
-		FVector End = Start + CrosshairWorldDirection * TraceLength;//×Óµ¯Éä³öÈ¥Í£Ö¹µÄÎ»ÖÃ£¬Ïàµ±ÓÚ×î´óÉä³Ì
+		FVector End = Start + CrosshairWorldDirection * TraceLength;//å­å¼¹å°„å‡ºå»åœæ­¢çš„ä½ç½®ï¼Œç›¸å½“äºæœ€å¤§å°„ç¨‹
 
 		GetWorld()->LineTraceSingleByChannel(
 			TraceHitResult,
@@ -329,26 +329,26 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 			End,
 			ECollisionChannel::ECC_Visibility
 		);
-	
-		if (TraceHitResult.GetActor() && TraceHitResult.GetActor()->Implements<UInteractWithCrosshairsInterface>())//¼ì²éÉäÏß¼ì²âÊÇ·ñÅö×²µ½ÁËÎïÌå²¢ÇÒÊÇ·ñ¼Ì³ĞÁË½Ó¿Ú
+		if (!TraceHitResult.bBlockingHit) TraceHitResult.ImpactPoint = End;
+		if (TraceHitResult.GetActor() && TraceHitResult.GetActor()->Implements<UInteractWithCrosshairsInterface>())//æ£€æŸ¥å°„çº¿æ£€æµ‹æ˜¯å¦ç¢°æ’åˆ°äº†ç‰©ä½“å¹¶ä¸”æ˜¯å¦ç»§æ‰¿äº†æ¥å£
 		{
-			HUDPackage.CrosshairsColor = FLinearColor::Red;//ÃéÖĞÈËÁË×¼ĞÄ±äºì
+			HUDPackage.CrosshairsColor = FLinearColor::Red;//ç„ä¸­äººäº†å‡†å¿ƒå˜çº¢
 		}
 		else
 		{
-			HUDPackage.CrosshairsColor = FLinearColor::White;//Ã»ÃéÖĞÈË×¼ĞÄ±ä°×
+			HUDPackage.CrosshairsColor = FLinearColor::White;//æ²¡ç„ä¸­äººå‡†å¿ƒå˜ç™½
 		}
 	}
 }
 
-void UCombatComponent::ServerFire_Implementation(const FVector_NetQuantize& TraceHitTarget)//·şÎñÆ÷¿ª»ğ
+void UCombatComponent::ServerFire_Implementation(const FVector_NetQuantize& TraceHitTarget)//æœåŠ¡å™¨å¼€ç«
 {
-	MultiCastFire(TraceHitTarget);//ÔÚ·şÎñÆ÷ÉÏÖ´ĞĞ¶à²¥»áÔÚ·şÎñÆ÷ºÍËùÓĞµÄ¿Í»§¶ËÉÏÖ´ĞĞ
+	MultiCastFire(TraceHitTarget);//åœ¨æœåŠ¡å™¨ä¸Šæ‰§è¡Œå¤šæ’­ä¼šåœ¨æœåŠ¡å™¨å’Œæ‰€æœ‰çš„å®¢æˆ·ç«¯ä¸Šæ‰§è¡Œ
 }
 
-void UCombatComponent::MultiCastFire_Implementation(const FVector_NetQuantize& TraceHitTarget)//·şÎñÆ÷·¢ÆğµÄÏò¿Í»§¶ËµÄ¶à²¥¿ª»ğ
+void UCombatComponent::MultiCastFire_Implementation(const FVector_NetQuantize& TraceHitTarget)//æœåŠ¡å™¨å‘èµ·çš„å‘å®¢æˆ·ç«¯çš„å¤šæ’­å¼€ç«
 {
-	if(Character && Character->IsLocallyControlled() && !Character->HasAuthority()) return;//Èç¹û½Óµ½Í¨ÖªµÄÊÇ±¾»ú£¬¾Í²»Ö´ĞĞÕâ¾ä»°£¬ÒòÎªÖ®Ç°Ö´ĞĞ¹ıÁË
+	if(Character && Character->IsLocallyControlled() && !Character->HasAuthority()) return;//å¦‚æœæ¥åˆ°é€šçŸ¥çš„æ˜¯æœ¬æœºï¼Œå°±ä¸æ‰§è¡Œè¿™å¥è¯ï¼Œå› ä¸ºä¹‹å‰æ‰§è¡Œè¿‡äº†
 	LocalFire(TraceHitTarget);
 }
 
@@ -359,7 +359,7 @@ void UCombatComponent::ServerShotgunFire_Implementation(const TArray<FVector_Net
 
 void UCombatComponent::MulticastShotgunFire_Implementation(const TArray<FVector_NetQuantize>& TraceHitTargets)
 {
-	if (Character && Character->IsLocallyControlled() && !Character->HasAuthority()) return;//Èç¹û½Óµ½Í¨ÖªµÄÊÇ±¾»ú£¬¾Í²»Ö´ĞĞÕâ¾ä»°£¬ÒòÎªÖ®Ç°Ö´ĞĞ¹ıÁË
+	if (Character && Character->IsLocallyControlled() && !Character->HasAuthority()) return;//å¦‚æœæ¥åˆ°é€šçŸ¥çš„æ˜¯æœ¬æœºï¼Œå°±ä¸æ‰§è¡Œè¿™å¥è¯ï¼Œå› ä¸ºä¹‹å‰æ‰§è¡Œè¿‡äº†
 	LocalShotgunFire(TraceHitTargets);
 }
 
@@ -367,23 +367,23 @@ void UCombatComponent::LocalFire(const FVector_NetQuantize& TraceHitTarget)
 {
 	if (EquippedWeapon == nullptr) return;
 
-	if (Character && CombatState == ECombatState::ECS_Unoccupied)//Èç¹û½ÇÉ«Àà´æÔÚ£¬ÇÒÎäÆ÷×´Ì¬ÊÇ¿ÕÏĞ×´Ì¬µÄ»°
+	if (Character && CombatState == ECombatState::ECS_Unoccupied)//å¦‚æœè§’è‰²ç±»å­˜åœ¨ï¼Œä¸”æ­¦å™¨çŠ¶æ€æ˜¯ç©ºé—²çŠ¶æ€çš„è¯
 	{
-		//¿ª»ğĞèÒª²¥·ÅÁ½ÖÖ¶¯»­£¬Ò»ÖÖÊÇ½ÇÉ«µÄ¿ª»ğ¶¯×÷¶¯»­£¬»¹ÓĞÒ»ÖÖÊÇÎäÆ÷µÄ¶¯×÷¶¯»­
-		Character->PlayFireMontage(bAiming);//½ÇÉ«Àà²¥·Å¿ª»ğÃÉÌ«Ææ¶¯»­
-		EquippedWeapon->Fire(TraceHitTarget);//ÎäÆ÷Àà´¥·¢¿ª»ğÊÂ¼ş
+		//å¼€ç«éœ€è¦æ’­æ”¾ä¸¤ç§åŠ¨ç”»ï¼Œä¸€ç§æ˜¯è§’è‰²çš„å¼€ç«åŠ¨ä½œåŠ¨ç”»ï¼Œè¿˜æœ‰ä¸€ç§æ˜¯æ­¦å™¨çš„åŠ¨ä½œåŠ¨ç”»
+		Character->PlayFireMontage(bAiming);//è§’è‰²ç±»æ’­æ”¾å¼€ç«è’™å¤ªå¥‡åŠ¨ç”»
+		EquippedWeapon->Fire(TraceHitTarget);//æ­¦å™¨ç±»è§¦å‘å¼€ç«äº‹ä»¶
 	}
 }
 
 void UCombatComponent::LocalShotgunFire(const TArray<FVector_NetQuantize>& TraceHitTarget)
 {
-	AShotGun* ShotGun = Cast<AShotGun>(EquippedWeapon);//½«ÎäÆ÷ÀàĞÍ×ª»»ÎªÅç×Ó
+	AShotGun* ShotGun = Cast<AShotGun>(EquippedWeapon);//å°†æ­¦å™¨ç±»å‹è½¬æ¢ä¸ºå–·å­
 	if(ShotGun == nullptr || Character == nullptr) return;
 	if (CombatState == ECombatState::ECS_Reloading || CombatState == ECombatState::ECS_Unoccupied)
 	{
-		Character->PlayFireMontage(bAiming);//½ÇÉ«Àà²¥·Å¿ª»ğÃÉÌ«Ææ¶¯»­
+		Character->PlayFireMontage(bAiming);//è§’è‰²ç±»æ’­æ”¾å¼€ç«è’™å¤ªå¥‡åŠ¨ç”»
 		ShotGun->FireShotgun(TraceHitTarget);
-		CombatState = ECombatState::ECS_Unoccupied;//½«ÎäÆ÷×´Ì¬ÖØĞÂÉèÖÃÎª ÆÕÍ¨×´Ì¬
+		CombatState = ECombatState::ECS_Unoccupied;//å°†æ­¦å™¨çŠ¶æ€é‡æ–°è®¾ç½®ä¸º æ™®é€šçŠ¶æ€
 
 	}
 
@@ -391,20 +391,20 @@ void UCombatComponent::LocalShotgunFire(const TArray<FVector_NetQuantize>& Trace
 
 void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {
-	if (Character == nullptr || WeaponToEquip == nullptr) return;//¼ì²é½ÇÉ«ºÍÎäÆ÷ÊÇ·ñÎª¿Õ
+	if (Character == nullptr || WeaponToEquip == nullptr) return;//æ£€æŸ¥è§’è‰²å’Œæ­¦å™¨æ˜¯å¦ä¸ºç©º
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
 
-	if(EquippedWeapon != nullptr && SecondaryWeapon == nullptr)//Èç¹ûÒÑ¾­×°±¸ÁËÒ»°ÑÎäÆ÷²¢ÇÒÃ»×°µÚ¶ş°Ñ£¬¾Í¿ÉÒÔ×°µÚ¶ş°Ñ
+	if(EquippedWeapon != nullptr && SecondaryWeapon == nullptr)//å¦‚æœå·²ç»è£…å¤‡äº†ä¸€æŠŠæ­¦å™¨å¹¶ä¸”æ²¡è£…ç¬¬äºŒæŠŠï¼Œå°±å¯ä»¥è£…ç¬¬äºŒæŠŠ
 	{
 		EquipSecondaryWeapon(WeaponToEquip);
 	}
 	else
 	{
-		EquipPrimaryWeapon(WeaponToEquip);//²»È»¾ÍÊÇ×°µÚÒ»¼şÎäÆ÷
+		EquipPrimaryWeapon(WeaponToEquip);//ä¸ç„¶å°±æ˜¯è£…ç¬¬ä¸€ä»¶æ­¦å™¨
 	}
 
-	Character->GetCharacterMovement()->bOrientRotationToMovement = false;//¹Ø±Õ½ÇÉ«ÏòÒÆ¶¯µÄ·½ÏòĞı×ª
-	Character->bUseControllerRotationYaw = true; //¿ªÆô½ÇÉ«¸úËæÊó±êµÄ×óÓÒĞı×ª
+	Character->GetCharacterMovement()->bOrientRotationToMovement = false;//å…³é—­è§’è‰²å‘ç§»åŠ¨çš„æ–¹å‘æ—‹è½¬
+	Character->bUseControllerRotationYaw = true; //å¼€å¯è§’è‰²è·Ÿéšé¼ æ ‡çš„å·¦å³æ—‹è½¬
 }
 
 void UCombatComponent::SwapPrimaryWeapon()
@@ -414,18 +414,18 @@ void UCombatComponent::SwapPrimaryWeapon()
 	EquippedWeapon = SecondaryWeapon;
 	SecondaryWeapon = TempWeapon;
 
-	//ÉèÖÃÖ÷ÎäÆ÷µÄ²¿·Ö,¸±ÎäÆ÷ÌÍ³öÀ´±ä³ÉÖ÷ÎäÆ÷
-	EquippedWeapon->SetWeaponState(EWeaponState::Weapon_Equipped);//ÉèÖÃÎäÆ÷µÄ×´Ì¬ÎªÒÑ×°±¸
-	AttachActorToRightHand(EquippedWeapon);//¶«Î÷·ÅÓÒÊÖÉÏ
-	EquippedWeapon->SetOwner(Character);//ÉèÖÃËùÓĞÈ¨
-	EquippedWeapon->SetHUDAmmo();//ÉèÖÃµ±Ç°µ¯Ò©HUD
-	UpdateCarriedAmmo();//¸üĞÂĞ¯´øµÄµ¯Ò©
-	PlayEquipWeaponSound(EquippedWeapon);//²¥·Å¼ñÆğÎäÆ÷µÄÉùÒô
-	ReloadEmptyWeapon();//ÎäÆ÷ÒªÊÇ¿ÕµÄ¾Í×°×Óµ¯
-	//ÉèÖÃ¸±ÎäÆ÷µÄ²¿·Ö
+	//è®¾ç½®ä¸»æ­¦å™¨çš„éƒ¨åˆ†,å‰¯æ­¦å™¨æå‡ºæ¥å˜æˆä¸»æ­¦å™¨
+	EquippedWeapon->SetWeaponState(EWeaponState::Weapon_Equipped);//è®¾ç½®æ­¦å™¨çš„çŠ¶æ€ä¸ºå·²è£…å¤‡
+	AttachActorToRightHand(EquippedWeapon);//ä¸œè¥¿æ”¾å³æ‰‹ä¸Š
+	EquippedWeapon->SetOwner(Character);//è®¾ç½®æ‰€æœ‰æƒ
+	EquippedWeapon->SetHUDAmmo();//è®¾ç½®å½“å‰å¼¹è¯HUD
+	UpdateCarriedAmmo();//æ›´æ–°æºå¸¦çš„å¼¹è¯
+	PlayEquipWeaponSound(EquippedWeapon);//æ’­æ”¾æ¡èµ·æ­¦å™¨çš„å£°éŸ³
+	ReloadEmptyWeapon();//æ­¦å™¨è¦æ˜¯ç©ºçš„å°±è£…å­å¼¹
+	//è®¾ç½®å‰¯æ­¦å™¨çš„éƒ¨åˆ†
 
-	SecondaryWeapon->SetWeaponState(EWeaponState::Weapon_EquippedSecondary);//ÉèÖÃÎäÆ÷µÄ×´Ì¬ÎªÒÑ×°±¸
-	AttachActorToBackpack(SecondaryWeapon);//ÎäÆ÷·Åµ½ºó±³È¥
+	SecondaryWeapon->SetWeaponState(EWeaponState::Weapon_EquippedSecondary);//è®¾ç½®æ­¦å™¨çš„çŠ¶æ€ä¸ºå·²è£…å¤‡
+	AttachActorToBackpack(SecondaryWeapon);//æ­¦å™¨æ”¾åˆ°åèƒŒå»
 
 }
 
@@ -436,47 +436,47 @@ void UCombatComponent::SwapSecondaryWeapon()
 	SecondaryWeapon = EquippedWeapon;
 	EquippedWeapon = TempWeapon;
 
-	//ÉèÖÃÖ÷ÎäÆ÷µÄ²¿·Ö,¸±ÎäÆ÷ÌÍ³öÀ´±ä³ÉÖ÷ÎäÆ÷
-	EquippedWeapon->SetWeaponState(EWeaponState::Weapon_Equipped);//ÉèÖÃÎäÆ÷µÄ×´Ì¬ÎªÒÑ×°±¸
-	AttachActorToRightHand(EquippedWeapon);//¶«Î÷·ÅÓÒÊÖÉÏ
-	EquippedWeapon->SetOwner(Character);//ÉèÖÃËùÓĞÈ¨
-	EquippedWeapon->SetHUDAmmo();//ÉèÖÃµ±Ç°µ¯Ò©HUD
-	UpdateCarriedAmmo();//¸üĞÂĞ¯´øµÄµ¯Ò©
-	PlayEquipWeaponSound(EquippedWeapon);//²¥·Å¼ñÆğÎäÆ÷µÄÉùÒô
-	ReloadEmptyWeapon();//ÎäÆ÷ÒªÊÇ¿ÕµÄ¾Í×°×Óµ¯
-	//ÉèÖÃ¸±ÎäÆ÷µÄ²¿·Ö
+	//è®¾ç½®ä¸»æ­¦å™¨çš„éƒ¨åˆ†,å‰¯æ­¦å™¨æå‡ºæ¥å˜æˆä¸»æ­¦å™¨
+	EquippedWeapon->SetWeaponState(EWeaponState::Weapon_Equipped);//è®¾ç½®æ­¦å™¨çš„çŠ¶æ€ä¸ºå·²è£…å¤‡
+	AttachActorToRightHand(EquippedWeapon);//ä¸œè¥¿æ”¾å³æ‰‹ä¸Š
+	EquippedWeapon->SetOwner(Character);//è®¾ç½®æ‰€æœ‰æƒ
+	EquippedWeapon->SetHUDAmmo();//è®¾ç½®å½“å‰å¼¹è¯HUD
+	UpdateCarriedAmmo();//æ›´æ–°æºå¸¦çš„å¼¹è¯
+	PlayEquipWeaponSound(EquippedWeapon);//æ’­æ”¾æ¡èµ·æ­¦å™¨çš„å£°éŸ³
+	ReloadEmptyWeapon();//æ­¦å™¨è¦æ˜¯ç©ºçš„å°±è£…å­å¼¹
+	//è®¾ç½®å‰¯æ­¦å™¨çš„éƒ¨åˆ†
 
-	SecondaryWeapon->SetWeaponState(EWeaponState::Weapon_EquippedSecondary);//ÉèÖÃÎäÆ÷µÄ×´Ì¬ÎªÒÑ×°±¸
-	AttachActorToBackpack(SecondaryWeapon);//Ö÷ÎäÆ÷·Åµ½ºó±³È¥
+	SecondaryWeapon->SetWeaponState(EWeaponState::Weapon_EquippedSecondary);//è®¾ç½®æ­¦å™¨çš„çŠ¶æ€ä¸ºå·²è£…å¤‡
+	AttachActorToBackpack(SecondaryWeapon);//ä¸»æ­¦å™¨æ”¾åˆ°åèƒŒå»
 
 }
 
 void UCombatComponent::EquipPrimaryWeapon(AWeapon* WeaponToEquip)
 {
 	if (WeaponToEquip == nullptr) return;
-	DropEquippedWeapon();//Èç¹ûÊÖÉÏÓĞ¶«Î÷¾Í°ÑÊÖÉÏµÄ¶«Î÷¶ªÁË
-	EquippedWeapon = WeaponToEquip;//×°±¸µÄÎäÆ÷ÉèÖÃÎª´«ÈëµÄÎäÆ÷
-	EquippedWeapon->SetWeaponState(EWeaponState::Weapon_Equipped);//ÉèÖÃÎäÆ÷µÄ×´Ì¬ÎªÒÑ×°±¸
-	EquippedWeapon->bDestroyedWeapon = false;//²»½øĞĞÎäÆ÷µôÂäµ½µØÉÏºó×¼±¸Ïú»ÙµÄ¼ÆÊ±
-	AttachActorToRightHand(EquippedWeapon);//¶«Î÷·ÅÓÒÊÖÉÏ
-	EquippedWeapon->SetOwner(Character);//ÉèÖÃËùÓĞÈ¨
-	EquippedWeapon->SetHUDAmmo();//ÉèÖÃµ±Ç°µ¯Ò©HUD
-	UpdateCarriedAmmo();//¸üĞÂĞ¯´øµÄµ¯Ò©
-	PlayEquipWeaponSound(WeaponToEquip);//²¥·Å¼ñÆğÎäÆ÷µÄÉùÒô
-	ReloadEmptyWeapon();//ÎäÆ÷ÒªÊÇ¿ÕµÄ¾Í×°×Óµ¯
-	EquippedWeapon->EnableCustomDepth(false);//¹Ø±ÕÎäÆ÷ÂÖÀªÃè±ß
+	DropEquippedWeapon();//å¦‚æœæ‰‹ä¸Šæœ‰ä¸œè¥¿å°±æŠŠæ‰‹ä¸Šçš„ä¸œè¥¿ä¸¢äº†
+	EquippedWeapon = WeaponToEquip;//è£…å¤‡çš„æ­¦å™¨è®¾ç½®ä¸ºä¼ å…¥çš„æ­¦å™¨
+	EquippedWeapon->SetWeaponState(EWeaponState::Weapon_Equipped);//è®¾ç½®æ­¦å™¨çš„çŠ¶æ€ä¸ºå·²è£…å¤‡
+	EquippedWeapon->bDestroyedWeapon = false;//ä¸è¿›è¡Œæ­¦å™¨æ‰è½åˆ°åœ°ä¸Šåå‡†å¤‡é”€æ¯çš„è®¡æ—¶
+	AttachActorToRightHand(EquippedWeapon);//ä¸œè¥¿æ”¾å³æ‰‹ä¸Š
+	EquippedWeapon->SetOwner(Character);//è®¾ç½®æ‰€æœ‰æƒ
+	EquippedWeapon->SetHUDAmmo();//è®¾ç½®å½“å‰å¼¹è¯HUD
+	UpdateCarriedAmmo();//æ›´æ–°æºå¸¦çš„å¼¹è¯
+	PlayEquipWeaponSound(WeaponToEquip);//æ’­æ”¾æ¡èµ·æ­¦å™¨çš„å£°éŸ³
+	ReloadEmptyWeapon();//æ­¦å™¨è¦æ˜¯ç©ºçš„å°±è£…å­å¼¹
+	EquippedWeapon->EnableCustomDepth(false);//å…³é—­æ­¦å™¨è½®å»“æè¾¹
 }
 
 void UCombatComponent::EquipSecondaryWeapon(AWeapon* WeaponToEquip)
 {
 	if (WeaponToEquip == nullptr) return;
-	SecondaryWeapon = WeaponToEquip;//×°±¸µÄÎäÆ÷ÉèÖÃÎª´«ÈëµÄÎäÆ÷
-	SecondaryWeapon->bDestroyedWeapon = false;//³õÊ¼»¯»ò²»½øĞĞÎäÆ÷µôÂäµ½µØÉÏºó×¼±¸Ïú»ÙµÄ¼ÆÊ±
-	SecondaryWeapon->SetWeaponState(EWeaponState::Weapon_EquippedSecondary);//ÉèÖÃÎäÆ÷µÄ×´Ì¬ÎªÒÑ×°±¸
+	SecondaryWeapon = WeaponToEquip;//è£…å¤‡çš„æ­¦å™¨è®¾ç½®ä¸ºä¼ å…¥çš„æ­¦å™¨
+	SecondaryWeapon->bDestroyedWeapon = false;//åˆå§‹åŒ–æˆ–ä¸è¿›è¡Œæ­¦å™¨æ‰è½åˆ°åœ°ä¸Šåå‡†å¤‡é”€æ¯çš„è®¡æ—¶
+	SecondaryWeapon->SetWeaponState(EWeaponState::Weapon_EquippedSecondary);//è®¾ç½®æ­¦å™¨çš„çŠ¶æ€ä¸ºå·²è£…å¤‡
 	AttachActorToBackpack(WeaponToEquip);
-	PlayEquipWeaponSound(WeaponToEquip);//²¥·Å¼ñÆğÎäÆ÷µÄÉùÒô
-	SecondaryWeapon->EnableCustomDepth(true);//¿ªÆôÎäÆ÷ÂÖÀªÃè±ß
-	SecondaryWeapon->SetOwner(Character);//ÉèÖÃËùÓĞÈ¨
+	PlayEquipWeaponSound(WeaponToEquip);//æ’­æ”¾æ¡èµ·æ­¦å™¨çš„å£°éŸ³
+	SecondaryWeapon->EnableCustomDepth(true);//å¼€å¯æ­¦å™¨è½®å»“æè¾¹
+	SecondaryWeapon->SetOwner(Character);//è®¾ç½®æ‰€æœ‰æƒ
 
 }
 
@@ -490,16 +490,16 @@ void UCombatComponent::OnRep_Aiming()
 
 void UCombatComponent::DropEquippedWeapon()
 {
-	if (EquippedWeapon)//Èç¹ûÎäÆ÷´æÔÚ
+	if (EquippedWeapon)//å¦‚æœæ­¦å™¨å­˜åœ¨
 	{
-		EquippedWeapon->Dropped();//Èç¹ûÒÑ¾­×°±¸ÁËÒ»¼şÎäÆ÷£¬¾Í¶ªµôÊÖÉÏµÄ
+		EquippedWeapon->Dropped();//å¦‚æœå·²ç»è£…å¤‡äº†ä¸€ä»¶æ­¦å™¨ï¼Œå°±ä¸¢æ‰æ‰‹ä¸Šçš„
 	}
 }
 
 void UCombatComponent::AttachActorToBackpack(AActor* ActorToAttach)
 {
 	if (Character == nullptr || Character->GetMesh() == nullptr || ActorToAttach == nullptr) return;
-	const USkeletalMeshSocket* BackpackSocket = Character->GetMesh()->GetSocketByName(FName("BackpackSocket"));//»ñÈ¡½ÇÉ«ºó±³±³°üµÄ²å²Û
+	const USkeletalMeshSocket* BackpackSocket = Character->GetMesh()->GetSocketByName(FName("BackpackSocket"));//è·å–è§’è‰²åèƒŒèƒŒåŒ…çš„æ’æ§½
 		if(BackpackSocket)
 		{
 			BackpackSocket->AttachActor(ActorToAttach, Character->GetMesh());
@@ -511,10 +511,10 @@ void UCombatComponent::AttachActorToRightHand(AActor* ActorToAttach)
 {
 	if (Character == nullptr || ActorToAttach == nullptr || Character->GetMesh() == nullptr) return;
 
-	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket"));//»ñÈ¡½ÇÉ«Ä£ĞÍÉíÉÏµÄÖ¸¶¨²å²Û
+	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket"));//è·å–è§’è‰²æ¨¡å‹èº«ä¸Šçš„æŒ‡å®šæ’æ§½
 	if (HandSocket)
 	{
-		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());//²ÎÊı£ºÎäÆ÷£¬½ÇÉ«Ä£ĞÍ
+		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());//å‚æ•°ï¼šæ­¦å™¨ï¼Œè§’è‰²æ¨¡å‹
 	}
 }
 
@@ -548,10 +548,10 @@ void UCombatComponent::AttachActorToLeftHand(AActor* ActorToAttach)
 
 void UCombatComponent::SelectWeaponSocket(FName SocketName)
 {
-	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName(SocketName));//»ñÈ¡½ÇÉ«Ä£ĞÍÉíÉÏµÄÖ¸¶¨²å²Û
+	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName(SocketName));//è·å–è§’è‰²æ¨¡å‹èº«ä¸Šçš„æŒ‡å®šæ’æ§½
 	if (HandSocket)
 	{
-		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());//²ÎÊı£ºÎäÆ÷£¬½ÇÉ«Ä£ĞÍ
+		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());//å‚æ•°ï¼šæ­¦å™¨ï¼Œè§’è‰²æ¨¡å‹
 	}
 }
 
@@ -568,22 +568,22 @@ void UCombatComponent::ShowAttachedGrenade(bool bShowGrenade)
 void UCombatComponent::UpdateCarriedAmmo()
 {
 	if (EquippedWeapon == nullptr) return;
-	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))//¼ì²éÎäÆ÷ÀàĞÍ
+	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))//æ£€æŸ¥æ­¦å™¨ç±»å‹
 	{
-		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];//´ÓmapÖĞ»ñÈ¡µ±Ç°ÎäÆ÷ÖÖÀàµÄ±¸µ¯Êı
+		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];//ä»mapä¸­è·å–å½“å‰æ­¦å™¨ç§ç±»çš„å¤‡å¼¹æ•°
 	}
 
 	Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(Character->Controller) : Controller;
 	if (Controller)
 	{
-		Controller->SetHUDCarriedAmmo(CarriedAmmo);//ÉèÖÃ±¸µ¯HUD
+		Controller->SetHUDCarriedAmmo(CarriedAmmo);//è®¾ç½®å¤‡å¼¹HUD
 	}
 }
 
 void UCombatComponent::PlayEquipWeaponSound(AWeapon* WeaponToEquip)
 {
 	if (Character == nullptr || WeaponToEquip ==nullptr || WeaponToEquip->EquipSound == nullptr) return;
-	//²¥·Å×°±¸ÎäÆ÷µÄÒôĞ§
+	//æ’­æ”¾è£…å¤‡æ­¦å™¨çš„éŸ³æ•ˆ
 		UGameplayStatics::PlaySoundAtLocation(
 			this,
 			WeaponToEquip->EquipSound,
@@ -594,27 +594,27 @@ void UCombatComponent::PlayEquipWeaponSound(AWeapon* WeaponToEquip)
 
 void UCombatComponent::ReloadEmptyWeapon()
 {
-	if (Character && EquippedWeapon && EquippedWeapon->IsEmpty())//Èç¹û¼ñÆğÀ´µÄÎäÆ÷ÊÇ¿ÕµÄ¾Í×Ô¶¯»»µ¯
+	if (Character && EquippedWeapon && EquippedWeapon->IsEmpty())//å¦‚æœæ¡èµ·æ¥çš„æ­¦å™¨æ˜¯ç©ºçš„å°±è‡ªåŠ¨æ¢å¼¹
 	{
 		Reload();
 	}
 
 }
 
-void UCombatComponent::SetHUDCrosshairs(float DeltaTime)//ÉèÖÃÊ®×Ö×¼ĞÄ
+void UCombatComponent::SetHUDCrosshairs(float DeltaTime)//è®¾ç½®åå­—å‡†å¿ƒ
 {
-	if (Character == nullptr || Character->Controller == nullptr) return;//ÏÈÅĞ¶¨½ÇÉ«´æ²»´æÔÚ
+	if (Character == nullptr || Character->Controller == nullptr) return;//å…ˆåˆ¤å®šè§’è‰²å­˜ä¸å­˜åœ¨
 
 	Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(Character->Controller) : Controller;
 
-	if (Controller)//ÔÙÅĞ¶Ï¿ØÖÆÆ÷´æ²»´æÔÚ
+	if (Controller)//å†åˆ¤æ–­æ§åˆ¶å™¨å­˜ä¸å­˜åœ¨
 	{
 		HUD = HUD == nullptr ? Cast<ABlasterHUD>(Controller->GetHUD()) : HUD;
 
-		if (HUD)//ÔÙÅĞ¶ÏHUD´æ²»´æÔÚ
+		if (HUD)//å†åˆ¤æ–­HUDå­˜ä¸å­˜åœ¨
 		{
-			if (EquippedWeapon)//ÔÙÅĞ¶ÏÊÇ·ñ×°±¸ÁËÎäÆ÷
-			{//ÒªÊÇ´æÔÚHUDÀà¾Í´Ó×°±¸µÄÎäÆ÷ÀàÄÇÄÃµ½Ô¤ÉèµÄ×¼ĞÄ
+			if (EquippedWeapon)//å†åˆ¤æ–­æ˜¯å¦è£…å¤‡äº†æ­¦å™¨
+			{//è¦æ˜¯å­˜åœ¨HUDç±»å°±ä»è£…å¤‡çš„æ­¦å™¨ç±»é‚£æ‹¿åˆ°é¢„è®¾çš„å‡†å¿ƒ
 				HUDPackage.CrosshairsCenter = EquippedWeapon->CrosshairsCenter;
 				HUDPackage.CrosshairsLeft = EquippedWeapon->CrosshairsLeft;
 				HUDPackage.CrosshairsRight = EquippedWeapon->CrosshairsRight;
@@ -622,14 +622,14 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)//ÉèÖÃÊ®×Ö×¼ĞÄ
 				HUDPackage.CrosshairsTop = EquippedWeapon->CrosshairsTop;
 			}
 			else
-			{//ÒªÊÇÃ»ÎäÆ÷¾ÍÉè¿Õ£¬¾ÍÃ»ÓĞ×¼ĞÄÁË
+			{//è¦æ˜¯æ²¡æ­¦å™¨å°±è®¾ç©ºï¼Œå°±æ²¡æœ‰å‡†å¿ƒäº†
 				HUDPackage.CrosshairsCenter = nullptr;
 				HUDPackage.CrosshairsLeft = nullptr;
 				HUDPackage.CrosshairsRight = nullptr;
 				HUDPackage.CrosshairsBottom = nullptr;
 				HUDPackage.CrosshairsTop = nullptr;
 			}
-			//½¨Á¢Ò»¸öËÙ¶ÈÇø¼äµ½À©É¢Á¿µÄÓ³Éä[0,600]->[0,1]
+			//å»ºç«‹ä¸€ä¸ªé€Ÿåº¦åŒºé—´åˆ°æ‰©æ•£é‡çš„æ˜ å°„[0,600]->[0,1]
 			FVector2D WalkSpeedRange(0.f, Character->GetCharacterMovement()->MaxWalkSpeed);
 			FVector2D VelocityOutputRange(0.f, 1.f);
 			FVector Velocity = Character->GetVelocity();
@@ -645,17 +645,17 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)//ÉèÖÃÊ®×Ö×¼ĞÄ
 				CrosshairInAirFactor = FMath::FInterpTo(CrosshairInAirFactor, 0.f, DeltaTime, 30.f);
 			}
 
-			//ÉèÖÃ×¼ĞÄÀ©É¢µÄÁ¿
+			//è®¾ç½®å‡†å¿ƒæ‰©æ•£çš„é‡
 			if (bAiming)
 			{
-				CrosshairAimFactor = FMath::FInterpTo(CrosshairAimFactor, CrosshairAimTarget, DeltaTime, 30.f);//Ãé×¼µÄÊ±ºò£¬×¼ĞÇ±äĞ¡±ä×¼
+				CrosshairAimFactor = FMath::FInterpTo(CrosshairAimFactor, CrosshairAimTarget, DeltaTime, 30.f);//ç„å‡†çš„æ—¶å€™ï¼Œå‡†æ˜Ÿå˜å°å˜å‡†
 			}
 			else
 			{
-				CrosshairAimFactor = FMath::FInterpTo(CrosshairAimFactor, 0.f, DeltaTime, 30.f);//Ã»Ãé×¼µÄÊ±ºò£¬×¼ĞÄÀ©É¢Îª0(²»¿¼ÂÇ¿ªÇ¹ºÍ¿ÕÖĞ)
+				CrosshairAimFactor = FMath::FInterpTo(CrosshairAimFactor, 0.f, DeltaTime, 30.f);//æ²¡ç„å‡†çš„æ—¶å€™ï¼Œå‡†å¿ƒæ‰©æ•£ä¸º0(ä¸è€ƒè™‘å¼€æªå’Œç©ºä¸­)
 			}
 
-			CrosshairShootingFactor = FMath::FInterpTo(CrosshairShootingFactor, 0.f, DeltaTime, 40.f);//ÈÃÃé×¼×¼ĞÇÀ©É¢Öµ¿ìËÙ»Ö¸´µ½0
+			CrosshairShootingFactor = FMath::FInterpTo(CrosshairShootingFactor, 0.f, DeltaTime, 40.f);//è®©ç„å‡†å‡†æ˜Ÿæ‰©æ•£å€¼å¿«é€Ÿæ¢å¤åˆ°0
 
 			HUDPackage.CrosshairsSpread =
 				0.5 +
@@ -681,13 +681,13 @@ void UCombatComponent::HandleReload()
 int32 UCombatComponent::AmountToReload()
 {
 	if (EquippedWeapon == nullptr) return 0;
-	int32 RoomInMag = EquippedWeapon->GetMagCapacity() - EquippedWeapon->GetAmmo();//µ¯¼ĞÖĞµÄÓàÏÂ¿Õ¼ä = Âúµ¯ - Ê£Óà×Óµ¯
+	int32 RoomInMag = EquippedWeapon->GetMagCapacity() - EquippedWeapon->GetAmmo();//å¼¹å¤¹ä¸­çš„ä½™ä¸‹ç©ºé—´ = æ»¡å¼¹ - å‰©ä½™å­å¼¹
 
-	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))//¼ì²éÎäÆ÷ÀàĞÍ
+	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))//æ£€æŸ¥æ­¦å™¨ç±»å‹
 	{
 		int32 AmountCarried = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
-		int32 Least = FMath::Min(RoomInMag, AmountCarried);//È¡RoomInMagºÍAmountCarriedÖ®¼ä×îĞ¡µÄ±äÁ¿
-		return FMath::Clamp(RoomInMag, 0, Least);//Ê¹RoomInMag
+		int32 Least = FMath::Min(RoomInMag, AmountCarried);//å–RoomInMagå’ŒAmountCarriedä¹‹é—´æœ€å°çš„å˜é‡
+		return FMath::Clamp(RoomInMag, 0, Least);//ä½¿RoomInMag
 	}
 	return 0;
 }
@@ -709,7 +709,7 @@ void UCombatComponent::ThrowGrenade()
 	}
 	if (Character && Character->HasAuthority())
 	{
-		Grenades = FMath::Clamp(Grenades - 1, 0, MaxGrenades);//ÕâÀï½øĞĞÊÖÀ×ÊıÁ¿µÄ¼õÉÙ
+		Grenades = FMath::Clamp(Grenades - 1, 0, MaxGrenades);//è¿™é‡Œè¿›è¡Œæ‰‹é›·æ•°é‡çš„å‡å°‘
 		UpdateHUDGrenades();
 	}
 }
@@ -725,7 +725,7 @@ void UCombatComponent::ServerThrowGrenade_Implementation()
 		Character->PlayThrowGrenadeMontage();
 		AttachActorToLeftHand(EquippedWeapon);
 	}
-	Grenades = FMath::Clamp(Grenades - 1, 0, MaxGrenades);//ÕâÀï½øĞĞÊÖÀ×ÊıÁ¿µÄ¼õÉÙ
+	Grenades = FMath::Clamp(Grenades - 1, 0, MaxGrenades);//è¿™é‡Œè¿›è¡Œæ‰‹é›·æ•°é‡çš„å‡å°‘
 	UpdateHUDGrenades();
 }
 
@@ -746,7 +746,7 @@ void UCombatComponent::OnRep_Grenades()
 
 void UCombatComponent::Reload()
 {
-	if (CarriedAmmo > 0 && CombatState != ECombatState::ECS_Reloading && !EquippedWeapon->IsFull() && !bLocallyReloading)//»¹ÓĞ×Óµ¯ÇÒ²»ÊÇÂúµ¯ÇÒµ±Ç°ÎäÆ÷×´Ì¬²»´¦ÓÚ»»µ¯²ÅÄÜ¹»»»µ¯
+	if (CarriedAmmo > 0 && CombatState != ECombatState::ECS_Reloading && !EquippedWeapon->IsFull() && !bLocallyReloading)//è¿˜æœ‰å­å¼¹ä¸”ä¸æ˜¯æ»¡å¼¹ä¸”å½“å‰æ­¦å™¨çŠ¶æ€ä¸å¤„äºæ¢å¼¹æ‰èƒ½å¤Ÿæ¢å¼¹
 	{
 		ServerReload();
 		HandleReload();
@@ -754,7 +754,7 @@ void UCombatComponent::Reload()
 	}
 }
 
-void UCombatComponent::FinishReload()//ÓÉÀ¶Í¼Ö±½Óµ÷ÓÃµÄº¯Êı
+void UCombatComponent::FinishReload()//ç”±è“å›¾ç›´æ¥è°ƒç”¨çš„å‡½æ•°
 {
 	if (Character == nullptr)  return;
 	bLocallyReloading = false;
@@ -770,15 +770,15 @@ void UCombatComponent::FinishReload()//ÓÉÀ¶Í¼Ö±½Óµ÷ÓÃµÄº¯Êı
 	}
 }
 
-void UCombatComponent::ServerReload_Implementation()//·şÎñ¶ËÉÏºô½ĞHandleReload
+void UCombatComponent::ServerReload_Implementation()//æœåŠ¡ç«¯ä¸Šå‘¼å«HandleReload
 {
 	if (Character == nullptr || EquippedWeapon == nullptr) return;
 
-	CombatState = ECombatState::ECS_Reloading;//ÇĞ»»ÎäÆ÷×´Ì¬µ½»»µ¯
-	if(!Character->IsLocallyControlled()) HandleReload();//±¾µØÒÑ¾­µ÷ÓÃ¹ıÒ»´Î»»µ¯¶¯»­£¬Õâ¸öÊÇÍ¨Öª·şÎñÆ÷µÄ
+	CombatState = ECombatState::ECS_Reloading;//åˆ‡æ¢æ­¦å™¨çŠ¶æ€åˆ°æ¢å¼¹
+	if(!Character->IsLocallyControlled()) HandleReload();//æœ¬åœ°å·²ç»è°ƒç”¨è¿‡ä¸€æ¬¡æ¢å¼¹åŠ¨ç”»ï¼Œè¿™ä¸ªæ˜¯é€šçŸ¥æœåŠ¡å™¨çš„
 }
 
-void UCombatComponent::OnRep_CombatState()//¿Í»§¶ËÉÏºô½ĞHandleReload
+void UCombatComponent::OnRep_CombatState()//å®¢æˆ·ç«¯ä¸Šå‘¼å«HandleReload
 {
 	switch (CombatState)
 	{
@@ -807,7 +807,7 @@ void UCombatComponent::UpdateAmmoValues()
 	if (Character == nullptr || EquippedWeapon == nullptr) return;
 	int32 ReloadAmount = AmountToReload();
 
-	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))//¼ì²éÎäÆ÷ÀàĞÍ
+	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))//æ£€æŸ¥æ­¦å™¨ç±»å‹
 	{
 		CarriedAmmoMap[EquippedWeapon->GetWeaponType()] -= ReloadAmount;
 		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
@@ -816,7 +816,7 @@ void UCombatComponent::UpdateAmmoValues()
 	Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(Character->Controller) : Controller;
 	if (Controller)
 	{
-		Controller->SetHUDCarriedAmmo(CarriedAmmo);//ÉèÖÃ±¸µ¯HUD
+		Controller->SetHUDCarriedAmmo(CarriedAmmo);//è®¾ç½®å¤‡å¼¹HUD
 	}
 
 	EquippedWeapon->AddAmmo(ReloadAmount);
@@ -826,7 +826,7 @@ void UCombatComponent::UpdateAmmoValues()
 void UCombatComponent::UpdateShotgunAmmoValues()
 {
 	if (Character == nullptr || EquippedWeapon == nullptr) return;
-	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))//¼ì²éÎäÆ÷ÀàĞÍ
+	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))//æ£€æŸ¥æ­¦å™¨ç±»å‹
 	{
 		CarriedAmmoMap[EquippedWeapon->GetWeaponType()] -= 1;
 		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
@@ -835,15 +835,15 @@ void UCombatComponent::UpdateShotgunAmmoValues()
 	Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(Character->Controller) : Controller;
 	if (Controller)
 	{
-		Controller->SetHUDCarriedAmmo(CarriedAmmo);//ÉèÖÃ±¸µ¯HUD
+		Controller->SetHUDCarriedAmmo(CarriedAmmo);//è®¾ç½®å¤‡å¼¹HUD
 	}
-	EquippedWeapon->AddAmmo(1);//Ò»µ©¼ÓÁË×Óµ¯£¬¿Ï¶¨¾ÍÄÜ´òÁË
+	EquippedWeapon->AddAmmo(1);//ä¸€æ—¦åŠ äº†å­å¼¹ï¼Œè‚¯å®šå°±èƒ½æ‰“äº†
 	bCanFire = true;
 
 	
 	if(EquippedWeapon->IsFull() || CarriedAmmo == 0 )
 	{
-		//Èç¹û×°ÂúÁË¾ÍÖ±½ÓÌøµ½×°ÌîÍê±ÏµÄ¶¯»­
+		//å¦‚æœè£…æ»¡äº†å°±ç›´æ¥è·³åˆ°è£…å¡«å®Œæ¯•çš„åŠ¨ç”»
 		JumpToShotGunEnd();
 	}
 }
@@ -855,7 +855,7 @@ void UCombatComponent::JumpToShotGunEnd()
 	UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
 	if (AnimInstance && Character->GetReloadMontage())
 	{
-		AnimInstance->Montage_JumpToSection(FName("ShotGunEnd"));//Ö±½ÓÌø×ªµ½ÖÆ¶¨µÄÃÉÌ«Ææ¶¯»­
+		AnimInstance->Montage_JumpToSection(FName("ShotGunEnd"));//ç›´æ¥è·³è½¬åˆ°åˆ¶å®šçš„è’™å¤ªå¥‡åŠ¨ç”»
 	}
 }
 
@@ -896,46 +896,46 @@ void UCombatComponent::ServerLuncherGrenade_Implementation(const FVector_NetQuan
 	}
 }
 
-void UCombatComponent::InterpFOV(float DeltaTime)//FOVµÄ²åÖµ±ä»»
+void UCombatComponent::InterpFOV(float DeltaTime)//FOVçš„æ’å€¼å˜æ¢
 {
 	if (EquippedWeapon == nullptr) return;
 	if (bAiming)
 	{
-		CurrentFOV = FMath::FInterpTo(CurrentFOV, EquippedWeapon->GetZoomedFOV(), DeltaTime, EquippedWeapon->GetZoomedInterpSpeed());//¶Ô´¦ÓÚÃé×¼×´Ì¬µÄFOV½øĞĞÉèÖÃ
+		CurrentFOV = FMath::FInterpTo(CurrentFOV, EquippedWeapon->GetZoomedFOV(), DeltaTime, EquippedWeapon->GetZoomedInterpSpeed());//å¯¹å¤„äºç„å‡†çŠ¶æ€çš„FOVè¿›è¡Œè®¾ç½®
 	}
 	else
 	{//
-		CurrentFOV = FMath::FInterpTo(CurrentFOV, DefaultFOV, DeltaTime, ZoomInterpSpeed);//¶Ô·ÇÃé×¼×´Ì¬µÄFOV½øĞĞÉèÖÃ
+		CurrentFOV = FMath::FInterpTo(CurrentFOV, DefaultFOV, DeltaTime, ZoomInterpSpeed);//å¯¹éç„å‡†çŠ¶æ€çš„FOVè¿›è¡Œè®¾ç½®
 	}
 	if (Character && Character->GetFollowCamera())
 	{
-		Character->GetFollowCamera()->SetFieldOfView(CurrentFOV);//ÉèÖÃÎªµ±Ç°µÄFOV
+		Character->GetFollowCamera()->SetFieldOfView(CurrentFOV);//è®¾ç½®ä¸ºå½“å‰çš„FOV
 	}
 }
 
-void UCombatComponent::SetAiming(bool IsAiming)//ÉèÖÃÊÇ·ñÃé×¼
+void UCombatComponent::SetAiming(bool IsAiming)//è®¾ç½®æ˜¯å¦ç„å‡†
 {
 	if(Character == nullptr || EquippedWeapon == nullptr) return;
 
-	bAiming = IsAiming;//ÆäÊµ²»¹ÜÔõÃ´Ñù bAiming¶¼ÊÇ±¾µØµÄÇÒreplicateµÄ£¬ËùÒÔ±¾µØ»áÊ×ÏÈ±»ÉèÖÃÈ»ºó¾­¹ıÒ»¶ÎÑÓ³ÙºóÔÚÇ±ÔÚµÄ·şÎñÆ÷ÉÏÔËĞĞ²¢replicateµ½ÆäËû¿Í»§¶Ë
-	ServerSetAiming(IsAiming);//ÔÚ¿Í»§¶ËÉÏ±¾µØÉèÖÃºóÔÙÈ¥·şÎñÆ÷¶Ëµ÷ÓÃÕâ¸öº¯ÊıÔÙreplicateµ½ÆäËû¿Í»§¶Ë£¬ÔÚ·şÎñÆ÷ÉÏµÄ»°£¬¾ÍÕıºÃ±¾µØµ÷ÓÃÒ»´ÎÔÙreplicate
+	bAiming = IsAiming;//å…¶å®ä¸ç®¡æ€ä¹ˆæ · bAimingéƒ½æ˜¯æœ¬åœ°çš„ä¸”replicateçš„ï¼Œæ‰€ä»¥æœ¬åœ°ä¼šé¦–å…ˆè¢«è®¾ç½®ç„¶åç»è¿‡ä¸€æ®µå»¶è¿Ÿååœ¨æ½œåœ¨çš„æœåŠ¡å™¨ä¸Šè¿è¡Œå¹¶replicateåˆ°å…¶ä»–å®¢æˆ·ç«¯
+	ServerSetAiming(IsAiming);//åœ¨å®¢æˆ·ç«¯ä¸Šæœ¬åœ°è®¾ç½®åå†å»æœåŠ¡å™¨ç«¯è°ƒç”¨è¿™ä¸ªå‡½æ•°å†replicateåˆ°å…¶ä»–å®¢æˆ·ç«¯ï¼Œåœ¨æœåŠ¡å™¨ä¸Šçš„è¯ï¼Œå°±æ­£å¥½æœ¬åœ°è°ƒç”¨ä¸€æ¬¡å†replicate
 	if (Character)
 	{
-		Character->GetCharacterMovement()->MaxWalkSpeed = bAiming ? AimWalkSpeed : BaseWalkSpeed; //ÔÚÃé×¼µÄ»°¾Í¸Ä±ä½ÇÉ«ÒÆ¶¯ËÙ¶È
+		Character->GetCharacterMovement()->MaxWalkSpeed = bAiming ? AimWalkSpeed : BaseWalkSpeed; //åœ¨ç„å‡†çš„è¯å°±æ”¹å˜è§’è‰²ç§»åŠ¨é€Ÿåº¦
 	}
 
-	if(Controller->IsLocalController() && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Sniper)//Èç¹ıÊÖÉÏÄÃµÄÊÇ¾Ñ¾Í»»Ò»ÖÖ¿ª¾µ
+	if(Controller->IsLocalController() && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Sniper)//å¦‚è¿‡æ‰‹ä¸Šæ‹¿çš„æ˜¯ç‹™å°±æ¢ä¸€ç§å¼€é•œ
 	{
 		Character->ShowSniperScopeWidget(IsAiming);
 	}
 	if(Character->IsLocallyControlled()) bAimButtonPressed = IsAiming;
 }
 
-void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)//Ãé×¼µÄ·şÎñÆ÷¶ËRPCµ÷ÓÃ
+void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)//ç„å‡†çš„æœåŠ¡å™¨ç«¯RPCè°ƒç”¨
 {
-	bAiming = bIsAiming;//ÆäÊµ²»¹ÜÔõÃ´Ñù bAiming¶¼ÊÇ±¾µØµÄÇÒreplicateµÄ£¬ËùÒÔ±¾µØ»áÊ×ÏÈ±»ÉèÖÃÈ»ºó¾­¹ıÒ»¶ÎÑÓ³ÙºóÔÚÇ±ÔÚµÄ·şÎñÆ÷ÉÏÔËĞĞ²¢replicateµ½ÆäËû¿Í»§¶Ë
-	if (Character)//½øĞĞÒ»´ÎRPCµ÷ÓÃ
+	bAiming = bIsAiming;//å…¶å®ä¸ç®¡æ€ä¹ˆæ · bAimingéƒ½æ˜¯æœ¬åœ°çš„ä¸”replicateçš„ï¼Œæ‰€ä»¥æœ¬åœ°ä¼šé¦–å…ˆè¢«è®¾ç½®ç„¶åç»è¿‡ä¸€æ®µå»¶è¿Ÿååœ¨æ½œåœ¨çš„æœåŠ¡å™¨ä¸Šè¿è¡Œå¹¶replicateåˆ°å…¶ä»–å®¢æˆ·ç«¯
+	if (Character)//è¿›è¡Œä¸€æ¬¡RPCè°ƒç”¨
 	{
-		Character->GetCharacterMovement()->MaxWalkSpeed = bAiming ? AimWalkSpeed : BaseWalkSpeed; //ÔÚÃé×¼µÄ»°¾Í¸Ä±ä½ÇÉ«ÒÆ¶¯ËÙ¶È
+		Character->GetCharacterMovement()->MaxWalkSpeed = bAiming ? AimWalkSpeed : BaseWalkSpeed; //åœ¨ç„å‡†çš„è¯å°±æ”¹å˜è§’è‰²ç§»åŠ¨é€Ÿåº¦
 	}
 }

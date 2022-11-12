@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "RocketMovementComponent.h"
@@ -8,12 +8,12 @@ UProjectileMovementComponent::EHandleBlockingHitResult URocketMovementComponent:
 {
 	Super::HandleBlockingHit(Hit, TimeTick, MoveDelta, SubTickTimeRemaining);
 
-	return EHandleBlockingHitResult::AdvanceNextSubstep;//Ö±½ÓÌø¹ıÕâ´ÎÅö×²
-	//½øÈëÏÂÒ»¸öÄ£Äâ¸üĞÂ¡£Í¨³£ÔÚ¿ÉÒÔºöÂÔÅö×²»ò¶à´Î»Øµ¯µÄÂß¼­Ê±Ê¹ÓÃ£¬±ÈÈçµ±Ò»¸öµ²×¡ÁËÍ¶ÉäÎïµÄÎïÌå±»´İ»ÙÊ±£¬ÔË¶¯Ó¦¸Ã¼ÌĞø
+	return EHandleBlockingHitResult::AdvanceNextSubstep;//ç›´æ¥è·³è¿‡è¿™æ¬¡ç¢°æ’
+	//è¿›å…¥ä¸‹ä¸€ä¸ªæ¨¡æ‹Ÿæ›´æ–°ã€‚é€šå¸¸åœ¨å¯ä»¥å¿½ç•¥ç¢°æ’æˆ–å¤šæ¬¡å›å¼¹çš„é€»è¾‘æ—¶ä½¿ç”¨ï¼Œæ¯”å¦‚å½“ä¸€ä¸ªæŒ¡ä½äº†æŠ•å°„ç‰©çš„ç‰©ä½“è¢«æ‘§æ¯æ—¶ï¼Œè¿åŠ¨åº”è¯¥ç»§ç»­
 }
 
 void URocketMovementComponent::HandleImpact(const FHitResult& Hit, float TimeSlice, const FVector& MoveDelta)
 {
-	//»ğ¼ı²»Ó¦¸ÃÍ£ÏÂÀ´£¬Ö»ÓĞÔÚÅö×²ºĞ×Ó¼ì²âµ½ÁË×²»÷²Å»á±¬Õ¨
+	//ç«ç®­ä¸åº”è¯¥åœä¸‹æ¥ï¼Œåªæœ‰åœ¨ç¢°æ’ç›’å­æ£€æµ‹åˆ°äº†æ’å‡»æ‰ä¼šçˆ†ç‚¸
 	
 }

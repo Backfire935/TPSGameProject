@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Projectile.h"
@@ -19,8 +19,8 @@ AProjectile::AProjectile()
 
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 	SetRootComponent(CollisionBox);
-	CollisionBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);//ÉèÖÃÅö×²Í¨µÀ
-	CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);//ÉèÖÃ½öÎïÀíÅö×²
+	CollisionBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);//è®¾ç½®ç¢°æ’é€šé“
+	CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);//è®¾ç½®ä»…ç‰©ç†ç¢°æ’
 	CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
 	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
@@ -45,14 +45,14 @@ void AProjectile::BeginPlay()
 			GetActorLocation(),
 			GetActorRotation(),
 			EAttachLocation::KeepWorldPosition
-		);//Éú³É¿ª»ğ¹ì¼£
+		);//ç”Ÿæˆå¼€ç«è½¨è¿¹
 	}
 	if (HasAuthority())
 	{
-		CollisionBox->OnComponentHit.AddDynamic(this , &AProjectile::OnHit);//Ìí¼Ó×Óµ¯×²»÷Ê±µÄ´ò»÷Ğ§¹û
+		CollisionBox->OnComponentHit.AddDynamic(this , &AProjectile::OnHit);//æ·»åŠ å­å¼¹æ’å‡»æ—¶çš„æ‰“å‡»æ•ˆæœ
 	}
 
-//	CollisionBox->IgnoreActorWhenMoving();//µ±½ÇÉ«ÔÚÒÆ¶¯µÄÊ±ºòºöÂÔÅö×²£¬±ÜÃâ×Ô¼ºÏòÇ°×ßµÄÊ±ºò·¢Éäµ¼µ¯°Ñ×Ô¼ºÕ¨ËÀ,µ«ÊÇÕâ¸ö°ì·¨²»ºÃÓÃ£¬ÒòÎªÄã»á¸üÔçµÄ°Ñ×Ô¼ºÕ¨ËÀ
+//	CollisionBox->IgnoreActorWhenMoving();//å½“è§’è‰²åœ¨ç§»åŠ¨çš„æ—¶å€™å¿½ç•¥ç¢°æ’ï¼Œé¿å…è‡ªå·±å‘å‰èµ°çš„æ—¶å€™å‘å°„å¯¼å¼¹æŠŠè‡ªå·±ç‚¸æ­»,ä½†æ˜¯è¿™ä¸ªåŠæ³•ä¸å¥½ç”¨ï¼Œå› ä¸ºä½ ä¼šæ›´æ—©çš„æŠŠè‡ªå·±ç‚¸æ­»
 }
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -65,14 +65,14 @@ void AProjectile::SpawnTrailSystem()
 	if (TrailSystem)
 	{
 		TrailSystemComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
-			TrailSystem,//ÒªÉú³ÉµÄÁ£×ÓÌØĞ§
-			GetRootComponent(),//Òª¸½¼ÓÔÚÄÄ¸ö×é¼şÉÏ
-			FName(),//Òª¸½¼ÓÔÚ×é¼şµÄÄÄ¸ö²å²ÛÉÏ,ÕâÀï²»ÉèÖÃ´«¿Õ
-			GetActorLocation(),//ÒªÉú³ÉµÄÎ»ÖÃĞÅÏ¢
-			GetActorRotation(),//ÒªÉú³ÉµÄĞı×ªĞÅÏ¢
-			EAttachLocation::KeepWorldPosition,//Òª¸½¼ÓµÄÎ»ÖÃÀàĞÍ
-			false//ÊÇ·ñÒª×Ô¶¯Ïú»Ù£¬ÕâÀïÏ£ÍûÊÖ¶¯ÉèÖÃ
-		);//µÃµ½µÄÊÇÒ»¸öÁ£×ÓÌØĞ§×é¼ş
+			TrailSystem,//è¦ç”Ÿæˆçš„ç²’å­ç‰¹æ•ˆ
+			GetRootComponent(),//è¦é™„åŠ åœ¨å“ªä¸ªç»„ä»¶ä¸Š
+			FName(),//è¦é™„åŠ åœ¨ç»„ä»¶çš„å“ªä¸ªæ’æ§½ä¸Š,è¿™é‡Œä¸è®¾ç½®ä¼ ç©º
+			GetActorLocation(),//è¦ç”Ÿæˆçš„ä½ç½®ä¿¡æ¯
+			GetActorRotation(),//è¦ç”Ÿæˆçš„æ—‹è½¬ä¿¡æ¯
+			EAttachLocation::KeepWorldPosition,//è¦é™„åŠ çš„ä½ç½®ç±»å‹
+			false//æ˜¯å¦è¦è‡ªåŠ¨é”€æ¯ï¼Œè¿™é‡Œå¸Œæœ›æ‰‹åŠ¨è®¾ç½®
+		);//å¾—åˆ°çš„æ˜¯ä¸€ä¸ªç²’å­ç‰¹æ•ˆç»„ä»¶
 	}
 }
 
@@ -89,11 +89,11 @@ void AProjectile::Destroyed()
 	Super::Destroyed();
 	if (ImpactParticles)
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, GetActorTransform());//ÔÚ±»»÷ÖĞµÄÎ»ÖÃ·ÅÖÃÒ»¸öÇ¹ºÛµÄÌù»¨
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, GetActorTransform());//åœ¨è¢«å‡»ä¸­çš„ä½ç½®æ”¾ç½®ä¸€ä¸ªæªç—•çš„è´´èŠ±
 	}
 	if (ImpactSound)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());//ÔÚ±»»÷ÖĞµÄÎ»ÖÃ²¥·ÅÒ»¸ö±»ÃüÖĞµÄÒôĞ§
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());//åœ¨è¢«å‡»ä¸­çš„ä½ç½®æ’­æ”¾ä¸€ä¸ªè¢«å‘½ä¸­çš„éŸ³æ•ˆ
 	}
 
 }
@@ -105,7 +105,7 @@ void AProjectile::StartDestroyTimer()
 		this,
 		&AProjectile::DestroyTimerFinished,
 		DestroyTime
-	);//ÉèÖÃ3sÑÓ³ÙÏú»Ù±£Ö¤»ğ¼ıµ¯µÄÎ²Æø²»»áÔÚ»ğ¼ıµ¯·¢ÉúÅö×²µÄÊ±ºòÁ¢¼´Ïú»Ù
+	);//è®¾ç½®3så»¶è¿Ÿé”€æ¯ä¿è¯ç«ç®­å¼¹çš„å°¾æ°”ä¸ä¼šåœ¨ç«ç®­å¼¹å‘ç”Ÿç¢°æ’çš„æ—¶å€™ç«‹å³é”€æ¯
 
 }
 
@@ -121,21 +121,21 @@ void AProjectile::ExplodeDamage()
 	if (FiringPawn && HasAuthority())
 	{
 		AController* FiringController = FiringPawn->GetController();
-		if (FiringController)//Ó¦ÓÃÒ»¸öÇòĞÎ·¶Î§ÉËº¦
+		if (FiringController)//åº”ç”¨ä¸€ä¸ªçƒå½¢èŒƒå›´ä¼¤å®³
 		{
 			UGameplayStatics::ApplyRadialDamageWithFalloff(
-				this,//ÊÀ½çÉÏÏÂÎÄ¶ÔÏó 
-				Damage,//»ù±¾ÉËº¦
-				0.3 * Damage,//×îµÍÉËº¦
-				GetActorLocation(),//ÔÚ»÷ÖĞµÄÎ»ÖÃÉèÎªÉËº¦µÄÖĞĞÄ
-				DamageInnerRadius,//ÂúÉËº¦¾àÀë
-				DamageOuterRadius,//¼õÉË¾àÀë
-				1.f,//ÉËº¦Ë¥¼õ¼ÆËãÊÇÖ¸Êı¼ÆËã£¬ÉèÖÃÎª1ºó¿ÉÒÔµÃµ½Ò»¸ö°´¾àÀëµÄÏßĞÔÉËº¦Ë¥¼õ
-				UDamageType::StaticClass(),//ÉËº¦ÀàĞÍ
-				TArray<AActor*>(),//ºöÂÔ¶ÔÖ¸¶¨ÀàĞÍµÄÎïÌåµÄÉËº¦
-				this,//²úÉúÉËº¦µÄ¶ÔÏó
-				FiringController//Ë­¿ª»ğµÄ
-			);//´ø¾àÀëË¥¼õµÄÇòĞÎ·¶Î§ÉËº¦
+				this,//ä¸–ç•Œä¸Šä¸‹æ–‡å¯¹è±¡ 
+				Damage,//åŸºæœ¬ä¼¤å®³
+				0.3 * Damage,//æœ€ä½ä¼¤å®³
+				GetActorLocation(),//åœ¨å‡»ä¸­çš„ä½ç½®è®¾ä¸ºä¼¤å®³çš„ä¸­å¿ƒ
+				DamageInnerRadius,//æ»¡ä¼¤å®³è·ç¦»
+				DamageOuterRadius,//å‡ä¼¤è·ç¦»
+				1.f,//ä¼¤å®³è¡°å‡è®¡ç®—æ˜¯æŒ‡æ•°è®¡ç®—ï¼Œè®¾ç½®ä¸º1åå¯ä»¥å¾—åˆ°ä¸€ä¸ªæŒ‰è·ç¦»çš„çº¿æ€§ä¼¤å®³è¡°å‡
+				UDamageType::StaticClass(),//ä¼¤å®³ç±»å‹
+				TArray<AActor*>(),//å¿½ç•¥å¯¹æŒ‡å®šç±»å‹çš„ç‰©ä½“çš„ä¼¤å®³
+				this,//äº§ç”Ÿä¼¤å®³çš„å¯¹è±¡
+				FiringController//è°å¼€ç«çš„
+			);//å¸¦è·ç¦»è¡°å‡çš„çƒå½¢èŒƒå›´ä¼¤å®³
 		}
 	}
 }

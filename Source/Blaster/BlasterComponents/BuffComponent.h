@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -40,36 +40,36 @@ private:
 	UPROPERTY()
 		class ABlasterCharacter* Character;
 
-	//ÓÃÓÚÖÎÁÆbuff
-	bool bHealing = false;//ÊÇ·ñ¿ªÆô»ØÑª×´Ì¬
+	//ç”¨äºæ²»ç–—buff
+	bool bHealing = false;//æ˜¯å¦å¼€å¯å›è¡€çŠ¶æ€
 
-	float HealingRate = 0;//»ØÑªËÙÂÊ
+	float HealingRate = 0;//å›è¡€é€Ÿç‡
 
-	float AmountToHeal = 0;//»ØÑª×ÜÁ¿
+	float AmountToHeal = 0;//å›è¡€æ€»é‡
 
-	float HealedAmount = 0;//ÓÃÓÚ´æ´¢ÒÑ¾­»Ö¸´µÄÑªÁ¿
+	float HealedAmount = 0;//ç”¨äºå­˜å‚¨å·²ç»æ¢å¤çš„è¡€é‡
 
-	//ÓÃÓÚ»¤¶Übuff
-	bool bRecharge = false;//ÊÇ·ñ¿ªÆô»Ö¸´»¤¶Ü×´Ì¬
+	//ç”¨äºæŠ¤ç›¾buff
+	bool bRecharge = false;//æ˜¯å¦å¼€å¯æ¢å¤æŠ¤ç›¾çŠ¶æ€
 
-	float ChargingShiledRate = 0;//»Ö¸´»¤¶ÜËÙÂÊ
+	float ChargingShiledRate = 0;//æ¢å¤æŠ¤ç›¾é€Ÿç‡
 
-	float AmountToRechargeShiled = 0;//»Ö¸´»¤¶Ü×ÜÁ¿
+	float AmountToRechargeShiled = 0;//æ¢å¤æŠ¤ç›¾æ€»é‡
 
-	float RechargedAmount = 0;//ÓÃÓÚ´æ´¢ÒÑ¾­»Ö¸´µÄ»¤¶Ü
+	float RechargedAmount = 0;//ç”¨äºå­˜å‚¨å·²ç»æ¢å¤çš„æŠ¤ç›¾
 
-	bool bSlowlyCharged = false;//ÊÇ»ºÂı»Ö¸´»¤¶Ü»¹ÊÇÒ»´Î³äÂú
+	bool bSlowlyCharged = false;//æ˜¯ç¼“æ…¢æ¢å¤æŠ¤ç›¾è¿˜æ˜¯ä¸€æ¬¡å……æ»¡
 
-	//ÓÃÓÚ¼ÓËÙbuff
+	//ç”¨äºåŠ é€Ÿbuff
 	float LastWalkSpeed = 0.f;
 	float LastCrouchSpeed = 0.f;
 
-	FTimerHandle SpeedUpTimer;//¼ÓËÙµÄ¼ÆÊ±Æ÷
+	FTimerHandle SpeedUpTimer;//åŠ é€Ÿçš„è®¡æ—¶å™¨
 
 	UFUNCTION(NetMulticast, Reliable)
 		void MulticastSpeedBuff(float BaseSpeed, float CrouchSpeed);
 
-	//ÓÃÓÚÌøÔ¾buff
+	//ç”¨äºè·³è·ƒbuff
 	FTimerHandle JumpBuff;
 	
 	void ResetJump();

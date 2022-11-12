@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -37,10 +37,10 @@ public:
 
 	AWeapon();
 	virtual void Tick(float DeltaTime) override;
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;//ÉèÖÃÍ¬²½
-	//ÉèÖÃÊôĞÔÍøÂç¸´ÖÆµÄ·½·¨
-	//.CppÎÄ¼şÖĞ£¬GetLifetimeReplicatedPropsº¯ÊıÖĞÌí¼ÓDORELIFETIME(ÀàÃû³Æ£¬±äÁ¿Ãû)
-	//ÊôĞÔÇ°Ìí¼ÓUPROPERTY(Replicated)
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;//è®¾ç½®åŒæ­¥
+	//è®¾ç½®å±æ€§ç½‘ç»œå¤åˆ¶çš„æ–¹æ³•
+	//.Cppæ–‡ä»¶ä¸­ï¼ŒGetLifetimeReplicatedPropså‡½æ•°ä¸­æ·»åŠ DORELIFETIME(ç±»åç§°ï¼Œå˜é‡å)
+	//å±æ€§å‰æ·»åŠ UPROPERTY(Replicated)
 
 	virtual void OnRep_Owner() override;
 
@@ -49,26 +49,26 @@ public:
 	void ShowPickupWidget(bool bShowWidget);
 	virtual void Fire(const FVector &HitTarget);
 	void Dropped();
-	FVector TraceWithScatter(const FVector& HitTarget);//Åç×ÓÉ¢ÉäµÄÉäÏß¼ì²â
+	FVector TraceWithScatter(const FVector& HitTarget);//å–·å­æ•£å°„çš„å°„çº¿æ£€æµ‹
 
 	UFUNCTION()
 		void ReadyDestroyWeapon();
 	UFUNCTION()
 		void DestroyWeapon();
 	FTimerHandle DestroyWeaponTimer;
-	//bool bIsDroppedToDestroyed = false;//ÎäÆ÷ÊÇ·ñ±»¶ªµ½µØÉÏµÈ´ıÏú»Ù
+	//bool bIsDroppedToDestroyed = false;//æ­¦å™¨æ˜¯å¦è¢«ä¸¢åˆ°åœ°ä¸Šç­‰å¾…é”€æ¯
 	UPROPERTY(EditAnywhere, Category = "Combat")
 		float DestroyWeaponTime;
 
 	void AddAmmo(int32 AmmoToAdd);
 
 	UPROPERTY(EditAnywhere, category = Combat)
-		float FireDelay = 0.15f;//×Ô¶¯ÎäÆ÷Ä¬ÈÏ¿ª»ğ¼ä¸ô
+		float FireDelay = 0.15f;//è‡ªåŠ¨æ­¦å™¨é»˜è®¤å¼€ç«é—´éš”
 
 	UPROPERTY(EditAnywhere, category = Combat)
-		bool bAutoMatic = true;//Ä¬ÈÏÎäÆ÷¿ª»ğÄ£Ê½:È«×Ô¶¯
+		bool bAutoMatic = true;//é»˜è®¤æ­¦å™¨å¼€ç«æ¨¡å¼:å…¨è‡ªåŠ¨
 	/*
-ÎäÆ÷×¼ĞÅµÄÎÆÀí
+æ­¦å™¨å‡†ä¿¡çš„çº¹ç†
 */
 	UPROPERTY(EditAnywhere, Category = Crosshairs)
 		class UTexture2D* CrosshairsCenter;
@@ -85,7 +85,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = Crosshairs)
 		UTexture2D* CrosshairsBottom;
 
-	//Ãé×¼Ê±ÊÓÒ°FOV±ä»¯
+	//ç„å‡†æ—¶è§†é‡FOVå˜åŒ–
 	UPROPERTY(EditAnywhere)
 	float ZoomedFOV = 30.F;
 
@@ -93,9 +93,9 @@ public:
 	float ZoomInterpSpeed = 20.f;
 
 	UPROPERTY(EditAnywhere)
-	class USoundCue* EquipSound;//×°±¸ÎäÆ÷Ê±µÄÒôĞ§
+	class USoundCue* EquipSound;//è£…å¤‡æ­¦å™¨æ—¶çš„éŸ³æ•ˆ
 
-	//¿ª¹ØÎäÆ÷µÄ×Ô¶¨ÒåäÖÈ¾Éî¶È
+	//å¼€å…³æ­¦å™¨çš„è‡ªå®šä¹‰æ¸²æŸ“æ·±åº¦
 	void EnableCustomDepth(bool bEnable);
 
 	bool bDestroyedWeapon = false;
@@ -104,16 +104,16 @@ public:
 	EFireType FireType;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
-		bool bUseScatter = false;//ÊÇ·ñÔÊĞí×Óµ¯É¢Éä
+		bool bUseScatter = false;//æ˜¯å¦å…è®¸å­å¼¹æ•£å°„
 	 
 	protected:
 	virtual void BeginPlay() override;
 
 	virtual void OnWeaponStateSet();
 	
-	virtual void HandleWeaponEquiped();//´¦Àí×°±¸¹ıµÄÎäÆ÷
-	virtual void HandleWeaponDropped();//´¦Àí¶ªÆúµÄÎäÆ÷
-	virtual void HandleWeaponSecondary();//´¦ÀíµÚ¶ş°ÑÎäÆ÷
+	virtual void HandleWeaponEquiped();//å¤„ç†è£…å¤‡è¿‡çš„æ­¦å™¨
+	virtual void HandleWeaponDropped();//å¤„ç†ä¸¢å¼ƒçš„æ­¦å™¨
+	virtual void HandleWeaponSecondary();//å¤„ç†ç¬¬äºŒæŠŠæ­¦å™¨
 
 	UFUNCTION()
 	virtual void OnSphereOverlap(
@@ -133,17 +133,17 @@ public:
 		int32 OtherBodyIndex
 	);
 
-	//ÉäÏß½áÊøµÄÎ»ÖÃ·ÖÁÑ×Óµ¯
+	//å°„çº¿ç»“æŸçš„ä½ç½®åˆ†è£‚å­å¼¹
 	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
-		float DistanceToSphere = 800.f;//Åç×ÓµÄÓĞĞ§¹¥»÷¾àÀë
+		float DistanceToSphere = 800.f;//å–·å­çš„æœ‰æ•ˆæ”»å‡»è·ç¦»
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
-		float SphereRadius = 75.f;//À©É¢·¶Î§
+		float SphereRadius = 75.f;//æ‰©æ•£èŒƒå›´
 
 	UPROPERTY(EditAnywhere)
 		float Damage = 10.f;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(Replicated,EditAnywhere)
 	bool bUseServerSideRewind = false;
 
 	UPROPERTY()
@@ -152,6 +152,9 @@ public:
 	UPROPERTY()
 		class ABlasterPlayerController* BlasterOwnerController;
 
+	UFUNCTION()
+	void OnPingTooHigh(bool bPingTooHigh);
+
 private:
 	UPROPERTY(VisibleAnywhere, category = "Weapon Properties")
 	USkeletalMeshComponent* WeaponMesh;
@@ -159,8 +162,8 @@ private:
 	UPROPERTY(VisibleAnywhere, category = "Weapon Properties")
 	class USphereComponent* AreaSphere;
 
-	//Èç¹ûÒ»¸ö±äÁ¿±»ÉèÎªÎªRep_Notify,µ±¸Ã±äÁ¿·¢Éú¸´ÖÆÊ±£¬ÊÕµ½¸ÃÖµµÄ¿Í»§¶Ë£¬¶¼¿ÉÒÔµ÷ÓÃÒ»¸ö×Ô¶¨ÒåµÄº¯Êı¡£
-	//ÓÃ·¨Îª£¬ÔÚUPROPERTYÉèÖÃReplicatedUsing=xxº¯ÊıÃû
+	//å¦‚æœä¸€ä¸ªå˜é‡è¢«è®¾ä¸ºä¸ºRep_Notify,å½“è¯¥å˜é‡å‘ç”Ÿå¤åˆ¶æ—¶ï¼Œæ”¶åˆ°è¯¥å€¼çš„å®¢æˆ·ç«¯ï¼Œéƒ½å¯ä»¥è°ƒç”¨ä¸€ä¸ªè‡ªå®šä¹‰çš„å‡½æ•°ã€‚
+	//ç”¨æ³•ä¸ºï¼Œåœ¨UPROPERTYè®¾ç½®ReplicatedUsing=xxå‡½æ•°å
 	UPROPERTY(ReplicatedUsing = OnRep_WeaponState,VisibleAnywhere, category = "Weapon Properties")
 		EWeaponState WeaponState;
 
@@ -178,7 +181,7 @@ private:
 
 	
 	UPROPERTY(EditAnywhere)
-	int32 Ammo;//Âúµ¯¼ĞÊıÁ¿×Óµ¯ÊıÁ¿
+	int32 Ammo;//æ»¡å¼¹å¤¹æ•°é‡å­å¼¹æ•°é‡
 
 	UFUNCTION(Client, Reliable)
 	void ClientUpdateAmmo(int32 ServerAmmo);
@@ -187,12 +190,12 @@ private:
 	void ClientAddAmmo(int32 AmmoToAdd);
 
 	UPROPERTY(EditAnywhere)
-	int32 MagCapacity = 30;//±¸µ¯ÊıÁ¿
+	int32 MagCapacity = 30;//å¤‡å¼¹æ•°é‡
 
-	int32 Sequence = 0;//¸ú×Óµ¯ÊıÁ¿ÓĞ¹ØµÄÎ´±»·şÎñÆ÷´¦ÀíµÄÇëÇóÊıÁ¿	
+	int32 Sequence = 0;//è·Ÿå­å¼¹æ•°é‡æœ‰å…³çš„æœªè¢«æœåŠ¡å™¨å¤„ç†çš„è¯·æ±‚æ•°é‡	
 
 	UFUNCTION()
-	void SpendRound();//´òÍêÁË¸üĞÂÏÂ×Óµ¯
+	void SpendRound();//æ‰“å®Œäº†æ›´æ–°ä¸‹å­å¼¹
 
 
 	UPROPERTY(EditAnywhere)
@@ -211,8 +214,8 @@ public:
 	FORCEINLINE float GetZoomedFOV() const { return ZoomedFOV; }
 	FORCEINLINE float GetZoomedInterpSpeed() const { return ZoomInterpSpeed; }
 
-	bool IsEmpty();//ÅĞ¶Ï×Óµ¯ÊÇ·ñ´òÍê
-	bool IsFull();//ÅĞ¶Ï×Óµ¯ÊÇ·ñÊÇÂúµÄ
+	bool IsEmpty();//åˆ¤æ–­å­å¼¹æ˜¯å¦æ‰“å®Œ
+	bool IsFull();//åˆ¤æ–­å­å¼¹æ˜¯å¦æ˜¯æ»¡çš„
 	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
 	FORCEINLINE int32 GetAmmo() const { return Ammo; };
 	FORCEINLINE int32 GetMagCapacity() const { return MagCapacity; }

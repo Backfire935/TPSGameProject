@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -19,13 +19,13 @@ protected:
 		virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere)
-	USoundCue* RocketLoopInAir;//»ğ¼ıÔÚÌìÉÏÒ»Ö±·ÉµÄºôºôÉù
+	USoundCue* RocketLoopInAir;//ç«ç®­åœ¨å¤©ä¸Šä¸€ç›´é£çš„å‘¼å‘¼å£°
 
 	UPROPERTY()
 	UAudioComponent* RocketLoopComponent;
 
 	UPROPERTY(EditAnywhere)
-	USoundAttenuation* LoopingSoundAttenuation;//»ğ¼ıÔÚÌìÉÏ·ÉµÄÉùÒôµÄË¥¼õÉèÖÃ
+	USoundAttenuation* LoopingSoundAttenuation;//ç«ç®­åœ¨å¤©ä¸Šé£çš„å£°éŸ³çš„è¡°å‡è®¾ç½®
 
 	UPROPERTY(EditAnywhere)
 	class URocketMovementComponent* RocketMovementComponent;
@@ -35,10 +35,10 @@ private:
 
 public:
 	UPROPERTY(EditAnywhere)
-		float InnerScope = 200.f;//ÎäÆ÷µÄÂúÉËº¦·¶Î§¾àÀë
+		float InnerScope = 200.f;//æ­¦å™¨çš„æ»¡ä¼¤å®³èŒƒå›´è·ç¦»
 
 	UPROPERTY(EditAnywhere)
-		float OutScope = 500.f;//ÎäÆ÷µÄ¼õÉË·¶Î§¾àÀë
+		float OutScope = 500.f;//æ­¦å™¨çš„å‡ä¼¤èŒƒå›´è·ç¦»
 
 	AProjectileRocket();
 

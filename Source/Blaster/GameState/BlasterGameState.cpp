@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "BlasterGameState.h"
@@ -9,10 +9,12 @@ void ABlasterGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ABlasterGameState,TopScoringPlayers);
+	DOREPLIFETIME(ABlasterGameState, RedTeamScore);
+	DOREPLIFETIME(ABlasterGameState, BlueTeamScore);
 
 }
 
-void ABlasterGameState::UpdateTopScore(ABlasterPlayerState* ScoringPlayer)//¼ÍÂ¼µÃµ½·ÖÊýµÄÍæ¼Ò
+void ABlasterGameState::UpdateTopScore(ABlasterPlayerState* ScoringPlayer)//çºªå½•å¾—åˆ°åˆ†æ•°çš„çŽ©å®¶
 {
 	if(TopScoringPlayers.Num() == 0 )
 	{
@@ -22,13 +24,23 @@ void ABlasterGameState::UpdateTopScore(ABlasterPlayerState* ScoringPlayer)//¼ÍÂ¼
 	}
 	else if (ScoringPlayer->GetScore() == TopScore)
 	{
-		TopScoringPlayers.AddUnique(ScoringPlayer);//È·±£ÊäÈëµÄÐÅÏ¢ÊÇÎ¨Ò»µÄ£¬²»»áÊäÈëÖØ¸´µÄÐÅÏ¢
+		TopScoringPlayers.AddUnique(ScoringPlayer);//ç¡®ä¿è¾“å…¥çš„ä¿¡æ¯æ˜¯å”¯ä¸€çš„ï¼Œä¸ä¼šè¾“å…¥é‡å¤çš„ä¿¡æ¯
 
 	}
-	else if(ScoringPlayer->GetScore() > TopScore)//Èç¹ûÕâ¸öÍæ¼ÒµÄ·Ö±ÈÖ®Ç°µÄ×î¸ß·Ö¸ß
+	else if(ScoringPlayer->GetScore() > TopScore)//å¦‚æžœè¿™ä¸ªçŽ©å®¶çš„åˆ†æ¯”ä¹‹å‰çš„æœ€é«˜åˆ†é«˜
 	{
-		TopScoringPlayers.Empty();//Çå¿ÕÖ®Ç°¼ÍÂ¼µÄ×î¸ß·Ö
-		TopScoringPlayers.AddUnique(ScoringPlayer);//»»³ÉÐÂµÄ×î¸ß·Ö
+		TopScoringPlayers.Empty();//æ¸…ç©ºä¹‹å‰çºªå½•çš„æœ€é«˜åˆ†
+		TopScoringPlayers.AddUnique(ScoringPlayer);//æ¢æˆæ–°çš„æœ€é«˜åˆ†
 		TopScore = ScoringPlayer->GetScore();
 	}
+}
+
+void ABlasterGameState::OnRep_RedTeamScore()
+{
+
+}
+
+void ABlasterGameState::OnRep_BlueTeamScore()
+{
+
 }

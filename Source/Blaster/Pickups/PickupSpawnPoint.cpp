@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "PickupSpawnPoint.h"
@@ -26,14 +26,14 @@ void APickupSpawnPoint::Tick(float DeltaTime)
 
 void APickupSpawnPoint::SpawnPickup()
 {
-	int32 NumPickupClasses = PickupClasses.Num();//µÃµ½ËùÓĞ¿ÉÊ°È¡buffÀàĞÍµÄÊıÁ¿
+	int32 NumPickupClasses = PickupClasses.Num();//å¾—åˆ°æ‰€æœ‰å¯æ‹¾å–buffç±»å‹çš„æ•°é‡
 	if(NumPickupClasses > 0)
 	{
 		int32 Selection = FMath::RandRange(0, NumPickupClasses-1);
-		SpawnedPickup =  GetWorld()->SpawnActor<APickup>(PickupClasses[Selection], GetActorTransform());//ÔÚÖ¸¶¨Î»ÖÃËæ»úÉú³ÉÒ»¸ö¿ÉÊ°È¡Àà
+		SpawnedPickup =  GetWorld()->SpawnActor<APickup>(PickupClasses[Selection], GetActorTransform());//åœ¨æŒ‡å®šä½ç½®éšæœºç”Ÿæˆä¸€ä¸ªå¯æ‹¾å–ç±»
 		if(HasAuthority() && SpawnedPickup)
 		{
-			SpawnedPickup->OnDestroyed.AddDynamic(this, &APickupSpawnPoint::StartSpawnPickupTimer);//°ó¶¨Ò»¸ö¶à²¥Î¯ÍĞ£¬µ±´ËÊ±µÄbuff±»Ê°È¡ºó£¬¾Íµ÷ÓÃ°ó¶¨µÄStartSpawnPickupTimerº¯ÊıÖØĞÂ¼ÆÊ±Éú³É¡£ÓÃµÄUEµÄÎ¯ÍĞ£¬º¯ÊıÉùÃ÷ÄÇĞèÒªÌí¼ÓUFUNCTION()·´Éä
+			SpawnedPickup->OnDestroyed.AddDynamic(this, &APickupSpawnPoint::StartSpawnPickupTimer);//ç»‘å®šä¸€ä¸ªå¤šæ’­å§”æ‰˜ï¼Œå½“æ­¤æ—¶çš„buffè¢«æ‹¾å–åï¼Œå°±è°ƒç”¨ç»‘å®šçš„StartSpawnPickupTimerå‡½æ•°é‡æ–°è®¡æ—¶ç”Ÿæˆã€‚ç”¨çš„UEçš„å§”æ‰˜ï¼Œå‡½æ•°å£°æ˜é‚£éœ€è¦æ·»åŠ UFUNCTION()åå°„
 		}
 	}
 
@@ -43,17 +43,17 @@ void APickupSpawnPoint::SpawnPickupTimerFinished()
 {
 	if(HasAuthority())
 	{
-		SpawnPickup();//Éú³Ébuffº¯Êı,µ«ÊÇÖÖÀàËæ»ú
+		SpawnPickup();//ç”Ÿæˆbuffå‡½æ•°,ä½†æ˜¯ç§ç±»éšæœº
 	}
 }
 
 void APickupSpawnPoint::StartSpawnPickupTimer(AActor* DestroyedActor)
 {
-	const float SpawnTime = FMath::FRandRange(SpawnPickupTimeMin,SpawnPickupTimeMax);//ÉèÖÃÒ»¸öËæ»úÉú³ÉÊ±¼ä
+	const float SpawnTime = FMath::FRandRange(SpawnPickupTimeMin,SpawnPickupTimeMax);//è®¾ç½®ä¸€ä¸ªéšæœºç”Ÿæˆæ—¶é—´
 	GetWorldTimerManager().SetTimer(
 		SpawnPickupTimer,
 		this,
-		&APickupSpawnPoint::SpawnPickupTimerFinished,//Timer¼ÆÊ±½áÊøºóµ÷ÓÃÉú³Ébuffº¯Êı
+		&APickupSpawnPoint::SpawnPickupTimerFinished,//Timerè®¡æ—¶ç»“æŸåè°ƒç”¨ç”Ÿæˆbuffå‡½æ•°
 		SpawnTime
 	);
 

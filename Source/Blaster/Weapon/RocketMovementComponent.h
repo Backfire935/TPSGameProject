@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -15,7 +15,7 @@ class BLASTER_API URocketMovementComponent : public UProjectileMovementComponent
 	GENERATED_BODY()
 
 protected:
-	virtual EHandleBlockingHitResult HandleBlockingHit(const FHitResult& Hit, float TimeTick, const FVector& MoveDelta, float& SubTickTimeRemaining) override;//×Ô¶¨Òå´¦ÀíÅö×²
+	virtual EHandleBlockingHitResult HandleBlockingHit(const FHitResult& Hit, float TimeTick, const FVector& MoveDelta, float& SubTickTimeRemaining) override;//è‡ªå®šä¹‰å¤„ç†ç¢°æ’
 
 	virtual  void HandleImpact(const FHitResult& Hit, float TimeSlice, const FVector& MoveDelta) override;
 };

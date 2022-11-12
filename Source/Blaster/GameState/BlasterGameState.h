@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -16,10 +16,24 @@ class BLASTER_API ABlasterGameState : public AGameState
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeTimeProps) const override;
 
-	void UpdateTopScore(class ABlasterPlayerState* ScoringPlayer);//¼ÍÂ¼µÃµ½·ÖÊýµÄÍæ¼Ò
+	void UpdateTopScore(class ABlasterPlayerState* ScoringPlayer);//çºªå½•å¾—åˆ°åˆ†æ•°çš„çŽ©å®¶
 	UPROPERTY(Replicated)
-	TArray<class ABlasterPlayerState*> TopScoringPlayers;//ÓÃÓÚ´æ´¢·ÖÊý×î¸ßµÄÍæ¼Ò
+	TArray<class ABlasterPlayerState*> TopScoringPlayers;//ç”¨äºŽå­˜å‚¨åˆ†æ•°æœ€é«˜çš„çŽ©å®¶
 
+	TArray<ABlasterPlayerState*> RedTeam;
+	TArray<ABlasterPlayerState*> BlueTeam;
+
+	UPROPERTY(ReplicatedUsing = OnRep_RedTeamScore)
+	float RedTeamScore = 0.f;
+
+	UPROPERTY(ReplicatedUsing = OnRep_BlueTeamScore)
+	float BlueTeamScore = 0.f;
+
+	UFUNCTION()
+	void OnRep_RedTeamScore();
+
+	UFUNCTION()
+		void OnRep_BlueTeamScore();
 
 private:
 	float TopScore = 0.f;

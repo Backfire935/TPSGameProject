@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -29,27 +29,27 @@ private:
 	float Speed;
 
 	UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "ture"))
-		bool bIsInAir;//ÊÇ·ñÔÚ¿ÕÖĞ
+		bool bIsInAir;//æ˜¯å¦åœ¨ç©ºä¸­
 
 	UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "ture"))
-		bool bIsAccelerating;//ÊÇ·ñÔÚ¼ÓËÙ
+		bool bIsAccelerating;//æ˜¯å¦åœ¨åŠ é€Ÿ
 
 	UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "ture"))
-		bool bWeaponEquipped;//ÊÇ·ñ×°±¸ÎäÆ÷
+		bool bWeaponEquipped;//æ˜¯å¦è£…å¤‡æ­¦å™¨
 
 	class AWeapon* EquippedWeapon;
 
 	UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "ture"))
-		bool bIsCrouched;//ÊÇ·ñÏÂ¶×
+		bool bIsCrouched;//æ˜¯å¦ä¸‹è¹²
 
 	UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "ture"))
-		bool bAiming;//ÊÇ·ñÃé×¼
+		bool bAiming;//æ˜¯å¦ç„å‡†
 
 	UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "ture"))
-		float YawOffset;//½ÇÉ«ÇãÏò×óÓÒµÄÆ«ÒÆÁ¿
+		float YawOffset;//è§’è‰²å€¾å‘å·¦å³çš„åç§»é‡
 
 	UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "ture"))
-		float Lean;//½ÇÉ«¶¯×÷ÏòÇ°ÏòºóµÄÁ¿
+		float Lean;//è§’è‰²åŠ¨ä½œå‘å‰å‘åçš„é‡
 
 	FRotator CharacterRotationLastFrame;
 	FRotator CharacterRotation;

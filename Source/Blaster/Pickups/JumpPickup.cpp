@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "JumpPickup.h"
@@ -21,7 +21,7 @@ void AJumpPickup::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 		UBuffComponent* Buff = BlasterCharacter->GetBuff();
 		if (Buff)
 		{
-			float LastVelocity =  BlasterCharacter->GetCharacterMovement()->JumpZVelocity;//Ô­Z·½ÏòÌøÔ¾ËÙ¶È
+			float LastVelocity =  BlasterCharacter->GetCharacterMovement()->JumpZVelocity;//åŽŸZæ–¹å‘è·³è·ƒé€Ÿåº¦
 			Buff->JumpUp(LastVelocity,JumpZVelocityBuff, JumpBuffTime);
 		}
 	}

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "SpeedPickup.h"
@@ -6,7 +6,7 @@
 #include "Blaster/Weapon/Weapon.h"
 #include "Blaster/BlasterComponents/BuffComponent.h"
 
-//Ê¹ÓÃÇ°ÏÈÔÚÀ¶Í¼Àï¼ì²éÏÂÄ¬ÈÏÖµÊÇ·ñÉèÖÃ£¬C++ÖĞµÄËÙ¶ÈÄ¬ÈÏÖµÊÇ0£¬Ğ¡ĞÄÒ»»áÅöÁË¶¯²»ÁË
+//ä½¿ç”¨å‰å…ˆåœ¨è“å›¾é‡Œæ£€æŸ¥ä¸‹é»˜è®¤å€¼æ˜¯å¦è®¾ç½®ï¼ŒC++ä¸­çš„é€Ÿåº¦é»˜è®¤å€¼æ˜¯0ï¼Œå°å¿ƒä¸€ä¼šç¢°äº†åŠ¨ä¸äº†
 ASpeedPickup::ASpeedPickup()
 {
 	bReplicates = true;
@@ -19,13 +19,13 @@ void ASpeedPickup::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 	ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(OtherActor);
 	if (BlasterCharacter)
 	{
-		//if (BlasterCharacter->GetHealth() == BlasterCharacter->GetMaxHealth()) return;//ÂúÑª×´Ì¬ÏÂÅöµ½ÎŞĞ§
+		//if (BlasterCharacter->GetHealth() == BlasterCharacter->GetMaxHealth()) return;//æ»¡è¡€çŠ¶æ€ä¸‹ç¢°åˆ°æ— æ•ˆ
 		UBuffComponent* Buff = BlasterCharacter->GetBuff();
-		CurrentWalkSpeed = BlasterCharacter->GetCharacterMovement()->GetMaxSpeed();//»ñÈ¡µ±Ç°ËÙ¶È
+		CurrentWalkSpeed = BlasterCharacter->GetCharacterMovement()->GetMaxSpeed();//è·å–å½“å‰é€Ÿåº¦
 		CurrentCrouchSpeed = BlasterCharacter->GetCharacterMovement()->MaxWalkSpeedCrouched;
 		if (Buff)
 		{
-			Buff->SpeedUp(CurrentWalkSpeed,CurrentCrouchSpeed, AcclerateToWalk, AcclerateToCrouch,SpeedUpTime);//Õâ¸öaccleratespeed±ØĞëÏÈÔÚÀ¶Í¼ÉèÖÃºÃ£¬²»È»´¥·¢ºóÄ¬ÈÏËÙ¶ÈÊÇ0
+			Buff->SpeedUp(CurrentWalkSpeed,CurrentCrouchSpeed, AcclerateToWalk, AcclerateToCrouch,SpeedUpTime);//è¿™ä¸ªaccleratespeedå¿…é¡»å…ˆåœ¨è“å›¾è®¾ç½®å¥½ï¼Œä¸ç„¶è§¦å‘åé»˜è®¤é€Ÿåº¦æ˜¯0
 		}
 	}
 	Destroy();
