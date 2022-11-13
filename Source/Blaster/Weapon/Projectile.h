@@ -27,8 +27,13 @@ public:
 	UPROPERTY(EditAnywhere)
 	float InitialSpeed = 15000;
 
-	//不暴露出去,存取对应的武器的伤害在网络上传出去
+	//只在榴弹和火箭筒里设置这个
+	UPROPERTY(EditAnywhere)
 		float Damage = 20.f;
+
+	//对榴弹和火箭筒不起作用
+	UPROPERTY(EditAnywhere)
+		float HeadShotDamage = 40.f;
 
 protected:
 	// Called when the game starts or when spawned

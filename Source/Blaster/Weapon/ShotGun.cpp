@@ -29,6 +29,8 @@ void AShotGun::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 
 		//对应命中的角色和被命中的次数
 		TMap<ABlasterCharacter*, uint32> HitMap;//将被命中的对象都加进去
+		TMap<ABlasterCharacter*, uint32> HeadShotHitMap;//将被爆头的对象都加进去
+
 
 		for(FVector_NetQuantize HitTarget : HitTargets)
 		{
@@ -38,14 +40,20 @@ void AShotGun::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 			ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(FireHit.GetActor());//获取击中的目标
 			if (BlasterCharacter )//在本地执行，不检查权威性和造成伤害的玩家控制器
 			{
-				if (HitMap.Contains(BlasterCharacter))//已经击中过这个人Hits就+1
+				const bool bHeadShot = FireHit.BoneName.ToString() == FString("head");
+
+				if(bHeadShot)
 				{
-					HitMap[BlasterCharacter]++;
+					if (HeadShotHitMap.Contains(BlasterCharacter)) HeadShotHitMap[BlasterCharacter]++;//已经击中过这个人Hits就+1
+					else HeadShotHitMap.Emplace(BlasterCharacter, 1);//以前没击中过这个人就添加进去并且置Hits为1
 				}
-				else//以前没击中过这个人就添加进去并且置Hits为1
+				//没被爆头的情况下
+				else
 				{
-					HitMap.Emplace(BlasterCharacter, 1);
+					if (HitMap.Contains(BlasterCharacter)) HitMap[BlasterCharacter]++;//已经击中过这个人Hits就+1
+					else HitMap.Emplace(BlasterCharacter, 1);//以前没击中过这个人就添加进去并且置Hits为1
 				}
+				
 
 				if (ImpactParticles)//生成打击的贴花效果
 				{
@@ -72,29 +80,54 @@ void AShotGun::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 
 		}
 
-		TArray<ABlasterCharacter*> HitCharacters;
+		TArray<ABlasterCharacter*> HitCharacters;//角色表
+		TMap<ABlasterCharacter*, float> DamageMap;//角色伤害表
 
 		//开始计算每个角色被命中的总伤害
 		for (auto HitPair : HitMap)
 		{
-			if (HitPair.Key && HasAuthority() && InstigatorController)
+			if (HitPair.Key)
+			{
+				DamageMap.Emplace(HitPair.Key, HitPair.Value * Damage);//命中的弹药*每一发弹药的伤害
+				HitCharacters.AddUnique(HitPair.Key);//只会添加不在里面的玩家
+			}
+		}
+
+		//开始计算每个角色被爆头的总伤害
+		for (auto HeadShotHitPair : HeadShotHitMap)
+		{
+			if (HeadShotHitPair.Key)
+			{
+				//伤害表已经被记录过爆头了，就把这次新的爆头伤害加上
+				if (DamageMap.Contains(HeadShotHitPair.Key)) DamageMap[HeadShotHitPair.Key] += HeadShotHitPair.Value * HeadShotDamage;
+				//伤害表头一次遇到这个玩家就加进去，顺便记录第一次受到的伤害
+				else DamageMap.Emplace(HeadShotHitPair.Key, HeadShotHitPair.Value * HeadShotDamage);
+				//如果是头一次遇到这个玩家，玩家表里记录一下
+				HitCharacters.AddUnique(HeadShotHitPair.Key);//只会添加不在里面的玩家
+			}
+		}
+
+		//计算这一喷子对每个玩家的总伤害
+		for(auto DamagePair : DamageMap)
+		{
+			if(InstigatorController && DamagePair.Key)
 			{
 				bool bCauseAuthDamage = !bUseServerSideRewind || OwnerPawn->IsLocallyControlled();
 				//不使用服务器回溯就直接算伤害,目前服务端开了这个功能就无法对客户端造成伤害
-				if(HasAuthority() && bCauseAuthDamage)
-				//if (HasAuthority() )
+				if (HasAuthority() && bCauseAuthDamage)
 				{
 					UGameplayStatics::ApplyDamage(
-						HitPair.Key,
-						Damage * HitPair.Value,
-						InstigatorController,
-						this,
+						DamagePair.Key,//受到伤害的玩家
+						DamagePair.Value,//受到伤害的值
+						InstigatorController,//伤害来源的控制器
+						this,//伤害来源
 						UDamageType::StaticClass()
 					);
 				}
-				HitCharacters.Add(HitPair.Key);
 			}
 		}
+
+	
 
 		//是否使用了服务器回溯,客户端才有这个选项
 		if (!HasAuthority() && bUseServerSideRewind)

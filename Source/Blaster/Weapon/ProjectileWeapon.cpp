@@ -38,6 +38,7 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 					SpawnedProjectile = World->SpawnActor<AProjectile>(ProjectileClass,SocketTransform.GetLocation(),TargetRotation,SpawnParams);//发射的弹药类，发射的插槽的位置，目标的旋转向量，发射物的一系列信息
 					SpawnedProjectile->bUseServerSideRewind = false;//服务端没必要用SSR
 					SpawnedProjectile->Damage = Damage;//弹药的伤害 = 武器的伤害
+					SpawnedProjectile->HeadShotDamage = HeadShotDamage;
 				}
 				else//服务端上的非本机控制的模拟控制器,生成不进行网络复制的抛射物(客户端RPC之后紧跟的服务端rep_notify已经复制了一遍了)，使用SSR
 				{
@@ -71,6 +72,7 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 				SpawnedProjectile = World->SpawnActor<AProjectile>(ProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);//发射的弹药类，发射的插槽的位置，目标的旋转向量，发射物的一系列信息
 				SpawnedProjectile->bUseServerSideRewind = false;
 				SpawnedProjectile->Damage = Damage;//弹药的伤害 = 武器的伤害
+				SpawnedProjectile->HeadShotDamage = HeadShotDamage;
 			}
 		}
 	}
