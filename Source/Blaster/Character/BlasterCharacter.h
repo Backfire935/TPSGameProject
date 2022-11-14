@@ -8,6 +8,7 @@
 #include "Blaster/Interfaces/InteractWithCrosshairsInterface.h"
 #include "Components/TimeLineComponent.h"
 #include"Blaster/BlasterTypes/CombatState.h"
+#include "Blaster/BlasterTypes/Team.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 #include "BlasterCharacter.generated.h"
@@ -70,6 +71,8 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastLostTheLead();
+
+	void SetTeamColor(ETeam Team);
 
 protected:
 
@@ -293,8 +296,24 @@ private:
 		UMaterialInstanceDynamic* DynamicDissolveMaterialInstance;//动态溶解材质实例
 
 		//在蓝图中设置的动态材质实例
-		UPROPERTY(EditAnywhere, Category = Elim)
+		UPROPERTY(VisibleAnywhere, Category = Elim)
 		UMaterialInstance* DissolveMaterialInstance;
+
+		//队伍颜色
+	UPROPERTY(EditAnywhere, Category = Elim)
+		UMaterialInstance* RedDissolveMatInst;
+
+	UPROPERTY(EditAnywhere, Category = Elim)
+		UMaterialInstance* RedMaterial;
+
+	UPROPERTY(EditAnywhere, Category = Elim)
+		UMaterialInstance* BlueDissolveMatInst;
+
+	UPROPERTY(EditAnywhere, Category = Elim)
+		UMaterialInstance* BlueMaterial;
+
+	UPROPERTY(EditAnywhere, Category = Elim)
+		UMaterialInstance* OriginalMaterial;
 
 		//淘汰效果
 		UPROPERTY(EditAnywhere)
@@ -320,6 +339,17 @@ private:
 
 	UPROPERTY(EditAnywhere,Category= "Combat")
 	TSubclassOf<AWeapon> DefaultWeaponClass;
+
+	UPROPERTY()
+	class ABlasterGameMode* BlasterGameMode;
+
+	//是否开启友军伤害
+	UPROPERTY(EditAnywhere, Category = "Team")
+	bool bTeamDamage =false;
+
+	//友军伤害倍率
+	UPROPERTY(EditAnywhere, Category = "Team")
+		float TeamDamageRate = 1.f;
 
 public:	
 

@@ -166,3 +166,8 @@ void ABlasterGameMode::PlayerLeftGame(ABlasterPlayerState* PlayerLeaving)
 
 }
 
+float ABlasterGameMode::CalculateDamage(AController* Attacker, AController* Victim, float BaseDamage, bool bTeamDamage, float TeamDamageRate)
+{
+	return BaseDamage; 
+}
+

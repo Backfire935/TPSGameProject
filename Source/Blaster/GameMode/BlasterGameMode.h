@@ -30,6 +30,8 @@ public:
 
 	void PlayerLeftGame(class ABlasterPlayerState * PlayerLeaving);//离开游戏
 
+	virtual float CalculateDamage(AController * Attacker, AController * Victim, float BaseDamage,bool bTeamDamage,float TeamDamageRate);//是否开启友伤,友伤只有0.6倍
+
 	UPROPERTY(EditDefaultsOnly)
 	float WarmupTime = 10.f;//只能从默认蓝图中设置,热身阶段的时间
 

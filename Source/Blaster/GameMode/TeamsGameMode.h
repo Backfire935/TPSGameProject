@@ -17,6 +17,9 @@ class BLASTER_API ATeamsGameMode : public ABlasterGameMode
 public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void Logout(AController* Exiting) override;
+	virtual float CalculateDamage(AController* Attacker, AController* Victim, float BaseDamage, bool bTeamDamage , float TeamDamageRate) override;
+
 protected:
 	virtual void HandleMatchHasStarted() override;
+
 };

@@ -327,7 +327,11 @@ void ABlasterCharacter::TabButtonReleased()
 
 void ABlasterCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
 {
-	if(bElimed) return;//如果自己已经死了就不会再受到伤害了
+
+	BlasterGameMode = BlasterGameMode == nullptr  ? GetWorld()->GetAuthGameMode<ABlasterGameMode>() : BlasterGameMode;
+	if(bElimed || BlasterGameMode == nullptr) return;//如果自己已经死了就不会再受到伤害了
+
+	Damage = BlasterGameMode->CalculateDamage(InstigatorController, Controller, Damage , bTeamDamage , TeamDamageRate);
 
 	float DamageToHealth = Damage;
 	float NotHitedShield = 0.f;
@@ -354,7 +358,6 @@ void ABlasterCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const 
 	PlayHitReactMontage();
 	if (Health == 0.f)//如果血量到0,进行淘汰
 	{
-		ABlasterGameMode* BlasterGameMode = GetWorld()->GetAuthGameMode<ABlasterGameMode>();
 		if (BlasterGameMode)
 		{
 			BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(Controller) : BlasterPlayerController;
@@ -447,6 +450,8 @@ void ABlasterCharacter::MulticastElim_Implementation(bool bPlayerLeftGame)//玩�
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	AttachedGrenade->SetCollisionEnabled(ECollisionEnabled::NoCollision);//玩家被淘汰后设置手雷的模型为不碰撞
+
 	//生成淘汰音效
 	if (ElimBotEffect)
 	{
@@ -487,7 +492,8 @@ void ABlasterCharacter::MulticastElim_Implementation(bool bPlayerLeftGame)//玩�
 
 void ABlasterCharacter::ElimTimerFinished()//淘汰计时器结束之后,从游戏模式那复活玩家
 {
-	ABlasterGameMode* BlasterGameMode = GetWorld()->GetAuthGameMode<ABlasterGameMode>();
+	BlasterGameMode = BlasterGameMode == nullptr ? GetWorld()->GetAuthGameMode<ABlasterGameMode>() : BlasterGameMode;
+
 	if (BlasterGameMode && !bLeftGame)
 	{
 		BlasterGameMode->RequestRespawn(this, Controller);//请求复活玩家
@@ -501,7 +507,8 @@ void ABlasterCharacter::ElimTimerFinished()//淘汰计时器结束之后,从游�
 
 void ABlasterCharacter::ServerLeaveGame_Implementation()
 {
-	ABlasterGameMode* BlasterGameMode = GetWorld()->GetAuthGameMode<ABlasterGameMode>();
+	BlasterGameMode = BlasterGameMode == nullptr ? GetWorld()->GetAuthGameMode<ABlasterGameMode>() : BlasterGameMode;
+
 	 BlasterPlayerState = BlasterPlayerState == nullptr ? GetPlayerState<ABlasterPlayerState>() : BlasterPlayerState;
 	if (BlasterGameMode && BlasterPlayerState)
 	{
@@ -517,7 +524,8 @@ void ABlasterCharacter::Destroyed()
 		ElimBotComponent->DestroyComponent();
 	}
 
-	ABlasterGameMode* BlasterGameMode = Cast<ABlasterGameMode>(UGameplayStatics::GetGameMode(this));
+	BlasterGameMode = BlasterGameMode == nullptr ? GetWorld()->GetAuthGameMode<ABlasterGameMode>() : BlasterGameMode;
+
 
 	bool bMatchNotInProgress = BlasterGameMode && BlasterGameMode->GetMatchState() != MatchState::InProgress;
 
@@ -556,6 +564,29 @@ void ABlasterCharacter::MulticastLostTheLead_Implementation()
 	{
 		//存在粒子组件就销毁
 		CrownComponent->DestroyComponent();
+	}
+}
+
+void ABlasterCharacter::SetTeamColor(ETeam Team)
+{
+	if (GetMesh() == nullptr || OriginalMaterial == nullptr ) return;
+
+	switch (Team)
+	{
+	case ETeam::ET_NoTeam :
+		GetMesh()->SetMaterial(0,OriginalMaterial);
+		DissolveMaterialInstance = BlueDissolveMatInst;
+		break;
+
+	case ETeam::ET_BlueTeam :
+		GetMesh()->SetMaterial(0, BlueMaterial);
+		DissolveMaterialInstance = BlueDissolveMatInst;
+		break;
+
+	case ETeam::ET_RedTeam :
+		GetMesh()->SetMaterial(0, RedMaterial);
+		DissolveMaterialInstance = RedDissolveMatInst;
+		break;
 	}
 }
 
@@ -949,6 +980,10 @@ void ABlasterCharacter::HideCameraIfCharacterClose()
 		{
 			Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = true;//设置拥有者不可见
 		}
+		if (Combat && Combat->SecondaryWeapon && Combat->SecondaryWeapon->GetWeaponMesh())
+		{
+			Combat->SecondaryWeapon->GetWeaponMesh()->bOwnerNoSee = true;//设置拥有者不可见
+		}
 	}
 	else
 	{
@@ -956,6 +991,10 @@ void ABlasterCharacter::HideCameraIfCharacterClose()
 		if (Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
 		{
 			Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = false;//设置拥有者可见
+		}
+		if (Combat && Combat->SecondaryWeapon && Combat->SecondaryWeapon->GetWeaponMesh())
+		{
+			Combat->SecondaryWeapon->GetWeaponMesh()->bOwnerNoSee = false;//设置拥有者可见
 		}
 	}
 }
@@ -1081,7 +1120,8 @@ void ABlasterCharacter::UpdateHUDAmmo()
 
 void ABlasterCharacter::SpawnDefaultWeapon()
 {
-	ABlasterGameMode* BlasterGameMode = Cast<ABlasterGameMode>(UGameplayStatics::GetGameMode(this));
+	BlasterGameMode = BlasterGameMode == nullptr ? GetWorld()->GetAuthGameMode<ABlasterGameMode>() : BlasterGameMode;
+
 	UWorld *World = GetWorld();
 	if(BlasterGameMode && World && !bElimed && DefaultWeaponClass)
 	{
@@ -1103,6 +1143,7 @@ void ABlasterCharacter::PollInit()
 		{
 			BlasterPlayerState->AddToScore(0.f);
 			BlasterPlayerState->AddToDefeats(0);
+			SetTeamColor(BlasterPlayerState->GetTeam());//设置队伍颜色
 			ABlasterGameState* BlasterGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
 			if (BlasterGameState && BlasterGameState->TopScoringPlayers.Contains(BlasterPlayerState))
 			{

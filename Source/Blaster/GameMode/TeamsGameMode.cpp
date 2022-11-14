@@ -48,6 +48,33 @@ void ATeamsGameMode::Logout(AController* Exiting)
 
 }
 
+float ATeamsGameMode::CalculateDamage(AController* Attacker, AController* Victim, float BaseDamage, bool bTeamDamage , float TeamDamageRate)
+{
+	ABlasterPlayerState* AttackerPState = Attacker->GetPlayerState<ABlasterPlayerState>();
+	ABlasterPlayerState* VictimPState = Victim->GetPlayerState<ABlasterPlayerState>();
+	if (AttackerPState == nullptr || VictimPState == nullptr) return BaseDamage;
+	if (AttackerPState == VictimPState) return BaseDamage;
+	//下面是针对相同队伍的情况,禁止友伤
+	if(AttackerPState->GetTeam() == VictimPState->GetTeam())
+	{
+		//如果开了友伤
+		if(bTeamDamage)
+		{
+			//限制下伤害倍率的范围
+			if (TeamDamageRate > 1) TeamDamageRate = 1;
+			// 回血 职业 治疗
+			if (TeamDamageRate < 0) TeamDamageRate = 0;
+			return BaseDamage * TeamDamageRate;
+		}
+		else
+		{
+			//没开友伤就返回零伤害
+			return 0.f;
+		}
+	}
+	return  BaseDamage;
+
+}
 
 
 void ATeamsGameMode::HandleMatchHasStarted()
