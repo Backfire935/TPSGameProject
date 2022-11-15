@@ -65,9 +65,8 @@ public:
 
 	void CheckTimeSync(float DeltaTime);//检查时间同步的函数
 
-	void OnMatchStateSet(FName State);
-
-	void HandleMatchHasStarted();
+	void OnMatchStateSet(FName State, bool bTeamMatch = false);
+	void HandleMatchHasStarted(bool bTeamMatch = false);
 
 	UFUNCTION(Server,Reliable)
 	void ServerCheckMatchState();//服务端检查游戏状态
@@ -87,6 +86,13 @@ public:
 
 		void BroadcastElim(APlayerState* Attacker, APlayerState* Victim); 
 
+	//关于HUD中队伍分数的显示
+		void HideTeamScores();
+		void InitTeamScores();
+		void SetHUDRedTeamScores(int32 RedScore);
+		void SetHUDBlueTeamScores(int32 BlueScore);
+		void SetHUDTargetScore(int32 Score);
+
 
 protected:
 	virtual void BeginPlay() override;
@@ -101,6 +107,15 @@ protected:
 
 	UFUNCTION(Client,Reliable)
 	void ClientElimAnnouncement(APlayerState* Attacker, APlayerState* Victim);
+
+	UPROPERTY(ReplicatedUsing=OnRep_ShowTeamScores)
+	bool bShowTeamScores = false;
+
+	UFUNCTION()
+	void OnRep_ShowTeamScores();
+
+	FString GetInfoText(const TArray<class ABlasterPlayerState*>& Players);
+	FString GetTeamsInfoText(class ABlasterGameState * BlasterGameState);
 
 private:
 	/// <summary>
@@ -119,6 +134,9 @@ private:
 
 	UPROPERTY()
 		class ABlasterGameMode* BlasterGameMode;
+
+	UPROPERTY()
+		class ATeamsGameMode* TeamGameMode;
 
 	float LevelStartingTime;//游戏开始的时间
 

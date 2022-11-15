@@ -43,6 +43,10 @@ public:
 
 	float LevelStartingTime = 0.f;
 
+	//是否开启团队模式
+	UPROPERTY(EditAnywhere)
+	bool bTeamsMatch = false;
+
 protected:
 	virtual void BeginPlay() override;
 

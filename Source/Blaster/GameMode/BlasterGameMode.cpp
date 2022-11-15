@@ -13,7 +13,7 @@
 namespace MatchState
 {
 	const FName Cooldown = FName("Cooldown");
-
+	
 }
 
 ABlasterGameMode::ABlasterGameMode()
@@ -67,7 +67,7 @@ void ABlasterGameMode::OnMatchStateSet()//由游戏模式通知所有的玩家控制器现在的游
 		ABlasterPlayerController *BlasterPlayer = Cast<ABlasterPlayerController>(*It);
 		if (BlasterPlayer)
 		{
-			BlasterPlayer->OnMatchStateSet(MatchState);
+			BlasterPlayer->OnMatchStateSet(MatchState,bTeamsMatch);
 		}
 
 	}

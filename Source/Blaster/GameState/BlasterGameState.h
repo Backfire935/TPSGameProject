@@ -20,6 +20,11 @@ public:
 	UPROPERTY(Replicated)
 	TArray<class ABlasterPlayerState*> TopScoringPlayers;//用于存储分数最高的玩家
 
+	//队伍
+	void RedTeamScores();
+
+	void BlueTeamScores();
+
 	TArray<ABlasterPlayerState*> RedTeam;
 	TArray<ABlasterPlayerState*> BlueTeam;
 

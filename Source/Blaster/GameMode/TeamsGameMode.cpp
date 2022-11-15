@@ -2,9 +2,25 @@
 
 
 #include "TeamsGameMode.h"
+
+#include "Blaster/Character/BlasterCharacter.h"
 #include "Blaster/GameState/BlasterGameState.h"
+#include "Blaster/PlayerController/BlasterPlayerController.h"
 #include "Blaster/PlayerState/BlasterPlayerState.h"
 #include"Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
+
+ATeamsGameMode::ATeamsGameMode()
+{
+	bTeamsMatch = true;
+	
+}
+
+void ATeamsGameMode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ATeamsGameMode, TargetScore);
+}
 
 void ATeamsGameMode::PostLogin(APlayerController* NewPlayer)
 {
@@ -76,6 +92,44 @@ float ATeamsGameMode::CalculateDamage(AController* Attacker, AController* Victim
 
 }
 
+void ATeamsGameMode::PlayerEliminated(ABlasterCharacter* ElimmedCharacter, ABlasterPlayerController* VictimController,
+	ABlasterPlayerController* AttackerController)
+{
+	Super::PlayerEliminated(ElimmedCharacter, VictimController, AttackerController);
+
+	ABlasterGameState* BGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));//返回当前游戏状态,世界上下文
+	ABlasterPlayerState* AttackerPlayerState = AttackerController ? Cast<ABlasterPlayerState>(AttackerController->PlayerState) : nullptr;//AttackerController是否存在，存在就取它的玩家状态，不存在就设空
+	ABlasterPlayerState* ElimmedPlayerState = VictimController ? Cast<ABlasterPlayerState>(VictimController->PlayerState) : nullptr;//VictimController是否存在，存在就取它的玩家状态，不存在就设空
+
+	if(BGameState && AttackerPlayerState && ElimmedPlayerState)
+	{
+		if (AttackerPlayerState->GetTeam() == ElimmedPlayerState->GetTeam())
+		{//如果是自杀或者杀队友不加分,此条放在最上面
+			return;
+		}
+		if(AttackerPlayerState->GetTeam() == ETeam::ET_BlueTeam)
+		{//淘汰一个红方玩家后蓝队加一分
+			BGameState->BlueTeamScores();
+		}
+		if (AttackerPlayerState->GetTeam() == ETeam::ET_RedTeam)
+		{//淘汰一个蓝方玩家后红队加一分
+			BGameState->RedTeamScores();
+		}
+		
+	}
+}
+
+
+
+
+void ATeamsGameMode::OnRep_TargetScore()
+{
+	ABlasterPlayerController* BPlayer = Cast<ABlasterPlayerController>(GetWorld()->GetFirstPlayerController());
+	if (BPlayer)
+	{
+		BPlayer->SetHUDTargetScore(TargetScore);
+	}
+}
 
 void ATeamsGameMode::HandleMatchHasStarted()
 {

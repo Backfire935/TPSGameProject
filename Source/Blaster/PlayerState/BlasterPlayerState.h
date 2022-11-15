@@ -27,7 +27,6 @@ public:
 	void AddToScore(float ScoreAmount);
 	void AddToDefeats(int32 DefeatsAmount);
 
-
 private:
 
 	UPROPERTY()

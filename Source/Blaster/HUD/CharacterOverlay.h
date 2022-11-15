@@ -50,8 +50,20 @@ public:
 	UPROPERTY(meta = (BindWidget))
 		UTextBlock* PingText;
 
+	//蓝队分数
 	UPROPERTY(meta = (BindWidget))
-	class UImage* HighPingImage;
+		UTextBlock* BlueTeamScore;
+
+	//红队分数
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* RedTeamScore;
+
+	//目标获胜分数
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* TargetScore;
+
+	UPROPERTY(meta = (BindWidget))
+	class UImage* HighPingImage; 
 
 	UPROPERTY(meta = (BindWidgetAnim),Transient)
 	UWidgetAnimation* HighPingAnimation;
