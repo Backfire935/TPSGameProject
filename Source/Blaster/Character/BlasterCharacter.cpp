@@ -409,6 +409,10 @@ void ABlasterCharacter::DropOrDestroyWeapons()
 		{
 			DropOrDestroyWeapon(Combat->SecondaryWeapon);
 		}
+		if (Combat->TheFlag)
+		{
+			Combat->TheFlag->Dropped();
+		}
 	}
 }
 
@@ -621,6 +625,14 @@ void ABlasterCharacter::Tick(float DeltaTime)
 
 void ABlasterCharacter::RotateInPlace(float DeltaTime)//控制角色转向的函数
 {
+	if(Combat && Combat->bHoldingTheFlag)
+	{
+		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+		return;
+	}
+
 	if (bDisableGameplay)
 	{
 		bUseControllerRotationYaw = false;
@@ -681,6 +693,7 @@ void ABlasterCharacter::EquipButtonPressed()//E键的响应
 
 	if (Combat)
 	{
+		if (Combat->bHoldingTheFlag) return;//如果在拿旗子
 		if (HasAuthority())//如果在服务器中
 		{
 			Combat->EquipWeapon(OverlappingWeapon);
@@ -696,7 +709,7 @@ void ABlasterCharacter::EquipButtonPressed()//E键的响应
 void ABlasterCharacter::CrouchButtonPressed()//下蹲的响应
 {
 	if (bDisableGameplay)return;//如果设置为true，则代表禁用了此项输入
-
+	if (Combat && Combat->bHoldingTheFlag) return;
 	if (bIsCrouched)
 		UnCrouch();
 	else
@@ -706,6 +719,7 @@ void ABlasterCharacter::CrouchButtonPressed()//下蹲的响应
 void ABlasterCharacter::AimButtonPressed()//鼠标右键按下的响应
 {
 	if (bDisableGameplay)return;//如果设置为true，则代表禁用了此项输入
+	if (Combat && Combat->bHoldingTheFlag) return;
 
 	if(Combat)
 	{ 
@@ -716,6 +730,7 @@ void ABlasterCharacter::AimButtonPressed()//鼠标右键按下的响应
 void ABlasterCharacter::AimButtonReleased()//鼠标右键松开的响应
 {
 	if (bDisableGameplay)return;//如果设置为true，则代表禁用了此项输入
+	if (Combat && Combat->bHoldingTheFlag) return;
 
 	if (Combat)
 	{
@@ -726,6 +741,7 @@ void ABlasterCharacter::AimButtonReleased()//鼠标右键松开的响应
 void ABlasterCharacter::ReloadButtonPressed()
 {
 	if (bDisableGameplay)return;//如果设置为true，则代表禁用了此项输入
+	if (Combat && Combat->bHoldingTheFlag) return;
 
 	if (Combat)
 	{
@@ -735,20 +751,57 @@ void ABlasterCharacter::ReloadButtonPressed()
 
 void ABlasterCharacter::SwapPrimaryWeapon()
 {
+	if (Combat && Combat->bHoldingTheFlag) return;
+
 	if(Combat->EquippedWeapon && Combat->SecondaryWeapon)
 	Combat->SwapPrimaryWeapon();
 }
 
 void ABlasterCharacter::SwapSecondaryWeapon()
 {
+	if (Combat && Combat->bHoldingTheFlag) return;
+
 	if (Combat->EquippedWeapon && Combat->SecondaryWeapon)
 	Combat->SwapSecondaryWeapon();
 }
 
 void ABlasterCharacter::DropCurrentWeapon()//按G丢武器
 {
+	int32 mark = 0;//此处用于标记武器丢弃信息
+
+	//夺旗模式的情况下
+	if (Combat->TheFlag)
+	{
+		mark = 1;//标记此次按G丢弃了flag
+		Combat->TheFlag->Dropped();
+		Combat->TheFlag = nullptr;
+		UnCrouch();
+		Combat->bHoldingTheFlag = false;
+		//有武器就掏出来
+		if (Combat->EquippedWeapon)
+		{
+			Combat->EquippedWeapon->SetWeaponState(EWeaponState::Weapon_Equipped);//设置武器的状态为已装备
+			Combat->AttachActorToRightHand(Combat->EquippedWeapon);//东西放右手上
+			Combat->EquippedWeapon->SetOwner(this);//设置所有权
+			Combat->EquippedWeapon->SetHUDAmmo();//设置当前弹药HUD
+			Combat->UpdateCarriedAmmo();//更新携带的弹药
+			Combat->PlayEquipWeaponSound(Combat->EquippedWeapon);//播放捡起武器的声音
+			Combat->ReloadEmptyWeapon();//武器要是空的就装子弹
+
+		}
+		else//如果玩家没有武器的话
+		{
+			GetCharacterMovement()->bOrientRotationToMovement = true;//开启角色向移动的方向旋转
+			bUseControllerRotationYaw = false; //关闭角色跟随鼠标的左右旋转
+		}
+	}
+
+	
 	if (Combat && Combat->EquippedWeapon)
 	{
+		//若是此次按G丢弃的是旗子，就不丢武器了，不然按个G武器旗子一起丢了
+		if (mark == 1) return;
+
 		if (Combat->SecondaryWeapon)//丢掉之后如果身上有第二把武器，自动切换到第二把武器
 		{
 			Combat->EquippedWeapon->Dropped();//先把手上的丢了
@@ -766,7 +819,7 @@ void ABlasterCharacter::DropCurrentWeapon()//按G丢武器
 			//将没有用的第二把武器的指针设为空，现在就只有一把武器了
 			Combat->SecondaryWeapon = nullptr;//因为模型还在，这个时候销毁后背上的模型,这个时候角色只有主武器没有副武器
 		}//如果没有的话，将自身的状态切换至空
-		else//如果玩家只有主武器的话
+		else if(Combat->EquippedWeapon && Combat->SecondaryWeapon == nullptr)//如果玩家只有主武器的话
 		{
 			Combat->EquippedWeapon->Dropped();//枪丢了就行
 			Combat->EquippedWeapon = nullptr;//指针置空
@@ -774,12 +827,16 @@ void ABlasterCharacter::DropCurrentWeapon()//按G丢武器
 			bUseControllerRotationYaw = false; //关闭角色跟随鼠标的左右旋转
 		}
 	}
-	
+
+
+
 
 }
 
 void ABlasterCharacter::GrenadeButtonPressed()
 {
+	if (Combat && Combat->bHoldingTheFlag) return;
+
 	if(Combat)
 	{
 		Combat->ThrowGrenade();
@@ -890,6 +947,8 @@ void ABlasterCharacter::SimProxiesTurn()//模拟代理的朝向
 
 void ABlasterCharacter::Jump()//重写跳跃，如果是蹲伏的，按空格也可恢复站立
 {
+	if (Combat && Combat->bHoldingTheFlag) return;
+	 
 	if (bDisableGameplay)return;//如果设置为true，则代表禁用了此项输入
 
 	if (bIsCrouched)
@@ -905,6 +964,7 @@ void ABlasterCharacter::Jump()//重写跳跃，如果是蹲伏的，按空格也
 void ABlasterCharacter::FireButtonPressed()//按下开火键
 {
 	if (bDisableGameplay)return;//如果设置为true，则代表禁用了此项输入
+	if (Combat && Combat->bHoldingTheFlag) return;
 
 	if (Combat)
 	{
@@ -915,6 +975,7 @@ void ABlasterCharacter::FireButtonPressed()//按下开火键
 void ABlasterCharacter::FireButtonReleased()//松开开火键
 {
 	if (bDisableGameplay)return;//如果设置为true，则代表禁用了此项输入
+	if (Combat && Combat->bHoldingTheFlag) return;
 
 	if (Combat)
 	{
@@ -1081,11 +1142,24 @@ ECombatState ABlasterCharacter::GetCombatState() const
 	return Combat->CombatState;
 }
 
+bool ABlasterCharacter::IsHoldingTheFlag() const
+{
+	if (Combat == nullptr) return false;
+	return Combat->bHoldingTheFlag;
+}
+
 bool ABlasterCharacter::IsLocallyReloading()
 {
 	if (Combat == nullptr) return false;
 	return Combat->bLocallyReloading;
 
+}
+
+ETeam ABlasterCharacter::GetTeam()
+{
+	BlasterPlayerState = BlasterPlayerState == nullptr ? GetPlayerState<ABlasterPlayerState>() : BlasterPlayerState;
+	if (BlasterPlayerState == nullptr) return ETeam::ET_NoTeam;
+	return BlasterPlayerState->GetTeam();
 }
 
 void ABlasterCharacter::UpdateHUDHealth()

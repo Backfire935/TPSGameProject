@@ -112,6 +112,7 @@ protected:
 	void DropEquippedWeapon();
 
 	void AttachActorToRightHand(AActor * ActorToAttach);
+	void AttachFlagToLeftHand(AWeapon* Flag);
 	void AttachActorToLeftHand(AActor* ActorToAttach);
 	void AttachActorToBackpack(AActor* ActorToAttach);
 
@@ -282,7 +283,20 @@ private:
 	 int32 MaxGrenades = 9;
 
 	void UpdateHUDGrenades();
+
+	//动画时蹲下的但是客户端的模型还是站着的
+	UPROPERTY(ReplicatedUsing= OnRep_HoldingTheFlag)
+	bool bHoldingTheFlag = false;
+
+	UFUNCTION()
+	void OnRep_HoldingTheFlag();
+
+
+
+
 public:	
-	
+	UPROPERTY()
+		 AWeapon* TheFlag;
+
 	FORCEINLINE int32 GetGrenades() const { return Grenades; }
 };

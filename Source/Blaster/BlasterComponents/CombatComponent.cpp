@@ -16,6 +16,7 @@
 #include"Sound/SoundCue.h"
 #include "Blaster/Weapon/Projectile.h"
 #include "Blaster/Weapon/ShotGun.h"
+#include"Blaster/Weapon/Flag.h"
 
 UCombatComponent::UCombatComponent()
 {
@@ -43,6 +44,8 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UCombatComponent, Grenades);
 
 	DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly); //注册本类中声明的int32类型的备弹量变量的网络同步
+
+	DOREPLIFETIME(UCombatComponent, bHoldingTheFlag);
 }
 
 void UCombatComponent::PickupAmmp(EWeaponType WeaponType, int32 AmmoAmount)
@@ -394,17 +397,31 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 	if (Character == nullptr || WeaponToEquip == nullptr) return;//检查角色和武器是否为空
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
 
-	if(EquippedWeapon != nullptr && SecondaryWeapon == nullptr)//如果已经装备了一把武器并且没装第二把，就可以装第二把
+	if(WeaponToEquip->GetWeaponType() == EWeaponType::EWT_Flag)
 	{
-		EquipSecondaryWeapon(WeaponToEquip);
+		Character->Crouch(); 
+		bHoldingTheFlag = true;
+		WeaponToEquip->SetWeaponState(EWeaponState::Weapon_Equipped);
+		AttachFlagToLeftHand(WeaponToEquip);
+		WeaponToEquip->SetOwner(Character);
+		TheFlag = (WeaponToEquip);
 	}
 	else
 	{
-		EquipPrimaryWeapon(WeaponToEquip);//不然就是装第一件武器
+		if (EquippedWeapon != nullptr && SecondaryWeapon == nullptr)//如果已经装备了一把武器并且没装第二把，就可以装第二把
+		{
+			EquipSecondaryWeapon(WeaponToEquip);
+		}
+		else
+		{
+			EquipPrimaryWeapon(WeaponToEquip);//不然就是装第一件武器
+		}
+
+		Character->GetCharacterMovement()->bOrientRotationToMovement = false;//关闭角色向移动的方向旋转
+		Character->bUseControllerRotationYaw = true; //开启角色跟随鼠标的左右旋转
 	}
 
-	Character->GetCharacterMovement()->bOrientRotationToMovement = false;//关闭角色向移动的方向旋转
-	Character->bUseControllerRotationYaw = true; //开启角色跟随鼠标的左右旋转
+
 }
 
 void UCombatComponent::SwapPrimaryWeapon()
@@ -515,6 +532,17 @@ void UCombatComponent::AttachActorToRightHand(AActor* ActorToAttach)
 	if (HandSocket)
 	{
 		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());//参数：武器，角色模型
+	}
+}
+
+void UCombatComponent::AttachFlagToLeftHand(AWeapon* Flag)
+{
+	if (Character == nullptr || Flag == nullptr || Character->GetMesh() == nullptr) return;
+
+	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("FlagSocket"));//获取角色模型身上的指定插槽
+	if (HandSocket)
+	{
+		HandSocket->AttachActor(Flag, Character->GetMesh());//参数：武器，角色模型
 	}
 }
 
@@ -736,6 +764,14 @@ void UCombatComponent::UpdateHUDGrenades()
 	{
 		Controller->SetHUDGrenades(Grenades);
 
+	}
+}
+
+void UCombatComponent::OnRep_HoldingTheFlag()
+{
+	if(bHoldingTheFlag && Character && Character->IsLocallyControlled())
+	{
+		Character->Crouch();
 	}
 }
 

@@ -48,6 +48,8 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	bElimed = BlasterCharacter->IsElimed();//设置角色初始是否被淘汰
 
+	bHoldingTheFlag = BlasterCharacter->IsHoldingTheFlag();
+
 	FRotator AimRotation =  BlasterCharacter->GetBaseAimRotation();//获取鼠标的转动
 
 	FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(BlasterCharacter->GetVelocity());

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "WeaponTypes.h"
+#include "Blaster/BlasterTypes/Team.h"
 #include "Weapon.generated.h"
 
 UENUM(BlueprintType)
@@ -48,7 +49,7 @@ public:
 
 	void ShowPickupWidget(bool bShowWidget);
 	virtual void Fire(const FVector &HitTarget);
-	void Dropped();
+	virtual void Dropped();
 	FVector TraceWithScatter(const FVector& HitTarget);//喷子散射的射线检测
 
 	UFUNCTION()
@@ -204,12 +205,14 @@ private:
 	UPROPERTY(EditAnywhere)
 		EWeaponType WeaponType;
 
-
+	UPROPERTY(EditAnywhere)
+	ETeam Team;
 
 public:	
 
 	 void SetWeaponState(EWeaponState State);
 
+	 FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
 
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }

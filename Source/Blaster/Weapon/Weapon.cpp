@@ -72,6 +72,7 @@ void AWeapon::BeginPlay()
 }
 
 
+
 // Called every frame
 void AWeapon::Tick(float DeltaTime)
 {
@@ -94,6 +95,10 @@ void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(OtherActor);
 	if (BlasterCharacter)
 	{
+		//不同队的旗子不能抢
+		if (WeaponType == EWeaponType::EWT_Flag && BlasterCharacter->GetTeam() != Team) return;
+		//手上拿着旗子不能捡枪
+		if(BlasterCharacter->IsHoldingTheFlag()) return;
 		BlasterCharacter->SetOverlappingWeapon(this);//将自身传入踩到武器盒子的函数
 	}
 }
@@ -104,6 +109,8 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(OtherActor);
 	if (BlasterCharacter)
 	{
+		//不同队的旗子不能抢
+		if (WeaponType == EWeaponType::EWT_Flag && BlasterCharacter->GetTeam() != Team) return;
 		BlasterCharacter->SetOverlappingWeapon(nullptr);//踩到武器盒子函数的对象设置为空
 	}
 }
@@ -187,6 +194,7 @@ void AWeapon::SetWeaponState(EWeaponState State)//本地的
 {
 	WeaponState = State;
 	OnWeaponStateSet();
+
 }
 
 void AWeapon::OnPingTooHigh(bool bPingTooHigh)
@@ -386,8 +394,11 @@ void AWeapon::Fire(const FVector& HitTarget)
 
 void AWeapon::Dropped()
 {
-	bDestroyedWeapon = true;//进行武器掉落到地上准备销毁的计时
-	ReadyDestroyWeapon();
+	if(WeaponType != EWeaponType::EWT_Flag)
+	{
+		bDestroyedWeapon = true;//进行武器掉落到地上准备销毁的计时
+		ReadyDestroyWeapon();
+	}
 	SetWeaponState(EWeaponState::Weapon_Dropped);//先将此件武器的状态的设为丢弃状态
 	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld,true);//这个变量是解绑组件的规则，参数意思是自动计算相对转换，以便分离组件维护相同的世界转换。
 	WeaponMesh->DetachFromComponent(DetachRules);//不论组件被附加到什么上面都会拆下来，自动解绑被绑在一起的组件
