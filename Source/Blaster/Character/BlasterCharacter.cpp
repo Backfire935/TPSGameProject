@@ -28,6 +28,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include"Blaster/GameState/BlasterGameState.h"
+#include"Blaster/PlayerStart/TeamPlayerStart.h"
 
 // Sets default values 
 ABlasterCharacter::ABlasterCharacter()
@@ -414,6 +415,50 @@ void ABlasterCharacter::DropOrDestroyWeapons()
 			Combat->TheFlag->Dropped();
 		}
 	}
+}
+
+void ABlasterCharacter::SetSpawnPoint()
+{
+		if(HasAuthority() && BlasterPlayerState->GetTeam() != ETeam::ET_NoTeam)
+		{
+			TArray<AActor* > PlayerStarts;
+			//获取所有的复活点
+			UGameplayStatics::GetAllActorsOfClass(this, ATeamPlayerStart::StaticClass(), PlayerStarts);
+			//设置团队复活点
+			TArray<ATeamPlayerStart*> TeamPlayerStarts;
+			//对于所有的复活点
+			for(auto Start : PlayerStarts)
+			{
+				//将普通复活点转为团队复活点类型
+				ATeamPlayerStart* TeamStart = Cast<ATeamPlayerStart>(Start);
+				//复活点要与玩家所在队伍一致
+				if(TeamStart && TeamStart->Team == BlasterPlayerState->GetTeam())
+				{
+					//将转换后的复活点添加到团队复活点组去
+					TeamPlayerStarts.Add(TeamStart);
+				}
+			}
+			//如果不止一个玩家复活点的话
+			if(TeamPlayerStarts.Num() > 0)
+			{
+				//要被使用的复活点 = 随机一个复活点
+				ATeamPlayerStart* ChosenPlayerStart = TeamPlayerStarts[FMath::RandRange(0,TeamPlayerStarts.Num()-1)];
+
+				SetActorLocationAndRotation(
+					ChosenPlayerStart->GetActorLocation(),
+					ChosenPlayerStart->GetActorRotation()
+				);
+			}
+
+		}
+}
+
+void ABlasterCharacter::OnPlayerStateInitialized()
+{
+	BlasterPlayerState->AddToScore(0.f);
+	BlasterPlayerState->AddToDefeats(0);
+	SetTeamColor(BlasterPlayerState->GetTeam());//设置队伍颜色
+	SetSpawnPoint();
 }
 
 
@@ -1215,9 +1260,8 @@ void ABlasterCharacter::PollInit()
 		BlasterPlayerState = GetPlayerState<ABlasterPlayerState>();
 		if (BlasterPlayerState)
 		{
-			BlasterPlayerState->AddToScore(0.f);
-			BlasterPlayerState->AddToDefeats(0);
-			SetTeamColor(BlasterPlayerState->GetTeam());//设置队伍颜色
+			OnPlayerStateInitialized();
+
 			ABlasterGameState* BlasterGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
 			if (BlasterGameState && BlasterGameState->TopScoringPlayers.Contains(BlasterPlayerState))
 			{

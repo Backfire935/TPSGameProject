@@ -39,6 +39,8 @@ public:
 	void DropOrDestroyWeapons();
 	//销毁武器的问题
 
+	void SetSpawnPoint();//设置出生点
+	void OnPlayerStateInitialized();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastElim(bool bPlayerLeftGame);//玩家淘汰时
