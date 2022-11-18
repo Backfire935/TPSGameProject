@@ -1,17 +1,17 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Flag.h"
 #include "Components/StaticMeshComponent.h"
 #include"Components/SphereComponent.h"
 #include"Components/WidgetComponent.h"
-
+#include"Blaster/Character/BlasterCharacter.h"
 
 AFlag::AFlag()
 {
 	FlagMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FlagMesh"));
 	SetRootComponent(FlagMesh);
-	GetAreaSphere()->SetupAttachment(FlagMesh);//½«USphereComponent¸½¼Óµ½Æì×ÓÉÏ
+	GetAreaSphere()->SetupAttachment(FlagMesh);//å°†USphereComponenté™„åŠ åˆ°æ——å­ä¸Š
 	GetPickupWidget()->SetupAttachment(FlagMesh);
 	FlagMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	FlagMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -21,23 +21,22 @@ AFlag::AFlag()
 
 void AFlag::Dropped()
 {
-
-	SetWeaponState(EWeaponState::Weapon_Dropped);//ÏÈ½«´Ë¼şÎäÆ÷µÄ×´Ì¬µÄÉèÎª¶ªÆú×´Ì¬
-	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);//Õâ¸ö±äÁ¿ÊÇ½â°ó×é¼şµÄ¹æÔò£¬²ÎÊıÒâË¼ÊÇ×Ô¶¯¼ÆËãÏà¶Ô×ª»»£¬ÒÔ±ã·ÖÀë×é¼şÎ¬»¤ÏàÍ¬µÄÊÀ½ç×ª»»¡£
-	FlagMesh->DetachFromComponent(DetachRules);//²»ÂÛ×é¼ş±»¸½¼Óµ½Ê²Ã´ÉÏÃæ¶¼»á²ğÏÂÀ´£¬×Ô¶¯½â°ó±»°óÔÚÒ»ÆğµÄ×é¼ş
-	SetOwner(nullptr);//½«ÓµÓĞÕßÉèÖÃÎª¿Õ
-	BlasterOwnerCharacter = nullptr;//½«ÓµÓĞ´ËÎäÆ÷µÄ½ÇÉ«ÀàÉèÖÃÎª¿Õ
-	BlasterOwnerController = nullptr;//½«ÓµÓĞ´ËÎäÆ÷µÄ¿ØÖÆÆ÷ÉèÖÃÎª¿Õ
+	SetWeaponState(EWeaponState::Weapon_Dropped);//å…ˆå°†æ­¤ä»¶æ­¦å™¨çš„çŠ¶æ€çš„è®¾ä¸ºä¸¢å¼ƒçŠ¶æ€
+	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);//è¿™ä¸ªå˜é‡æ˜¯è§£ç»‘ç»„ä»¶çš„è§„åˆ™ï¼Œå‚æ•°æ„æ€æ˜¯è‡ªåŠ¨è®¡ç®—ç›¸å¯¹è½¬æ¢ï¼Œä»¥ä¾¿åˆ†ç¦»ç»„ä»¶ç»´æŠ¤ç›¸åŒçš„ä¸–ç•Œè½¬æ¢ã€‚
+	FlagMesh->DetachFromComponent(DetachRules);//ä¸è®ºç»„ä»¶è¢«é™„åŠ åˆ°ä»€ä¹ˆä¸Šé¢éƒ½ä¼šæ‹†ä¸‹æ¥ï¼Œè‡ªåŠ¨è§£ç»‘è¢«ç»‘åœ¨ä¸€èµ·çš„ç»„ä»¶
+	SetOwner(nullptr);//å°†æ‹¥æœ‰è€…è®¾ç½®ä¸ºç©º
+	BlasterOwnerCharacter = nullptr;//å°†æ‹¥æœ‰æ­¤æ­¦å™¨çš„è§’è‰²ç±»è®¾ç½®ä¸ºç©º
+	BlasterOwnerController = nullptr;//å°†æ‹¥æœ‰æ­¤æ­¦å™¨çš„æ§åˆ¶å™¨è®¾ç½®ä¸ºç©º
 }
 
 void AFlag::HandleWeaponEquiped()
 {
-	ShowPickupWidget(false);//¹Ø±ÕÎäÆ÷µÄÊ°È¡ÌáÊ¾
-	GetAreaSphere()->SetCollisionEnabled(ECollisionEnabled::NoCollision);//¹Ø±ÕÎäÆ÷µÄÅö×²ºĞ×Ó
-	FlagMesh->SetSimulatePhysics(false);//¿ªÆôÄ£ÄâÎïÀí
-	FlagMesh->SetEnableGravity(false);//¿ªÆôÎäÆ÷ÖØÁ¦
-	FlagMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
+	ShowPickupWidget(false);//å…³é—­æ­¦å™¨çš„æ‹¾å–æç¤º
+	GetAreaSphere()->SetCollisionEnabled(ECollisionEnabled::NoCollision);//å…³é—­æ­¦å™¨çš„ç¢°æ’ç›’å­
+	FlagMesh->SetSimulatePhysics(false);//å¼€å¯æ¨¡æ‹Ÿç‰©ç†
+	FlagMesh->SetEnableGravity(false);//å¼€å¯æ­¦å™¨é‡åŠ›
+	FlagMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	FlagMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
 
 }
 
@@ -45,15 +44,48 @@ void AFlag::HandleWeaponDropped()
 {
 	if (HasAuthority())
 	{
-		GetAreaSphere()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);//¿ªÆôÎäÆ÷µÄÅö×²ºĞ×Ó
+		GetAreaSphere()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);//å¼€å¯æ­¦å™¨çš„ç¢°æ’ç›’å­
 	}
 
-	FlagMesh->SetSimulatePhysics(true);//¿ªÆôÄ£ÄâÎïÀí
-	FlagMesh->SetEnableGravity(true);//¿ªÆôÎäÆ÷ÖØÁ¦
+	FlagMesh->SetSimulatePhysics(true);//å¼€å¯æ¨¡æ‹Ÿç‰©ç†
+	FlagMesh->SetEnableGravity(true);//å¼€å¯æ­¦å™¨é‡åŠ›
 	FlagMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	FlagMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block); //ÉèÖÃÎäÆ÷¶ÔËùÓĞÅö×²¼ì²âÍ¨µÀµÄÏìÓ¦Ä£Ê½
-	FlagMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore); //¸²¸Ç ºöÂÔ¶ÔPawnÍ¨µÀµÄÅö×²¼ì²â
-	FlagMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore); //¸²¸Ç ºöÂÔ¶ÔCameraÍ¨µÀµÄÅö×²¼ì²â
+	FlagMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block); //è®¾ç½®æ­¦å™¨å¯¹æ‰€æœ‰ç¢°æ’æ£€æµ‹é€šé“çš„å“åº”æ¨¡å¼
+	FlagMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore); //è¦†ç›– å¿½ç•¥å¯¹Pawné€šé“çš„ç¢°æ’æ£€æµ‹
+	FlagMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore); //è¦†ç›– å¿½ç•¥å¯¹Cameraé€šé“çš„ç¢°æ’æ£€æµ‹
 
 
+}
+
+void AFlag::BeginPlay()
+{
+	Super::BeginPlay();
+	//è·å–è§’è‰²çš„åˆå§‹ä½ç½®å’Œä½ç§»
+	InitialTransform = GetActorTransform();
+}
+
+void AFlag::ResetFlag()
+{
+	ABlasterCharacter* FlagBearer = Cast<ABlasterCharacter>(GetOwner());
+	if (FlagBearer)
+	{
+		FlagBearer->SetHoldingTheFlag(false);
+		FlagBearer->SetOverlappingWeapon(nullptr);
+		FlagBearer->UnCrouch();
+	}
+
+	if (!HasAuthority()) return;
+
+	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);//è¿™ä¸ªå˜é‡æ˜¯è§£ç»‘ç»„ä»¶çš„è§„åˆ™ï¼Œå‚æ•°æ„æ€æ˜¯è‡ªåŠ¨è®¡ç®—ç›¸å¯¹è½¬æ¢ï¼Œä»¥ä¾¿åˆ†ç¦»ç»„ä»¶ç»´æŠ¤ç›¸åŒçš„ä¸–ç•Œè½¬æ¢ã€‚
+	FlagMesh->DetachFromComponent(DetachRules);//ä¸è®ºç»„ä»¶è¢«é™„åŠ åˆ°ä»€ä¹ˆä¸Šé¢éƒ½ä¼šæ‹†ä¸‹æ¥ï¼Œè‡ªåŠ¨è§£ç»‘è¢«ç»‘åœ¨ä¸€èµ·çš„ç»„ä»¶
+	SetWeaponState(EWeaponState::Weapon_Initial);//å…ˆå°†æ­¤ä»¶æ­¦å™¨çš„çŠ¶æ€çš„è®¾ä¸ºä¸¢å¼ƒçŠ¶æ€
+	GetAreaSphere()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetAreaSphere()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	
+	SetOwner(nullptr);//å°†æ‹¥æœ‰è€…è®¾ç½®ä¸ºç©º
+	BlasterOwnerCharacter = nullptr;//å°†æ‹¥æœ‰æ­¤æ­¦å™¨çš„è§’è‰²ç±»è®¾ç½®ä¸ºç©º
+	BlasterOwnerController = nullptr;//å°†æ‹¥æœ‰æ­¤æ­¦å™¨çš„æ§åˆ¶å™¨è®¾ç½®ä¸ºç©º
+
+	//å°†æ——å­é€å›åˆå§‹ä½ç½®
+	SetActorTransform(InitialTransform);
 }

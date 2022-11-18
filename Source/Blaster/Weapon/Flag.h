@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -19,12 +19,16 @@ public:
 
 	virtual void Dropped() override;
 
-	virtual void HandleWeaponEquiped() override;//´¦Àí×°±¸¹ıµÄÎäÆ÷
-	virtual void HandleWeaponDropped() override;//´¦Àí¶ªÆúµÄÎäÆ÷
-
+	virtual void HandleWeaponEquiped() override;//å¤„ç†è£…å¤‡è¿‡çš„æ­¦å™¨
+	virtual void HandleWeaponDropped() override;//å¤„ç†ä¸¢å¼ƒçš„æ­¦å™¨
+	virtual void BeginPlay() override;
+	void ResetFlag();
 private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* FlagMesh;
 
+	FTransform InitialTransform;
 
+public:
+	FORCEINLINE FTransform GetInitialTransform() const { return InitialTransform; }
 };
