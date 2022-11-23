@@ -24,6 +24,9 @@ UMultiplayerSessionSubsystem::UMultiplayerSessionSubsystem() :
 
 void UMultiplayerSessionSubsystem::CreateSession(int32 NumPublicConnections, FString MatchType)
 {
+	//从menu.cpp里传来的自定义的参数
+	DesiredMatchType = MatchType;
+	DesiredNumPublicConnections = NumPublicConnections;
 	//创建会话前先看看会话接口能不能用
 	if (!SessionInterface.IsValid())
 	{

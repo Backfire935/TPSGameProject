@@ -23,6 +23,7 @@ public:
 		UFUNCTION(BlueprintCallable)
 		void ShowPlayerNetRole(APawn *InPawn);	//设置玩家网络角色
 protected:
-	virtual void OnLevelRemovedFromWorld(ULevel * InLevel, UWorld *InWorld) override;	//移除控件
-
+	virtual void NativeDestruct() override;	//移除控件
+	//UE5.1 删除OnLevelRemoveFromWorld函数，使用NativeDestruct函数替换，5.1版本以下换回OnLevelRemoveFromWorld，感谢epic讨论区老哥救我一命
+	// https://forums.unrealengine.com/t/where-is-uuserwidget-onlevelremovedfromworld-in-5-1/692215/7
 };

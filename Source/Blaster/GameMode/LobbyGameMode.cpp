@@ -3,6 +3,7 @@
 
 #include "LobbyGameMode.h"
 #include "GameFramework/GameStateBase.h"
+#include"MultiplayerSessionSubsystem.h"
 
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
@@ -10,13 +11,41 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 
 	int32 NumberOfPlayers = GameState.Get()->PlayerArray.Num();     //玩家数量
 
-	if (NumberOfPlayers >= 2)
+	UGameInstance* GameInstance = GetGameInstance();
+
+	if(GameInstance)
 	{
-		UWorld* World = GetWorld();
-		if (World)
+		//依赖于steam联机插件
+		UMultiplayerSessionSubsystem * Subsystem = GameInstance->GetSubsystem<UMultiplayerSessionSubsystem>();
+		//断言处理防止为空
+		check(Subsystem);
+
+		if (NumberOfPlayers >= Subsystem->DesiredNumPublicConnections)
 		{
-			bUseSeamlessTravel = true; //使用无缝地图旅行
-			World->ServerTravel(FString("/Game/Maps/BlasterMap?listen"));
+			UWorld* World = GetWorld();
+			if (World)
+			{
+				bUseSeamlessTravel = true; //使用无缝地图旅行
+
+				FString MatchType = Subsystem->DesiredMatchType;
+				if(MatchType == "FreeForAll")
+				{
+				World->ServerTravel(FString("/Game/Maps/BlasterMap?listen"));
+					
+				}
+				else if (MatchType == "Teams")
+				{
+					World->ServerTravel(FString("/Game/Maps/TeamsMap?listen"));
+
+				}
+				else if (MatchType == "CaptureTheFlag")
+				{
+					World->ServerTravel(FString("/Game/Maps/TestMap?listen"));
+
+				}
+			}
 		}
 	}
+
+	
 }

@@ -49,6 +49,9 @@ public:
 	FMultiplayerOnDestroySessionComplete MultiplayerOnDestroySessionComplete;
 	FMultiplayerOnStartSessionComplete MultiplayerOnStartSessionComplete;
 
+	int32 DesiredNumPublicConnections{};
+
+	FString DesiredMatchType{};
 protected:
 	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
 	void OnFindSessionsComplete(bool bWasSuccessful);
@@ -86,7 +89,12 @@ private:
 
 
 	bool bCreateSessionOnDestroy{ false };
+
+
 	int32 LastNumPublicConnctions;
+
 	FString LastMatchType;
 
+	
+	
 };
