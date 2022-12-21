@@ -10,5 +10,6 @@ public class BlasterEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		ExtraModuleNames.AddRange( new string[] { "Blaster" } );
+		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_1;
 	}
 }
