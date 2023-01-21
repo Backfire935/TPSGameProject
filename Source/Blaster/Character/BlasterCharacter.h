@@ -169,14 +169,15 @@ protected:
 	UPROPERTY(EditAnywhere)
 		UBoxComponent* foot_r;
 
+	protected:
+		UPROPERTY(VisibleAnywhere, Category = camera)
+			class USpringArmComponent* CameraBoom;
 
+		UPROPERTY(VisibleAnywhere, Category = camera)
+			class UCameraComponent* FollowCamera;
 
 private:
-	UPROPERTY(VisibleAnywhere, Category = camera)
-	class USpringArmComponent* CameraBoom;	
 
-	UPROPERTY(VisibleAnywhere, Category = camera)
-	class UCameraComponent* FollowCamera;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UWidgetComponent* OverheadWidget;
